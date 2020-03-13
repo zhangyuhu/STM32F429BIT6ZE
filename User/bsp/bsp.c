@@ -46,6 +46,9 @@ void bsp_Init(void)
 	bsp_InitLed(); 		/* 初始LED指示灯端口 */
 	bsp_InitKey();		/* 初始化按键 */
 	bsp_InitTimer();	/* 初始化系统滴答定时器 (此函数会开 systick 中断, tim2-5中断) */
+	
+	bsp_InitSPIBus();	/* 配置SPI总线 */		
+	bsp_InitSFlash();	/* 初始化SPI 串行Flash */
 }
 
 /*

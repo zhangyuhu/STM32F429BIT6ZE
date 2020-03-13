@@ -362,7 +362,7 @@
             <wLevel>2</wLevel>
             <uThumb>0</uThumb>
             <uSurpInc>0</uSurpInc>
-            <uC99>0</uC99>
+            <uC99>1</uC99>
             <useXO>0</useXO>
             <v6Lang>1</v6Lang>
             <v6LangP>1</v6LangP>
@@ -375,7 +375,7 @@
               <MiscControls>--diag_suppress=870</MiscControls>
               <Define>USE_STDPERIPH_DRIVER,STM32F429_439xx,USE_USB_OTG_FS,USE_EMBEDDED_PHY</Define>
               <Undefine></Undefine>
-              <IncludePath>..\..\Libraries\CMSIS\Include;..\..\Libraries\STM32F4xx_StdPeriph_Driver\inc;..\..\User\bsp\inc;..\..\User\bsp;..\..\User\app\fatfs_demo;..\..\User\usbd_mass_storage;..\..\Libraries\STM32_USB_Device_Library\Core\inc;..\..\Libraries\STM32_USB_OTG_Driver\inc;..\..\Libraries\STM32_USB_Device_Library\Class\msc\inc;..\..\User\framework\components\FatFS\src</IncludePath>
+              <IncludePath>..\..\Libraries\CMSIS\Include;..\..\Libraries\STM32F4xx_StdPeriph_Driver\inc;..\..\User\usbd_mass_storage;..\..\Libraries\STM32_USB_Device_Library\Core\inc;..\..\Libraries\STM32_USB_OTG_Driver\inc;..\..\Libraries\STM32_USB_Device_Library\Class\msc\inc;..\..\User\bsp;..\..\User\bsp\inc;..\..\User\app;..\..\User\app\fatfs_demo;..\..\User\app\spifs_demo;..\..\User\framework\components\FatFS\src;..\..\User\framework\components\SPIFS</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -479,6 +479,16 @@
               <FileType>1</FileType>
               <FilePath>..\..\User\bsp\src\bsp_sdio_sd.c</FilePath>
             </File>
+            <File>
+              <FileName>bsp_spi_bus.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\bsp\src\bsp_spi_bus.c</FilePath>
+            </File>
+            <File>
+              <FileName>bsp_spi_flash.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\bsp\src\bsp_spi_flash.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -529,6 +539,11 @@
               <FileType>1</FileType>
               <FilePath>..\..\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_sdio.c</FilePath>
             </File>
+            <File>
+              <FileName>stm32f4xx_spi.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_spi.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -574,6 +589,31 @@
               <FileType>1</FileType>
               <FilePath>..\..\User\framework\components\FatFS\src\option\cc936.c</FilePath>
             </File>
+            <File>
+              <FileName>spiffs_cache.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\framework\components\SPIFS\spiffs_cache.c</FilePath>
+            </File>
+            <File>
+              <FileName>spiffs_check.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\framework\components\SPIFS\spiffs_check.c</FilePath>
+            </File>
+            <File>
+              <FileName>spiffs_gc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\framework\components\SPIFS\spiffs_gc.c</FilePath>
+            </File>
+            <File>
+              <FileName>spiffs_hydrogen.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\framework\components\SPIFS\spiffs_hydrogen.c</FilePath>
+            </File>
+            <File>
+              <FileName>spiffs_nucleus.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\framework\components\SPIFS\spiffs_nucleus.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -583,6 +623,11 @@
               <FileName>demo_nand_fatfs.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\User\app\fatfs_demo\demo_nand_fatfs.c</FilePath>
+            </File>
+            <File>
+              <FileName>demo_spiflash_spifs.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\app\spifs_demo\demo_spiflash_spifs.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -1060,6 +1105,16 @@
               <FileType>1</FileType>
               <FilePath>..\..\User\bsp\src\bsp_sdio_sd.c</FilePath>
             </File>
+            <File>
+              <FileName>bsp_spi_bus.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\bsp\src\bsp_spi_bus.c</FilePath>
+            </File>
+            <File>
+              <FileName>bsp_spi_flash.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\bsp\src\bsp_spi_flash.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -1110,6 +1165,11 @@
               <FileType>1</FileType>
               <FilePath>..\..\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_sdio.c</FilePath>
             </File>
+            <File>
+              <FileName>stm32f4xx_spi.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_spi.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -1155,6 +1215,31 @@
               <FileType>1</FileType>
               <FilePath>..\..\User\framework\components\FatFS\src\option\cc936.c</FilePath>
             </File>
+            <File>
+              <FileName>spiffs_cache.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\framework\components\SPIFS\spiffs_cache.c</FilePath>
+            </File>
+            <File>
+              <FileName>spiffs_check.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\framework\components\SPIFS\spiffs_check.c</FilePath>
+            </File>
+            <File>
+              <FileName>spiffs_gc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\framework\components\SPIFS\spiffs_gc.c</FilePath>
+            </File>
+            <File>
+              <FileName>spiffs_hydrogen.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\framework\components\SPIFS\spiffs_hydrogen.c</FilePath>
+            </File>
+            <File>
+              <FileName>spiffs_nucleus.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\framework\components\SPIFS\spiffs_nucleus.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -1164,6 +1249,11 @@
               <FileName>demo_nand_fatfs.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\User\app\fatfs_demo\demo_nand_fatfs.c</FilePath>
+            </File>
+            <File>
+              <FileName>demo_spiflash_spifs.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\app\spifs_demo\demo_spiflash_spifs.c</FilePath>
             </File>
           </Files>
         </Group>

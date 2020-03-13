@@ -100,8 +100,8 @@
 ////#include "bsp_mg323.h"
 //#include "bsp_sim800.h"
 
-//#include "bsp_spi_bus.h"
-//#include "bsp_spi_flash.h"
+#include "bsp_spi_bus.h"
+#include "bsp_spi_flash.h"
 //#include "bsp_tm7705.h"
 //#include "bsp_ads1256.h"
 //#include "bsp_vs1053b.h"
