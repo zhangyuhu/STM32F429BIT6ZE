@@ -72,6 +72,8 @@ int main(void)
 	
 	PrintfInfo();	/* 打印例程信息到串口1 */
 	
+	sw_timer_test();
+	
 #if (1 == NAND_FATFS_TEST)
 	DemoFatFS();	/* NAND Flash文件系统演示程序 */
 #endif
@@ -79,6 +81,7 @@ int main(void)
 #if (1 == NAND_SPIFS_TEST)
 	DemoSPIFS();
 #endif
+	
 }
 
 

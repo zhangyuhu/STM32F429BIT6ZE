@@ -372,10 +372,10 @@
             <v6WtE>0</v6WtE>
             <v6Rtti>0</v6Rtti>
             <VariousControls>
-              <MiscControls>--diag_suppress=870</MiscControls>
+              <MiscControls>--diag_suppress=870;--c99</MiscControls>
               <Define>USE_STDPERIPH_DRIVER,STM32F429_439xx,USE_USB_OTG_FS,USE_EMBEDDED_PHY</Define>
               <Undefine></Undefine>
-              <IncludePath>..\..\Libraries\CMSIS\Include;..\..\Libraries\STM32F4xx_StdPeriph_Driver\inc;..\..\User\usbd_mass_storage;..\..\Libraries\STM32_USB_Device_Library\Core\inc;..\..\Libraries\STM32_USB_OTG_Driver\inc;..\..\Libraries\STM32_USB_Device_Library\Class\msc\inc;..\..\User\bsp;..\..\User\bsp\inc;..\..\User\app;..\..\User\app\fatfs_demo;..\..\User\app\spifs_demo;..\..\User\framework\components\FatFS\src;..\..\User\framework\components\SPIFS</IncludePath>
+              <IncludePath>..\..\Libraries\CMSIS\Include;..\..\Libraries\STM32F4xx_StdPeriph_Driver\inc;..\..\User\usbd_mass_storage;..\..\Libraries\STM32_USB_Device_Library\Core\inc;..\..\Libraries\STM32_USB_OTG_Driver\inc;..\..\Libraries\STM32_USB_Device_Library\Class\msc\inc;..\..\User;..\..\User\bsp;..\..\User\bsp\inc;..\..\User\app;..\..\User\app\fatfs_demo;..\..\User\app\spifs_demo;..\..\User\framework\common\log;..\..\User\framework\components\FatFS\src;..\..\User\framework\components\SPIFS;..\..\User\framework\components\timer</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -613,6 +613,16 @@
               <FileName>spiffs_nucleus.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\User\framework\components\SPIFS\spiffs_nucleus.c</FilePath>
+            </File>
+            <File>
+              <FileName>drv_timer.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\framework\components\timer\drv_timer.c</FilePath>
+            </File>
+            <File>
+              <FileName>sw_timer.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\framework\components\timer\sw_timer.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -1239,6 +1249,16 @@
               <FileName>spiffs_nucleus.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\User\framework\components\SPIFS\spiffs_nucleus.c</FilePath>
+            </File>
+            <File>
+              <FileName>drv_timer.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\framework\components\timer\drv_timer.c</FilePath>
+            </File>
+            <File>
+              <FileName>sw_timer.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\framework\components\timer\sw_timer.c</FilePath>
             </File>
           </Files>
         </Group>

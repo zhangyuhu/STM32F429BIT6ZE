@@ -40,6 +40,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include "log.h"
 
 #ifndef TRUE
 	#define TRUE  1
@@ -127,6 +128,7 @@
 //#include "bsp_esp8266.h"
 //#include "bsp_ad9833.h"
 
+#include "sw_timer.h"
 /* 提供给其他C文件调用的函数 */
 void bsp_Init(void);
 void bsp_Idle(void);

@@ -17,7 +17,7 @@
 */
 
 #include "bsp.h"
-
+#include "drv_timer.h"
 /*
 *********************************************************************************************************
 *	函 数 名: bsp_Init
@@ -38,7 +38,7 @@ void bsp_Init(void)
 
 	/* 优先级分组设置为4 */
 //	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);
-	
+		
 	SystemCoreClockUpdate();	/* 根据PLL配置更新系统时钟频率变量 SystemCoreClock */
 
 	bsp_InitExtIO();	/*　配置扩展IO */
@@ -49,6 +49,9 @@ void bsp_Init(void)
 	
 	bsp_InitSPIBus();	/* 配置SPI总线 */		
 	bsp_InitSFlash();	/* 初始化SPI 串行Flash */
+	
+	
+	LOG_HIGHLIGHT("bsp_Init");
 }
 
 /*
@@ -62,6 +65,7 @@ void bsp_Init(void)
 */
 void bsp_RunPer10ms(void)
 {
+	short_timer_task();
 	bsp_KeyScan();		/* 按键扫描 */
 }
 
