@@ -375,7 +375,7 @@
               <MiscControls>--diag_suppress=870;--c99</MiscControls>
               <Define>USE_STDPERIPH_DRIVER,STM32F429_439xx,USE_USB_OTG_FS,USE_EMBEDDED_PHY</Define>
               <Undefine></Undefine>
-              <IncludePath>..\..\Libraries\CMSIS\Include;..\..\Libraries\STM32F4xx_StdPeriph_Driver\inc;..\..\User\usbd_mass_storage;..\..\Libraries\STM32_USB_Device_Library\Core\inc;..\..\Libraries\STM32_USB_OTG_Driver\inc;..\..\Libraries\STM32_USB_Device_Library\Class\msc\inc;..\..\User;..\..\User\bsp;..\..\User\bsp\inc;..\..\User\app;..\..\User\app\fatfs_demo;..\..\User\app\spifs_demo;..\..\User\framework\common\log;..\..\User\framework\components\FatFS\src;..\..\User\framework\components\SPIFS;..\..\User\framework\components\timer</IncludePath>
+              <IncludePath>..\..\Libraries\CMSIS\Include;..\..\Libraries\STM32F4xx_StdPeriph_Driver\inc;..\..\User\usbd_mass_storage;..\..\Libraries\STM32_USB_Device_Library\Core\inc;..\..\Libraries\STM32_USB_OTG_Driver\inc;..\..\Libraries\STM32_USB_Device_Library\Class\msc\inc;..\..\User;..\..\User\bsp;..\..\User\bsp\inc;..\..\User\app;..\..\User\app\fatfs_demo;..\..\User\app\spifs_demo;..\..\User\app\task_manager;..\..\User\framework\common\log;..\..\User\framework\components\FatFS\src;..\..\User\framework\components\SPIFS;..\..\User\framework\components\timer;..\..\FreeRTOS\include;..\..\FreeRTOS\portable\RVDS\ARM_CM4F</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -423,6 +423,31 @@
               <FileName>main.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\User\app\main.c</FilePath>
+            </File>
+            <File>
+              <FileName>includes.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\..\User\app\includes.h</FilePath>
+            </File>
+            <File>
+              <FileName>FreeRTOSConfig.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\..\User\app\FreeRTOSConfig.h</FilePath>
+            </File>
+            <File>
+              <FileName>module_config.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\..\User\app\module_config.h</FilePath>
+            </File>
+            <File>
+              <FileName>global.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\..\User\global.h</FilePath>
+            </File>
+            <File>
+              <FileName>SysInfoTest.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\app\SysInfoTest.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -634,6 +659,11 @@
               <FileType>1</FileType>
               <FilePath>..\..\User\framework\components\timer\sw_timer.c</FilePath>
             </File>
+            <File>
+              <FileName>log.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\framework\common\log\log.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -648,6 +678,66 @@
               <FileName>demo_spiflash_spifs.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\User\app\spifs_demo\demo_spiflash_spifs.c</FilePath>
+            </File>
+            <File>
+              <FileName>task_manager.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\app\task_manager\task_manager.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>FreeRTOS/Source</GroupName>
+          <Files>
+            <File>
+              <FileName>croutine.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\FreeRTOS\croutine.c</FilePath>
+            </File>
+            <File>
+              <FileName>event_groups.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\FreeRTOS\event_groups.c</FilePath>
+            </File>
+            <File>
+              <FileName>list.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\FreeRTOS\list.c</FilePath>
+            </File>
+            <File>
+              <FileName>queue.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\FreeRTOS\queue.c</FilePath>
+            </File>
+            <File>
+              <FileName>tasks.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\FreeRTOS\tasks.c</FilePath>
+            </File>
+            <File>
+              <FileName>timers.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\FreeRTOS\timers.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>FreeRTOS/Ports</GroupName>
+          <Files>
+            <File>
+              <FileName>heap_4.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\FreeRTOS\portable\MemMang\heap_4.c</FilePath>
+            </File>
+            <File>
+              <FileName>port.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\FreeRTOS\portable\RVDS\ARM_CM4F\port.c</FilePath>
+            </File>
+            <File>
+              <FileName>portmacro.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\..\FreeRTOS\portable\RVDS\ARM_CM4F\portmacro.h</FilePath>
             </File>
           </Files>
         </Group>
@@ -1070,6 +1160,31 @@
               <FileType>1</FileType>
               <FilePath>..\..\User\app\main.c</FilePath>
             </File>
+            <File>
+              <FileName>includes.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\..\User\app\includes.h</FilePath>
+            </File>
+            <File>
+              <FileName>FreeRTOSConfig.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\..\User\app\FreeRTOSConfig.h</FilePath>
+            </File>
+            <File>
+              <FileName>module_config.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\..\User\app\module_config.h</FilePath>
+            </File>
+            <File>
+              <FileName>global.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\..\User\global.h</FilePath>
+            </File>
+            <File>
+              <FileName>SysInfoTest.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\app\SysInfoTest.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -1280,6 +1395,11 @@
               <FileType>1</FileType>
               <FilePath>..\..\User\framework\components\timer\sw_timer.c</FilePath>
             </File>
+            <File>
+              <FileName>log.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\framework\common\log\log.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -1294,6 +1414,66 @@
               <FileName>demo_spiflash_spifs.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\User\app\spifs_demo\demo_spiflash_spifs.c</FilePath>
+            </File>
+            <File>
+              <FileName>task_manager.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\app\task_manager\task_manager.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>FreeRTOS/Source</GroupName>
+          <Files>
+            <File>
+              <FileName>croutine.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\FreeRTOS\croutine.c</FilePath>
+            </File>
+            <File>
+              <FileName>event_groups.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\FreeRTOS\event_groups.c</FilePath>
+            </File>
+            <File>
+              <FileName>list.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\FreeRTOS\list.c</FilePath>
+            </File>
+            <File>
+              <FileName>queue.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\FreeRTOS\queue.c</FilePath>
+            </File>
+            <File>
+              <FileName>tasks.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\FreeRTOS\tasks.c</FilePath>
+            </File>
+            <File>
+              <FileName>timers.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\FreeRTOS\timers.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>FreeRTOS/Ports</GroupName>
+          <Files>
+            <File>
+              <FileName>heap_4.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\FreeRTOS\portable\MemMang\heap_4.c</FilePath>
+            </File>
+            <File>
+              <FileName>port.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\FreeRTOS\portable\RVDS\ARM_CM4F\port.c</FilePath>
+            </File>
+            <File>
+              <FileName>portmacro.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\..\FreeRTOS\portable\RVDS\ARM_CM4F\portmacro.h</FilePath>
             </File>
           </Files>
         </Group>

@@ -37,12 +37,13 @@ void bsp_Init(void)
     */
 
     /* 优先级分组设置为4 */
-//  NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);
+    NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);
 
     SystemCoreClockUpdate();    /* 根据PLL配置更新系统时钟频率变量 SystemCoreClock */
     bsp_InitUart();     /* 初始化串口 */
+    DBG_vInit();        /* 日志输出初始化 */
 
-    bsp_InitExtIO();    /*　配置扩展IO */
+    bsp_InitExtIO();    /* 配置扩展IO */
     bsp_InitLed();      /* 初始LED指示灯端口 */
     bsp_InitKey();      /* 初始化按键 */
     bsp_InitTimer();    /* 初始化系统滴答定时器 (此函数会开 systick 中断, tim2-5中断) */

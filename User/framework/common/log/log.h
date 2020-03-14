@@ -19,7 +19,7 @@ extern "C" {
 
 
 #if 1
-#define DBG_vInit()     do{}while(0)
+#define DBG_vInit()     do{log_init();}while(0)
 #define DBG_Disable() 	do{}while(0)
 #else
 #define DBG_vInit()			do{}while(0)
@@ -103,14 +103,15 @@ extern "C" {
 #define LOG_PROMPT_DISPLAY
 #endif
 
+void App_Printf(char *format, ...);
 
 
 #if (DEBUG_LOG == 1)
-#define LOG(format,...) {printf(format, ##__VA_ARGS__);printf(LOG_STRING_NEW_LINE);}while(0)
-#define LOG_SIMPLE(format, ...) {printf(format, ##__VA_ARGS__);  }while(0)
-#define LOG_ERROR(format, ...)   {printf(LOG_COLOR_E format LOG_RESET_COLOR, ##__VA_ARGS__); printf(LOG_STRING_NEW_LINE);  }while(0)
-#define LOG_FORCE(format, ...) {printf(LOG_COLOR_E format LOG_RESET_COLOR, ##__VA_ARGS__); printf(LOG_STRING_NEW_LINE);  }while(0)
-#define LOG_HIGHLIGHT(format, ...) {printf(LOG_PROMPT_DISPLAY format LOG_RESET_COLOR, ##__VA_ARGS__); printf(LOG_STRING_NEW_LINE);  }while(0)
+#define LOG(format,...) {App_Printf(format, ##__VA_ARGS__);App_Printf(LOG_STRING_NEW_LINE);}while(0)
+#define LOG_SIMPLE(format, ...) {App_Printf(format, ##__VA_ARGS__);  }while(0)
+#define LOG_ERROR(format, ...)   {App_Printf(LOG_COLOR_E format LOG_RESET_COLOR, ##__VA_ARGS__); App_Printf(LOG_STRING_NEW_LINE);  }while(0)
+#define LOG_FORCE(format, ...) {App_Printf(LOG_COLOR_E format LOG_RESET_COLOR, ##__VA_ARGS__); App_Printf(LOG_STRING_NEW_LINE);  }while(0)
+#define LOG_HIGHLIGHT(format, ...) {App_Printf(LOG_PROMPT_DISPLAY format LOG_RESET_COLOR, ##__VA_ARGS__); App_Printf(LOG_STRING_NEW_LINE);  }while(0)
 #else
 #define LOG(format, ...)
 #define LOG_SIMPLE(format, ...)
