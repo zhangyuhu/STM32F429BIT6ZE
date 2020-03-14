@@ -1,16 +1,16 @@
 /*
 *********************************************************************************************************
 *
-*	Ä£¿éÃû³Æ : ´®ĞĞEEPROM 24xx02Çı¶¯Ä£¿é
-*	ÎÄ¼şÃû³Æ : bsp_eeprom_24xx.h
-*	°æ    ±¾ : V1.0
-*	Ëµ    Ã÷ : Í·ÎÄ¼ş
+*	æ¨¡å—åç§° : ä¸²è¡ŒEEPROM 24xx02é©±åŠ¨æ¨¡å—
+*	æ–‡ä»¶åç§° : bsp_eeprom_24xx.h
+*	ç‰ˆ    æœ¬ : V1.0
+*	è¯´    æ˜ : å¤´æ–‡ä»¶
 *
-*	ĞŞ¸Ä¼ÇÂ¼ :
-*		°æ±¾ºÅ  ÈÕÆÚ       ×÷Õß    ËµÃ÷
-*		v1.0    2012-10-12 armfly  ST¹Ì¼ş¿â°æ±¾ V2.1.0
+*	ä¿®æ”¹è®°å½• :
+*		ç‰ˆæœ¬å·  æ—¥æœŸ       ä½œè€…    è¯´æ˜
+*		v1.0    2012-10-12 armfly  STå›ºä»¶åº“ç‰ˆæœ¬ V2.1.0
 *
-*	Copyright (C), 2012-2013, °²¸»À³µç×Ó www.armfly.com
+*	Copyright (C), 2012-2013, å®‰å¯Œè±ç”µå­ www.armfly.com
 *
 *********************************************************************************************************
 */
@@ -23,18 +23,18 @@
 
 #ifdef AT24C02
 	#define EE_MODEL_NAME		"AT24C02"
-	#define EE_DEV_ADDR			0xA0		/* Éè±¸µØÖ· */
-	#define EE_PAGE_SIZE		8			/* Ò³Ãæ´óĞ¡(×Ö½Ú) */
-	#define EE_SIZE				256			/* ×ÜÈİÁ¿(×Ö½Ú) */
-	#define EE_ADDR_BYTES		1			/* µØÖ·×Ö½Ú¸öÊı */
+	#define EE_DEV_ADDR			0xA0		/* è®¾å¤‡åœ°å€ */
+	#define EE_PAGE_SIZE		8			/* é¡µé¢å¤§å°(å­—èŠ‚) */
+	#define EE_SIZE				256			/* æ€»å®¹é‡(å­—èŠ‚) */
+	#define EE_ADDR_BYTES		1			/* åœ°å€å­—èŠ‚ä¸ªæ•° */
 #endif
 
 #ifdef AT24C128
 	#define EE_MODEL_NAME		"AT24C128"
-	#define EE_DEV_ADDR			0xA0		/* Éè±¸µØÖ· */
-	#define EE_PAGE_SIZE		64			/* Ò³Ãæ´óĞ¡(×Ö½Ú) */
-	#define EE_SIZE				(16*1024)	/* ×ÜÈİÁ¿(×Ö½Ú) */
-	#define EE_ADDR_BYTES		2			/* µØÖ·×Ö½Ú¸öÊı */
+	#define EE_DEV_ADDR			0xA0		/* è®¾å¤‡åœ°å€ */
+	#define EE_PAGE_SIZE		64			/* é¡µé¢å¤§å°(å­—èŠ‚) */
+	#define EE_SIZE				(16*1024)	/* æ€»å®¹é‡(å­—èŠ‚) */
+	#define EE_ADDR_BYTES		2			/* åœ°å€å­—èŠ‚ä¸ªæ•° */
 #endif
 
 uint8_t ee_CheckOk(void);
@@ -43,4 +43,4 @@ uint8_t ee_WriteBytes(uint8_t *_pWriteBuf, uint16_t _usAddress, uint16_t _usSize
 
 #endif
 
-/***************************** °²¸»À³µç×Ó www.armfly.com (END OF FILE) *********************************/
+/***************************** å®‰å¯Œè±ç”µå­ www.armfly.com (END OF FILE) *********************************/

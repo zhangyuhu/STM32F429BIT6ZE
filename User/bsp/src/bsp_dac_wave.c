@@ -1,16 +1,16 @@
 /*
 *********************************************************************************************************
 *
-*	Ä£¿éÃû³Æ : DAC²¨ĞÎ·¢ÉúÆ÷
-*	ÎÄ¼şÃû³Æ : bsp_dac_wave.c
-*	°æ    ±¾ : V1.0
-*	Ëµ    Ã÷ : Ê¹ÓÃSTM32ÄÚ²¿DACÊä³ö²¨ĞÎ¡£Ö§³ÖDAC1ºÍDAC2Êä³ö²»Í¬µÄ²¨ĞÎ¡£
+*	æ¨¡å—åç§° : DACæ³¢å½¢å‘ç”Ÿå™¨
+*	æ–‡ä»¶åç§° : bsp_dac_wave.c
+*	ç‰ˆ    æœ¬ : V1.0
+*	è¯´    æ˜ : ä½¿ç”¨STM32å†…éƒ¨DACè¾“å‡ºæ³¢å½¢ã€‚æ”¯æŒDAC1å’ŒDAC2è¾“å‡ºä¸åŒçš„æ³¢å½¢ã€‚
 *
-*	ĞŞ¸Ä¼ÇÂ¼ :
-*		°æ±¾ºÅ  ÈÕÆÚ        ×÷Õß     ËµÃ÷
-*		V1.0    2015-10-06  armfly  ÕıÊ½·¢²¼
+*	ä¿®æ”¹è®°å½• :
+*		ç‰ˆæœ¬å·  æ—¥æœŸ        ä½œè€…     è¯´æ˜
+*		V1.0    2015-10-06  armfly  æ­£å¼å‘å¸ƒ
 *
-*	Copyright (C), 2015-2020, °²¸»À³µç×Ó www.armfly.com
+*	Copyright (C), 2015-2020, å®‰å¯Œè±ç”µå­ www.armfly.com
 *
 *********************************************************************************************************
 */
@@ -18,24 +18,24 @@
 #include "bsp.h"
 
 /*
-	PA4ÓÃ×÷ DAC_OUT1
-	PA5ÓÃ×÷ DAC_OUT2
+	PA4ç”¨ä½œ DAC_OUT1
+	PA5ç”¨ä½œ DAC_OUT2
 
-	DAC1Ê¹ÓÃÁËTIM6×÷Îª¶¨Ê±´¥·¢£¬ DMAÍ¨µÀ: DMA1_Stream5
-	DAC2Ê¹ÓÃÁËTIM7×÷Îª¶¨Ê±´¥·¢£¬ DMAÍ¨µÀ: DMA2_Stream6	
+	DAC1ä½¿ç”¨äº†TIM6ä½œä¸ºå®šæ—¶è§¦å‘ï¼Œ DMAé€šé“: DMA1_Stream5
+	DAC2ä½¿ç”¨äº†TIM7ä½œä¸ºå®šæ—¶è§¦å‘ï¼Œ DMAé€šé“: DMA2_Stream6	
 	
-	DAC_InitStructure.DAC_OutputBuffer = DAC_OutputBuffer_Enable ¿ªÆôÁËDACÊä³ö»º³å£¬Ôö¼ÓÇı¶¯ÄÜÁ¦,
-	¿ªÁË»º³åÖ®ºó£¬¿¿½ü0VºÍ²Î¿¼µçÔ´Ê±£¬Ê§ÕæÀ÷º¦£¬×îµÍ50mV
-	²»¿ª»º³å²¨ĞÎ½ÏºÃ£¬µ½0VÄ¿²â²»³öÃ÷ÏÔÊ§Õæ¡£
+	DAC_InitStructure.DAC_OutputBuffer = DAC_OutputBuffer_Enable å¼€å¯äº†DACè¾“å‡ºç¼“å†²ï¼Œå¢åŠ é©±åŠ¨èƒ½åŠ›,
+	å¼€äº†ç¼“å†²ä¹‹åï¼Œé è¿‘0Vå’Œå‚è€ƒç”µæºæ—¶ï¼Œå¤±çœŸå‰å®³ï¼Œæœ€ä½50mV
+	ä¸å¼€ç¼“å†²æ³¢å½¢è¾ƒå¥½ï¼Œåˆ°0Vç›®æµ‹ä¸å‡ºæ˜æ˜¾å¤±çœŸã€‚
 	
-	¹¦ÄÜ£º
-	1¡¢Êä³öÕıÏÒ²¨£¬·ù¶ÈºÍÆµÂÊ¿Éµ÷½Ú
-	2¡¢Êä³ö·½²¨£¬·ù¶ÈÆ«ÒÆ¿Éµ÷½Ú£¬ÆµÂÊ¿Éµ÷½Ú£¬Õ¼¿Õ±È¿ÉÒÔµ÷½Ú
-	3¡¢Êä³öÈı½Ç²¨£¬·ù¶È¿Éµ÷½Ú£¬ÆµÂÊ¿Éµ÷½Ú£¬ÉÏÉıÑØÕ¼±È¿Éµ÷½Ú
-	4¡¢»ù±¾µÄDACÊä³öÖ±Á÷µçÆ½µÄº¯Êı
+	åŠŸèƒ½ï¼š
+	1ã€è¾“å‡ºæ­£å¼¦æ³¢ï¼Œå¹…åº¦å’Œé¢‘ç‡å¯è°ƒèŠ‚
+	2ã€è¾“å‡ºæ–¹æ³¢ï¼Œå¹…åº¦åç§»å¯è°ƒèŠ‚ï¼Œé¢‘ç‡å¯è°ƒèŠ‚ï¼Œå ç©ºæ¯”å¯ä»¥è°ƒèŠ‚
+	3ã€è¾“å‡ºä¸‰è§’æ³¢ï¼Œå¹…åº¦å¯è°ƒèŠ‚ï¼Œé¢‘ç‡å¯è°ƒèŠ‚ï¼Œä¸Šå‡æ²¿å æ¯”å¯è°ƒèŠ‚
+	4ã€åŸºæœ¬çš„DACè¾“å‡ºç›´æµç”µå¹³çš„å‡½æ•°
 */
 
-/*  ÕıÏÒ²¨Êı¾İ£¬12bit£¬1¸öÖÜÆÚ128¸öµã, 0-4095Ö®¼ä±ä»¯ */
+/*  æ­£å¼¦æ³¢æ•°æ®ï¼Œ12bitï¼Œ1ä¸ªå‘¨æœŸ128ä¸ªç‚¹, 0-4095ä¹‹é—´å˜åŒ– */
 const uint16_t g_SineWave128[] = {
 	2047 ,
 	2147 ,
@@ -167,33 +167,33 @@ const uint16_t g_SineWave128[] = {
 	1947
 };
 
-/* ÕıÏÒ²¨ (32Ñù±¾£¬ÊÊºÏ¸ßÆµ£© */
+/* æ­£å¼¦æ³¢ (32æ ·æœ¬ï¼Œé€‚åˆé«˜é¢‘ï¼‰ */
 const uint16_t g_SineWave32[32] = {
                       2047, 2447, 2831, 3185, 3498, 3750, 3939, 4056, 4095, 4056,
                       3939, 3750, 3495, 3185, 2831, 2447, 2047, 1647, 1263, 909,
                       599, 344, 155, 38, 0, 38, 155, 344, 599, 909, 1263, 1647};
 
-/* DMA²¨ĞÎ»º³åÇø */
+/* DMAæ³¢å½¢ç¼“å†²åŒº */
 uint16_t g_Wave1[128];
 uint16_t g_Wave2[128];
 
 /*
 *********************************************************************************************************
-*	º¯ Êı Ãû: bsp_InitDAC1
-*	¹¦ÄÜËµÃ÷: ÅäÖÃPA4/DAC1
-*	ĞÎ    ²Î: ÎŞ
-*	·µ »Ø Öµ: ÎŞ
+*	å‡½ æ•° å: bsp_InitDAC1
+*	åŠŸèƒ½è¯´æ˜: é…ç½®PA4/DAC1
+*	å½¢    å‚: æ— 
+*	è¿” å› å€¼: æ— 
 *********************************************************************************************************
 */
 void bsp_InitDAC1(void)
 {	
-	/* ÅäÖÃGPIO */
+	/* é…ç½®GPIO */
 	{
 		GPIO_InitTypeDef GPIO_InitStructure;
 		
 		RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);
 		
-		/* ÅäÖÃADCÒı½ÅÎªÄ£ÄâÊäÈëÄ£Ê½  PA4 / DAC_OUT1 */
+		/* é…ç½®ADCå¼•è„šä¸ºæ¨¡æ‹Ÿè¾“å…¥æ¨¡å¼  PA4 / DAC_OUT1 */
 		GPIO_InitStructure.GPIO_Pin = GPIO_Pin_4;
 		GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AN;
 		GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL ;
@@ -207,7 +207,7 @@ void bsp_InitDAC1(void)
 		/* DAC Periph clock enable */
 		RCC_APB1PeriphClockCmd(RCC_APB1Periph_DAC, ENABLE);		
 
-		DAC_InitStructure.DAC_Trigger = DAC_Trigger_None;	/* Ñ¡ÔñÈí¼ş´¥·¢, Èí¼şĞŞ¸ÄDACÊı¾İ¼Ä´æÆ÷ */
+		DAC_InitStructure.DAC_Trigger = DAC_Trigger_None;	/* é€‰æ‹©è½¯ä»¶è§¦å‘, è½¯ä»¶ä¿®æ”¹DACæ•°æ®å¯„å­˜å™¨ */
 		DAC_InitStructure.DAC_WaveGeneration = DAC_WaveGeneration_None;
 		DAC_InitStructure.DAC_LFSRUnmask_TriangleAmplitude = DAC_LFSRUnmask_Bit0;
 		//DAC_InitStructure.DAC_OutputBuffer = DAC_OutputBuffer_Enable;
@@ -222,21 +222,21 @@ void bsp_InitDAC1(void)
 
 /*
 *********************************************************************************************************
-*	º¯ Êı Ãû: bsp_InitDAC2
-*	¹¦ÄÜËµÃ÷: ÅäÖÃPA5/DAC2
-*	ĞÎ    ²Î: ÎŞ
-*	·µ »Ø Öµ: ÎŞ
+*	å‡½ æ•° å: bsp_InitDAC2
+*	åŠŸèƒ½è¯´æ˜: é…ç½®PA5/DAC2
+*	å½¢    å‚: æ— 
+*	è¿” å› å€¼: æ— 
 *********************************************************************************************************
 */
 void bsp_InitDAC2(void)
 {	
-	/* ÅäÖÃGPIO */
+	/* é…ç½®GPIO */
 	{
 		GPIO_InitTypeDef GPIO_InitStructure;
 		
 		RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);
 		
-		/* ÅäÖÃADCÒı½ÅÎªÄ£ÄâÊäÈëÄ£Ê½  PA5 / DAC_OUT2 */
+		/* é…ç½®ADCå¼•è„šä¸ºæ¨¡æ‹Ÿè¾“å…¥æ¨¡å¼  PA5 / DAC_OUT2 */
 		GPIO_InitStructure.GPIO_Pin = GPIO_Pin_5;
 		GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AN;
 		GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL ;
@@ -250,7 +250,7 @@ void bsp_InitDAC2(void)
 		/* DAC Periph clock enable */
 		RCC_APB1PeriphClockCmd(RCC_APB1Periph_DAC, ENABLE);		
 
-		DAC_InitStructure.DAC_Trigger = DAC_Trigger_None;	/* Ñ¡ÔñÈí¼ş´¥·¢, Èí¼şĞŞ¸ÄDACÊı¾İ¼Ä´æÆ÷ */
+		DAC_InitStructure.DAC_Trigger = DAC_Trigger_None;	/* é€‰æ‹©è½¯ä»¶è§¦å‘, è½¯ä»¶ä¿®æ”¹DACæ•°æ®å¯„å­˜å™¨ */
 		DAC_InitStructure.DAC_WaveGeneration = DAC_WaveGeneration_None;
 		DAC_InitStructure.DAC_LFSRUnmask_TriangleAmplitude = DAC_LFSRUnmask_Bit0;
 		//DAC_InitStructure.DAC_OutputBuffer = DAC_OutputBuffer_Enable;
@@ -265,10 +265,10 @@ void bsp_InitDAC2(void)
 
 /*
 *********************************************************************************************************
-*	º¯ Êı Ãû: bsp_SetDAC1
-*	¹¦ÄÜËµÃ÷: ÉèÖÃDAC1Êä³öÊı¾İ¼Ä´æÆ÷£¬¸Ä±äÊä³öµçÑ¹
-*	ĞÎ    ²Î: _dac : DACÊı¾İ£¬0-4095
-*	·µ »Ø Öµ: ÎŞ
+*	å‡½ æ•° å: bsp_SetDAC1
+*	åŠŸèƒ½è¯´æ˜: è®¾ç½®DAC1è¾“å‡ºæ•°æ®å¯„å­˜å™¨ï¼Œæ”¹å˜è¾“å‡ºç”µå‹
+*	å½¢    å‚: _dac : DACæ•°æ®ï¼Œ0-4095
+*	è¿” å› å€¼: æ— 
 *********************************************************************************************************
 */
 void bsp_SetDAC1(uint16_t _dac)
@@ -278,10 +278,10 @@ void bsp_SetDAC1(uint16_t _dac)
 
 /*
 *********************************************************************************************************
-*	º¯ Êı Ãû: bsp_SetDAC2
-*	¹¦ÄÜËµÃ÷: ÉèÖÃDAC2Êä³öÊı¾İ¼Ä´æÆ÷£¬¸Ä±äÊä³öµçÑ¹
-*	ĞÎ    ²Î: _dac : DACÊı¾İ£¬0-4095
-*	·µ »Ø Öµ: ÎŞ
+*	å‡½ æ•° å: bsp_SetDAC2
+*	åŠŸèƒ½è¯´æ˜: è®¾ç½®DAC2è¾“å‡ºæ•°æ®å¯„å­˜å™¨ï¼Œæ”¹å˜è¾“å‡ºç”µå‹
+*	å½¢    å‚: _dac : DACæ•°æ®ï¼Œ0-4095
+*	è¿” å› å€¼: æ— 
 *********************************************************************************************************
 */
 void bsp_SetDAC2(uint16_t _dac)
@@ -291,18 +291,18 @@ void bsp_SetDAC2(uint16_t _dac)
 
 /*
 *********************************************************************************************************
-*	                                    DAC1 - DMA ²¿·ÖµÄ´úÂë *
+*	                                    DAC1 - DMA éƒ¨åˆ†çš„ä»£ç  *
 *********************************************************************************************************
 */
 
 /*
 *********************************************************************************************************
-*	º¯ Êı Ãû: dac1_InitForDMA
-*	¹¦ÄÜËµÃ÷: ÅäÖÃPA4 ÎªDAC_OUT1, ÆôÓÃDMA2
-*	ĞÎ    ²Î: _BufAddr : DMAÊı¾İ»º³åÇøµØÖ·
-*			  _Count : »º³åÇøÑù±¾¸öÊı
-*			 _DacFreq : DACÑù±¾¸üĞÂÆµÂÊ
-*	·µ »Ø Öµ: ÎŞ
+*	å‡½ æ•° å: dac1_InitForDMA
+*	åŠŸèƒ½è¯´æ˜: é…ç½®PA4 ä¸ºDAC_OUT1, å¯ç”¨DMA2
+*	å½¢    å‚: _BufAddr : DMAæ•°æ®ç¼“å†²åŒºåœ°å€
+*			  _Count : ç¼“å†²åŒºæ ·æœ¬ä¸ªæ•°
+*			 _DacFreq : DACæ ·æœ¬æ›´æ–°é¢‘ç‡
+*	è¿” å› å€¼: æ— 
 *********************************************************************************************************
 */
 void dac1_InitForDMA(uint32_t _BufAddr, uint32_t _Count, uint32_t _DacFreq)
@@ -311,13 +311,13 @@ void dac1_InitForDMA(uint32_t _BufAddr, uint32_t _Count, uint32_t _DacFreq)
 	DAC_DMACmd(DAC_Channel_1, DISABLE);
 	TIM_Cmd(TIM6, DISABLE);
 		
-	/* ÅäÖÃGPIO.*/
+	/* é…ç½®GPIO.*/
 	{
 		GPIO_InitTypeDef GPIO_InitStructure;
 		
 		RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);
 		
-		/* ÅäÖÃADCÒı½ÅÎªÄ£ÄâÊäÈëÄ£Ê½  PA4 / DAC_OUT1 ******************************/
+		/* é…ç½®ADCå¼•è„šä¸ºæ¨¡æ‹Ÿè¾“å…¥æ¨¡å¼  PA4 / DAC_OUT1 ******************************/
 		GPIO_InitStructure.GPIO_Pin = GPIO_Pin_4;
 		GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AN;
 		GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL ;
@@ -330,8 +330,8 @@ void dac1_InitForDMA(uint32_t _BufAddr, uint32_t _Count, uint32_t _DacFreq)
 
 		TIM_PrescalerConfig(TIM6, 0, TIM_PSCReloadMode_Update);
 
-		/* ¾ö¶¨DACÊä³öµÄ²ÉÑùÆµÂÊ
-		  x = (168000000 / 2) / ÆµÂÊ
+		/* å†³å®šDACè¾“å‡ºçš„é‡‡æ ·é¢‘ç‡
+		  x = (168000000 / 2) / é¢‘ç‡
 		*/
 		TIM_SetAutoreload(TIM6, (SystemCoreClock / 2) / _DacFreq - 1);
 
@@ -364,11 +364,11 @@ void dac1_InitForDMA(uint32_t _BufAddr, uint32_t _Count, uint32_t _DacFreq)
 
 		RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_DMA1, ENABLE);
 
-		/* DMA1 Stream 5 channel 7 ÅäÖÃÓÃÓÚDAC1 **************************************/
+		/* DMA1 Stream 5 channel 7 é…ç½®ç”¨äºDAC1 **************************************/
 		DMA_InitStructure.DMA_Channel = DMA_Channel_7;
-		DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t)&DAC->DHR12R1; /* DAC1Êı¾İ¼Ä´æÆ÷ 12Î»ÓÒ¶ÔÆë¸ñÊ½ */
-		DMA_InitStructure.DMA_Memory0BaseAddr = _BufAddr;	/* ÄÚ´æµØÖ·-Ô´µØÖ· */
-		DMA_InitStructure.DMA_DIR = DMA_DIR_MemoryToPeripheral;		/* ÄÚ´æµ½ÍâÉè */
+		DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t)&DAC->DHR12R1; /* DAC1æ•°æ®å¯„å­˜å™¨ 12ä½å³å¯¹é½æ ¼å¼ */
+		DMA_InitStructure.DMA_Memory0BaseAddr = _BufAddr;	/* å†…å­˜åœ°å€-æºåœ°å€ */
+		DMA_InitStructure.DMA_DIR = DMA_DIR_MemoryToPeripheral;		/* å†…å­˜åˆ°å¤–è®¾ */
 		DMA_InitStructure.DMA_BufferSize = _Count;
 		DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;
 		DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;
@@ -393,11 +393,11 @@ void dac1_InitForDMA(uint32_t _BufAddr, uint32_t _Count, uint32_t _DacFreq)
 
 /*
 *********************************************************************************************************
-*	º¯ Êı Ãû: dac1_SetSinWave
-*	¹¦ÄÜËµÃ÷: DAC1Êä³öÕıÏÒ²¨
-*	ĞÎ    ²Î: _vpp : ·ù¶È 0-2047;
-*			  _freq : ÆµÂÊ
-*	·µ »Ø Öµ: ÎŞ
+*	å‡½ æ•° å: dac1_SetSinWave
+*	åŠŸèƒ½è¯´æ˜: DAC1è¾“å‡ºæ­£å¼¦æ³¢
+*	å½¢    å‚: _vpp : å¹…åº¦ 0-2047;
+*			  _freq : é¢‘ç‡
+*	è¿” å› å€¼: æ— 
 *********************************************************************************************************
 */
 void dac1_SetSinWave(uint16_t _vpp, uint32_t _freq)
@@ -407,7 +407,7 @@ void dac1_SetSinWave(uint16_t _vpp, uint32_t _freq)
 	
 	TIM_Cmd(TIM6, DISABLE);
 		
-	/* µ÷ÕûÕıÏÒ²¨·ù¶È */		
+	/* è°ƒæ•´æ­£å¼¦æ³¢å¹…åº¦ */		
 	for (i = 0; i < 128; i++)
 	{
 		dac = (g_SineWave128[i] * _vpp) / 2047;
@@ -423,13 +423,13 @@ void dac1_SetSinWave(uint16_t _vpp, uint32_t _freq)
 
 /*
 *********************************************************************************************************
-*	º¯ Êı Ãû: dac1_SetRectWave
-*	¹¦ÄÜËµÃ÷: DAC1Êä³ö·½²¨
-*	ĞÎ    ²Î: _low : µÍµçÆ½Ê±DAC, 
-*			  _high : ¸ßµçÆ½Ê±DAC
-*			  _freq : ÆµÂÊ Hz
-*			  _duty : Õ¼¿Õ±È 2% - 98%, µ÷½Ú²½Êı 1%
-*	·µ »Ø Öµ: ÎŞ
+*	å‡½ æ•° å: dac1_SetRectWave
+*	åŠŸèƒ½è¯´æ˜: DAC1è¾“å‡ºæ–¹æ³¢
+*	å½¢    å‚: _low : ä½ç”µå¹³æ—¶DAC, 
+*			  _high : é«˜ç”µå¹³æ—¶DAC
+*			  _freq : é¢‘ç‡ Hz
+*			  _duty : å ç©ºæ¯” 2% - 98%, è°ƒèŠ‚æ­¥æ•° 1%
+*	è¿” å› å€¼: æ— 
 *********************************************************************************************************
 */
 void dac1_SetRectWave(uint16_t _low, uint16_t _high, uint32_t _freq, uint16_t _duty)
@@ -451,13 +451,13 @@ void dac1_SetRectWave(uint16_t _low, uint16_t _high, uint32_t _freq, uint16_t _d
 
 /*
 *********************************************************************************************************
-*	º¯ Êı Ãû: dac1_SetTriWave
-*	¹¦ÄÜËµÃ÷: DAC1Êä³öÈı½Ç²¨
-*	ĞÎ    ²Î: _low : µÍµçÆ½Ê±DAC, 
-*			  _high : ¸ßµçÆ½Ê±DAC
-*			  _freq : ÆµÂÊ Hz
-*			  _duty : Õ¼¿Õ±È
-*	·µ »Ø Öµ: ÎŞ
+*	å‡½ æ•° å: dac1_SetTriWave
+*	åŠŸèƒ½è¯´æ˜: DAC1è¾“å‡ºä¸‰è§’æ³¢
+*	å½¢    å‚: _low : ä½ç”µå¹³æ—¶DAC, 
+*			  _high : é«˜ç”µå¹³æ—¶DAC
+*			  _freq : é¢‘ç‡ Hz
+*			  _duty : å ç©ºæ¯”
+*	è¿” å› å€¼: æ— 
 *********************************************************************************************************
 */
 void dac1_SetTriWave(uint16_t _low, uint16_t _high, uint32_t _freq, uint16_t _duty)
@@ -468,7 +468,7 @@ void dac1_SetTriWave(uint16_t _low, uint16_t _high, uint32_t _freq, uint16_t _du
 	
 	TIM_Cmd(TIM6, DISABLE);
 		
-	/* ¹¹ÔìÈı½Ç²¨Êı×é£¬128¸öÑù±¾£¬´Ó _low µ½ _high */		
+	/* æ„é€ ä¸‰è§’æ³¢æ•°ç»„ï¼Œ128ä¸ªæ ·æœ¬ï¼Œä» _low åˆ° _high */		
 	m = (_duty * 128) / 100;
 	
 	if (m == 0)
@@ -496,11 +496,11 @@ void dac1_SetTriWave(uint16_t _low, uint16_t _high, uint32_t _freq, uint16_t _du
 
 /*
 *********************************************************************************************************
-*	º¯ Êı Ãû: dac1_StopWave
-*	¹¦ÄÜËµÃ÷: Í£Ö¹DAC1Êä³ö
-*	ĞÎ    ²Î: ÎŞ
-*			  _freq : ÆµÂÊ 0-5Hz
-*	·µ »Ø Öµ: ÎŞ
+*	å‡½ æ•° å: dac1_StopWave
+*	åŠŸèƒ½è¯´æ˜: åœæ­¢DAC1è¾“å‡º
+*	å½¢    å‚: æ— 
+*			  _freq : é¢‘ç‡ 0-5Hz
+*	è¿” å› å€¼: æ— 
 *********************************************************************************************************
 */
 void dac1_StopWave(void)
@@ -512,18 +512,18 @@ void dac1_StopWave(void)
 
 /*
 ********************************************************************************************************
-                                           DAC2 DMA ²¿·ÖµÄ´úÂë
+                                           DAC2 DMA éƒ¨åˆ†çš„ä»£ç 
 *********************************************************************************************************
 */
 
 /*
 *********************************************************************************************************
-*	º¯ Êı Ãû: dac2_InitForDMA
-*	¹¦ÄÜËµÃ÷: ÅäÖÃPA4 ÎªDAC_OUT1, ÆôÓÃDMA2
-*	ĞÎ    ²Î: _BufAddr : DMAÊı¾İ»º³åÇøµØÖ·
-*			  _Count : »º³åÇøÑù±¾¸öÊı
-*			 _DacFreq : DACÑù±¾¸üĞÂÆµÂÊ
-*	·µ »Ø Öµ: ÎŞ
+*	å‡½ æ•° å: dac2_InitForDMA
+*	åŠŸèƒ½è¯´æ˜: é…ç½®PA4 ä¸ºDAC_OUT1, å¯ç”¨DMA2
+*	å½¢    å‚: _BufAddr : DMAæ•°æ®ç¼“å†²åŒºåœ°å€
+*			  _Count : ç¼“å†²åŒºæ ·æœ¬ä¸ªæ•°
+*			 _DacFreq : DACæ ·æœ¬æ›´æ–°é¢‘ç‡
+*	è¿” å› å€¼: æ— 
 *********************************************************************************************************
 */
 void dac2_InitForDMA(uint32_t _BufAddr, uint32_t _Count, uint32_t _DacFreq)
@@ -532,13 +532,13 @@ void dac2_InitForDMA(uint32_t _BufAddr, uint32_t _Count, uint32_t _DacFreq)
 	DAC_DMACmd(DAC_Channel_2, DISABLE);
 	TIM_Cmd(TIM7, DISABLE);
 		
-	/* ÅäÖÃGPIO.*/
+	/* é…ç½®GPIO.*/
 	{
 		GPIO_InitTypeDef GPIO_InitStructure;
 		
 		RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);
 		
-		/* ÅäÖÃADCÒı½ÅÎªÄ£ÄâÊäÈëÄ£Ê½  PA5 / DAC_OUT2 ******************************/
+		/* é…ç½®ADCå¼•è„šä¸ºæ¨¡æ‹Ÿè¾“å…¥æ¨¡å¼  PA5 / DAC_OUT2 ******************************/
 		GPIO_InitStructure.GPIO_Pin = GPIO_Pin_5;
 		GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AN;
 		GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL ;
@@ -551,8 +551,8 @@ void dac2_InitForDMA(uint32_t _BufAddr, uint32_t _Count, uint32_t _DacFreq)
 
 		TIM_PrescalerConfig(TIM7, 0, TIM_PSCReloadMode_Update);
 
-		/* ¾ö¶¨DACÊä³öµÄ²ÉÑùÆµÂÊ
-		  x = (168000000 / 2) / ÆµÂÊ
+		/* å†³å®šDACè¾“å‡ºçš„é‡‡æ ·é¢‘ç‡
+		  x = (168000000 / 2) / é¢‘ç‡
 		*/
 		TIM_SetAutoreload(TIM6, (SystemCoreClock / 2) / _DacFreq - 1);
 
@@ -585,11 +585,11 @@ void dac2_InitForDMA(uint32_t _BufAddr, uint32_t _Count, uint32_t _DacFreq)
 
 		RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_DMA1, ENABLE);
 
-		/* DMA2 Stream 5 channel 7 ÅäÖÃÓÃÓÚDAC1 **************************************/
+		/* DMA2 Stream 5 channel 7 é…ç½®ç”¨äºDAC1 **************************************/
 		DMA_InitStructure.DMA_Channel = DMA_Channel_7;
-		DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t)&DAC->DHR12R2;		/* DAC2Êı¾İ¼Ä´æÆ÷ 12Î»ÓÒ¶ÔÆë¸ñÊ½ */
-		DMA_InitStructure.DMA_Memory0BaseAddr = _BufAddr;	/* ÄÚ´æµØÖ·-Ô´µØÖ· */
-		DMA_InitStructure.DMA_DIR = DMA_DIR_MemoryToPeripheral;		/* ÄÚ´æµ½ÍâÉè */
+		DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t)&DAC->DHR12R2;		/* DAC2æ•°æ®å¯„å­˜å™¨ 12ä½å³å¯¹é½æ ¼å¼ */
+		DMA_InitStructure.DMA_Memory0BaseAddr = _BufAddr;	/* å†…å­˜åœ°å€-æºåœ°å€ */
+		DMA_InitStructure.DMA_DIR = DMA_DIR_MemoryToPeripheral;		/* å†…å­˜åˆ°å¤–è®¾ */
 		DMA_InitStructure.DMA_BufferSize = _Count;
 		DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;
 		DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;
@@ -614,11 +614,11 @@ void dac2_InitForDMA(uint32_t _BufAddr, uint32_t _Count, uint32_t _DacFreq)
 
 /*
 *********************************************************************************************************
-*	º¯ Êı Ãû: dac2_SetSinWave
-*	¹¦ÄÜËµÃ÷: DAC1Êä³öÕıÏÒ²¨
-*	ĞÎ    ²Î: _vpp : ·ù¶È 0-2047;
-*			  _freq : ÆµÂÊ 0-5Hz
-*	·µ »Ø Öµ: ÎŞ
+*	å‡½ æ•° å: dac2_SetSinWave
+*	åŠŸèƒ½è¯´æ˜: DAC1è¾“å‡ºæ­£å¼¦æ³¢
+*	å½¢    å‚: _vpp : å¹…åº¦ 0-2047;
+*			  _freq : é¢‘ç‡ 0-5Hz
+*	è¿” å› å€¼: æ— 
 *********************************************************************************************************
 */
 void dac2_SetSinWave(uint16_t _vpp, uint32_t _freq)
@@ -628,7 +628,7 @@ void dac2_SetSinWave(uint16_t _vpp, uint32_t _freq)
 	
 	TIM_Cmd(TIM7, DISABLE);
 		
-	/* µ÷ÕûÕıÏÒ²¨·ù¶È */		
+	/* è°ƒæ•´æ­£å¼¦æ³¢å¹…åº¦ */		
 	for (i = 0; i < 128; i++)
 	{
 		dac = (g_SineWave128[i] * _vpp) / 2047;
@@ -644,13 +644,13 @@ void dac2_SetSinWave(uint16_t _vpp, uint32_t _freq)
 
 /*
 *********************************************************************************************************
-*	º¯ Êı Ãû: dac2_SetRectWave
-*	¹¦ÄÜËµÃ÷: DAC1Êä³ö·½²¨
-*	ĞÎ    ²Î: _low : µÍµçÆ½Ê±DAC, 
-*			  _high : ¸ßµçÆ½Ê±DAC
-*			  _freq : ÆµÂÊ Hz
-*			  _duty : Õ¼¿Õ±È 2% - 98%, µ÷½Ú²½Êı 1%
-*	·µ »Ø Öµ: ÎŞ
+*	å‡½ æ•° å: dac2_SetRectWave
+*	åŠŸèƒ½è¯´æ˜: DAC1è¾“å‡ºæ–¹æ³¢
+*	å½¢    å‚: _low : ä½ç”µå¹³æ—¶DAC, 
+*			  _high : é«˜ç”µå¹³æ—¶DAC
+*			  _freq : é¢‘ç‡ Hz
+*			  _duty : å ç©ºæ¯” 2% - 98%, è°ƒèŠ‚æ­¥æ•° 1%
+*	è¿” å› å€¼: æ— 
 *********************************************************************************************************
 */
 void dac2_SetRectWave(uint16_t _low, uint16_t _high, uint32_t _freq, uint16_t _duty)
@@ -672,13 +672,13 @@ void dac2_SetRectWave(uint16_t _low, uint16_t _high, uint32_t _freq, uint16_t _d
 
 /*
 *********************************************************************************************************
-*	º¯ Êı Ãû: dac2_SetTriWave
-*	¹¦ÄÜËµÃ÷: DAC1Êä³öÈı½Ç²¨
-*	ĞÎ    ²Î: _low : µÍµçÆ½Ê±DAC, 
-*			  _high : ¸ßµçÆ½Ê±DAC
-*			  _freq : ÆµÂÊ Hz
-*			  _duty : Õ¼¿Õ±È
-*	·µ »Ø Öµ: ÎŞ
+*	å‡½ æ•° å: dac2_SetTriWave
+*	åŠŸèƒ½è¯´æ˜: DAC1è¾“å‡ºä¸‰è§’æ³¢
+*	å½¢    å‚: _low : ä½ç”µå¹³æ—¶DAC, 
+*			  _high : é«˜ç”µå¹³æ—¶DAC
+*			  _freq : é¢‘ç‡ Hz
+*			  _duty : å ç©ºæ¯”
+*	è¿” å› å€¼: æ— 
 *********************************************************************************************************
 */
 void dac2_SetTriWave(uint16_t _low, uint16_t _high, uint32_t _freq, uint16_t _duty)
@@ -689,7 +689,7 @@ void dac2_SetTriWave(uint16_t _low, uint16_t _high, uint32_t _freq, uint16_t _du
 	
 	TIM_Cmd(TIM7, DISABLE);
 		
-	/* ¹¹ÔìÈı½Ç²¨Êı×é£¬128¸öÑù±¾£¬´Ó _low µ½ _high */		
+	/* æ„é€ ä¸‰è§’æ³¢æ•°ç»„ï¼Œ128ä¸ªæ ·æœ¬ï¼Œä» _low åˆ° _high */		
 	m = (_duty * 128) / 100;
 	
 	if (m == 0)
@@ -717,10 +717,10 @@ void dac2_SetTriWave(uint16_t _low, uint16_t _high, uint32_t _freq, uint16_t _du
 
 /*
 *********************************************************************************************************
-*	º¯ Êı Ãû: dac2_StopWave
-*	¹¦ÄÜËµÃ÷: Í£Ö¹DAC2Êä³ö
-*	ĞÎ    ²Î: ÎŞ
-*	·µ »Ø Öµ: ÎŞ
+*	å‡½ æ•° å: dac2_StopWave
+*	åŠŸèƒ½è¯´æ˜: åœæ­¢DAC2è¾“å‡º
+*	å½¢    å‚: æ— 
+*	è¿” å› å€¼: æ— 
 *********************************************************************************************************
 */
 void dac2_StopWave(void)
@@ -730,4 +730,4 @@ void dac2_StopWave(void)
 	TIM_Cmd(TIM7, DISABLE);
 }
 
-/***************************** °²¸»À³µç×Ó www.armfly.com (END OF FILE) *********************************/
+/***************************** å®‰å¯Œè±ç”µå­ www.armfly.com (END OF FILE) *********************************/

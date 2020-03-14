@@ -1,12 +1,12 @@
 /*
 *********************************************************************************************************
 *
-*	ģ������ : modbus�ײ���������
-*	�ļ����� : bsp_modbus.h
-*	��    �� : V1.0
-*	˵    �� : ͷ�ļ�
+*	模块名称 : modbus底层驱动程序
+*	文件名称 : bsp_modbus.h
+*	版    本 : V1.0
+*	说    明 : 头文件
 *
-*	Copyright (C), 2014-2015, ���������� www.armfly.com
+*	Copyright (C), 2014-2015, 安富莱电子 www.armfly.com
 *
 *********************************************************************************************************
 */
@@ -14,20 +14,20 @@
 #ifndef __BSP_MODBUS_H
 #define __BSP_MODBUS_H
 
-/* ����KEY_FIFO ��Ϣ֪ͨӦ�ó��� */
-#define MSG_485_RX			0xFE	/* �˴���ֵ��Ҫ�Ͱ������롢����ң�ش���ͬ����룬����Ψһ�� */
+/* 借用KEY_FIFO 消息通知应用程序 */
+#define MSG_485_RX			0xFE	/* 此代码值需要和按键代码、红外遥控代码同意编码，保持唯一性 */
 
-/* �����жϳ���Ĺ���ģʽ -- ModbusInitVar() �������β� */
-#define WKM_NO_CRC			0		/* ��У��CRC�����ݳ��ȡ�����ASCIIЭ�顣��ʱ��ֱ�Ӹ�Ӧ�ò㴦�� */
-#define WKM_MODBUS_HOST		1		/* У��CRC,��У���ַ�� ��Modbus����Ӧ�� */
-#define WKM_MODBUS_DEVICE	2		/* У��CRC����У�鱾����ַ�� ��Modbus�豸���ӻ���Ӧ�� */
+/* 接收中断程序的工作模式 -- ModbusInitVar() 函数的形参 */
+#define WKM_NO_CRC			0		/* 不校验CRC和数据长度。比如ASCII协议。超时后直接给应用层处理 */
+#define WKM_MODBUS_HOST		1		/* 校验CRC,不校验地址。 供Modbus主机应用 */
+#define WKM_MODBUS_DEVICE	2		/* 校验CRC，并校验本机地址。 供Modbus设备（从机）应用 */
 
-/* RTU Ӧ����� */
-#define RSP_OK				0		/* �ɹ� */
-#define RSP_ERR_CMD			0x01	/* ��֧�ֵĹ����� */
-#define RSP_ERR_REG_ADDR	0x02	/* �Ĵ�����ַ���� */
-#define RSP_ERR_VALUE		0x03	/* ����ֵ����� */
-#define RSP_ERR_WRITE		0x04	/* д��ʧ�� */
+/* RTU 应答代码 */
+#define RSP_OK				0		/* 成功 */
+#define RSP_ERR_CMD			0x01	/* 不支持的功能码 */
+#define RSP_ERR_REG_ADDR	0x02	/* 寄存器地址错误 */
+#define RSP_ERR_VALUE		0x03	/* 数据值域错误 */
+#define RSP_ERR_WRITE		0x04	/* 写入失败 */
 
 #define MODBUS_RX_SIZE		128
 #define MODBUS_TX_SIZE      128
@@ -50,17 +50,17 @@ typedef struct
 	uint8_t TxBuf[MODBUS_TX_SIZE];
 	uint8_t TxCount;
 
-	uint8_t WorkMode;	/* �����жϵĹ���ģʽ�� ASCII, MODBUS������ MODBUS �ӻ� */
+	uint8_t WorkMode;	/* 接收中断的工作模式： ASCII, MODBUS主机或 MODBUS 从机 */
 	
 }MODBUS_T;
 
 void MODBUS_InitVar(uint32_t _Baud, uint8_t _Para1);
 void MODBUS_Poll(void);
 void MODBUS_SendWithCRC(uint8_t *_pBuf, uint8_t _ucLen);
-void MODBUS_ReciveNew(uint8_t _byte);		/* �����ڽ����жϷ��������� */
+void MODBUS_ReciveNew(uint8_t _byte);		/* 被串口接收中断服务程序调用 */
 
 extern MODBUS_T g_tModbus;
 
 #endif
 
-/***************************** ���������� www.armfly.com (END OF FILE) *********************************/
+/***************************** 安富莱电子 www.armfly.com (END OF FILE) *********************************/

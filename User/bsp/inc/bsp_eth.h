@@ -1,12 +1,12 @@
 /*
 *********************************************************************************************************
 *
-*	Ä£¿éÃû³Æ : STM32F4 ÄÚÖÃETH MAC Çı¶¯Ä£¿é
-*	ÎÄ¼şÃû³Æ : bsp_eth.h
-*	°æ    ±¾ : V2.4
-*	Ëµ    Ã÷ : °²¸»À³STM32-V5¿ª·¢°åÍâÀ©µÄMACÎª DM9161
+*	æ¨¡å—åç§° : STM32F4 å†…ç½®ETH MAC é©±åŠ¨æ¨¡å—
+*	æ–‡ä»¶åç§° : bsp_eth.h
+*	ç‰ˆ    æœ¬ : V2.4
+*	è¯´    æ˜ : å®‰å¯Œè±STM32-V5å¼€å‘æ¿å¤–æ‰©çš„MACä¸º DM9161
 *
-*	Copyright (C), 2013-2014, °²¸»À³µç×Ó www.armfly.com
+*	Copyright (C), 2013-2014, å®‰å¯Œè±ç”µå­ www.armfly.com
 *
 *********************************************************************************************************
 */
@@ -19,18 +19,18 @@
  extern "C" {
 #endif
 
-/* ¶¨Òå ETH_PHY ÖĞ¶Ï¿ÚÏß PH6  used to manage Ethernet link status */
+/* å®šä¹‰ ETH_PHY ä¸­æ–­å£çº¿ PH6  used to manage Ethernet link status */
 #define ETH_LINK_EXTI_LINE             EXTI_Line6
 #define ETH_LINK_EXTI_PORT_SOURCE      EXTI_PortSourceGPIOH
 #define ETH_LINK_EXTI_PIN_SOURCE       EXTI_PinSource6
-#define ETH_LINK_EXTI_IRQn             EXTI9_5_IRQn			/* ÖĞ¶ÏºÅ£¬ÔÚstm32f4xx.h ÖĞ¶¨Òå */
+#define ETH_LINK_EXTI_IRQn             EXTI9_5_IRQn			/* ä¸­æ–­å·ï¼Œåœ¨stm32f4xx.h ä¸­å®šä¹‰ */
 
 #define ETH_LINK_PIN                   GPIO_Pin_6
 #define ETH_LINK_GPIO_PORT             GPIOH
 #define ETH_LINK_GPIO_CLK              RCC_AHB1Periph_GPIOH
 
 
-#define PHY_ADDRESS      0x00 	/* µØÖ·ÓĞDM9161µÄRXD0 - RXD3 ¾ö¶¨£¬ÉÏµç¸´Î»Ê±Ëø´æ. °²¸»À³STM32-V5¿ª·¢°åµØÖ·ÊÇ0 */
+#define PHY_ADDRESS      0x00 	/* åœ°å€æœ‰DM9161çš„RXD0 - RXD3 å†³å®šï¼Œä¸Šç”µå¤ä½æ—¶é”å­˜. å®‰å¯Œè±STM32-V5å¼€å‘æ¿åœ°å€æ˜¯0 */
 
 
 /* PHY registers */

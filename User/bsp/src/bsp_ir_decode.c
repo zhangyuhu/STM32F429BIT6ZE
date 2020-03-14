@@ -1,28 +1,28 @@
 /*
 *********************************************************************************************************
 *
-*	Ä£¿éÃû³Æ : ºìÍâÒ£¿Ø½ÓÊÕÆ÷Çý¶¯Ä£¿é
-*	ÎÄ¼þÃû³Æ : bsp_ir_decode.c
-*	°æ    ±¾ : V1.0
-*	Ëµ    Ã÷ : ºìÍâÒ£¿Ø½ÓÊÕµÄºìÍâÐÅºÅËÍÈëCPUµÄ PB0/TIM3_CH3.  ±¾Çý¶¯³ÌÐòÊ¹ÓÃTIM3_CH3Í¨µÀµÄÊäÈë²¶»ñ¹¦ÄÜÀ´
-*				Ð­Öú½âÂë¡£
+*	æ¨¡å—åç§° : çº¢å¤–é¥æŽ§æŽ¥æ”¶å™¨é©±åŠ¨æ¨¡å—
+*	æ–‡ä»¶åç§° : bsp_ir_decode.c
+*	ç‰ˆ    æœ¬ : V1.0
+*	è¯´    æ˜Ž : çº¢å¤–é¥æŽ§æŽ¥æ”¶çš„çº¢å¤–ä¿¡å·é€å…¥CPUçš„ PB0/TIM3_CH3.  æœ¬é©±åŠ¨ç¨‹åºä½¿ç”¨TIM3_CH3é€šé“çš„è¾“å…¥æ•èŽ·åŠŸèƒ½æ¥
+*				ååŠ©è§£ç ã€‚
 *
-*	ÐÞ¸Ä¼ÇÂ¼ :
-*		°æ±¾ºÅ  ÈÕÆÚ         ×÷Õß     ËµÃ÷
-*		V1.0    2014-02-12   armfly  ÕýÊ½·¢²¼
-*		V1.1	2015-12-09   armfly  ¸ù¾ÝCPUÖ÷ÆµÉèÖÃTIM·ÖÆµÏµÊý¡£½â¾ö192MÊ±£¬ÎÞ·¨ÕýÈ·½âÂëÎÊÌâ¡£
+*	ä¿®æ”¹è®°å½• :
+*		ç‰ˆæœ¬å·  æ—¥æœŸ         ä½œè€…     è¯´æ˜Ž
+*		V1.0    2014-02-12   armfly  æ­£å¼å‘å¸ƒ
+*		V1.1	2015-12-09   armfly  æ ¹æ®CPUä¸»é¢‘è®¾ç½®TIMåˆ†é¢‘ç³»æ•°ã€‚è§£å†³192Mæ—¶ï¼Œæ— æ³•æ­£ç¡®è§£ç é—®é¢˜ã€‚
 *
-*	Copyright (C), 2015-2020, °²¸»À³µç×Ó www.armfly.com
+*	Copyright (C), 2015-2020, å®‰å¯ŒèŽ±ç”µå­ www.armfly.com
 *
 *********************************************************************************************************
 */
 
 #include "bsp.h"
 
-#define IR_REPEAT_SEND_EN		1	/* Á¬·¢Ê¹ÄÜ */
-#define IR_REPEAT_FILTER		10	/* Ò£¿ØÆ÷108ms ·¢³ÖÐø°´ÏÂÂö³å, Á¬Ðø°´ÏÂ1ÃëºóÆô¶¯ÖØ·¢ */
+#define IR_REPEAT_SEND_EN		1	/* è¿žå‘ä½¿èƒ½ */
+#define IR_REPEAT_FILTER		10	/* é¥æŽ§å™¨108ms å‘æŒç»­æŒ‰ä¸‹è„‰å†², è¿žç»­æŒ‰ä¸‹1ç§’åŽå¯åŠ¨é‡å‘ */
 
-/* ¶¨ÒåGPIO¶Ë¿Ú */
+/* å®šä¹‰GPIOç«¯å£ */
 #define RCC_IRD		RCC_AHB1Periph_GPIOB
 #define PORT_IRD	GPIOB
 #define PIN_IRD		GPIO_Pin_0
@@ -33,24 +33,24 @@ IRD_T g_tIR;
 
 /*
 *********************************************************************************************************
-*	º¯ Êý Ãû: bsp_InitIRD
-*	¹¦ÄÜËµÃ÷: ÅäÖÃSTM32µÄGPIO,ÓÃÓÚºìÍâÒ£¿ØÆ÷½âÂë
-*	ÐÎ    ²Î: ÎÞ
-*	·µ »Ø Öµ: ÎÞ
+*	å‡½ æ•° å: bsp_InitIRD
+*	åŠŸèƒ½è¯´æ˜Ž: é…ç½®STM32çš„GPIO,ç”¨äºŽçº¢å¤–é¥æŽ§å™¨è§£ç 
+*	å½¢    å‚: æ— 
+*	è¿” å›ž å€¼: æ— 
 *********************************************************************************************************
 */
 void bsp_InitIRD(void)
 {
 	GPIO_InitTypeDef GPIO_InitStructure;
 
-	/* ´ò¿ªGPIOÊ±ÖÓ */
+	/* æ‰“å¼€GPIOæ—¶é’Ÿ */
 	RCC_AHB1PeriphClockCmd(RCC_IRD, ENABLE);
 
-	/* ÅäÖÃDQÎªÊäÈëÒý½Å */
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;		/* ÉèÎªÊä³ö¿Ú */
-	GPIO_InitStructure.GPIO_OType = GPIO_OType_OD;		/* ÉèÎª¿ªÂ©Ä£Ê½ */
-	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;	/* ÉÏÏÂÀ­µç×è²»Ê¹ÄÜ */
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;	/* IO¿Ú×î´óËÙ¶È */
+	/* é…ç½®DQä¸ºè¾“å…¥å¼•è„š */
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;		/* è®¾ä¸ºè¾“å‡ºå£ */
+	GPIO_InitStructure.GPIO_OType = GPIO_OType_OD;		/* è®¾ä¸ºå¼€æ¼æ¨¡å¼ */
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;	/* ä¸Šä¸‹æ‹‰ç”µé˜»ä¸ä½¿èƒ½ */
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;	/* IOå£æœ€å¤§é€Ÿåº¦ */
 
 	GPIO_InitStructure.GPIO_Pin = PIN_IRD;
 	GPIO_Init(PORT_IRD, &GPIO_InitStructure);
@@ -58,10 +58,10 @@ void bsp_InitIRD(void)
 
 /*
 *********************************************************************************************************
-*	º¯ Êý Ãû: IRD_StartWork
-*	¹¦ÄÜËµÃ÷: ÅäÖÃTIM£¬¿ªÊ¼½âÂë
-*	ÐÎ    ²Î: ÎÞ
-*	·µ »Ø Öµ: ÎÞ
+*	å‡½ æ•° å: IRD_StartWork
+*	åŠŸèƒ½è¯´æ˜Ž: é…ç½®TIMï¼Œå¼€å§‹è§£ç 
+*	å½¢    å‚: æ— 
+*	è¿” å›ž å€¼: æ— 
 *********************************************************************************************************
 */
 void IRD_StartWork(void)
@@ -78,10 +78,10 @@ void IRD_StartWork(void)
 
 	/* TIM3 chennel3 configuration : PB.0 */
 	GPIO_InitStructure.GPIO_Pin   = GPIO_Pin_0;
-	GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_AF;		/* Ñ¡Ôñ¸´ÓÃ¹¦ÄÜ */
+	GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_AF;		/* é€‰æ‹©å¤ç”¨åŠŸèƒ½ */
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
 	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
-	GPIO_InitStructure.GPIO_PuPd  = GPIO_PuPd_UP ;		/* ÉÏÀ­µç×èÊ¹ÄÜ */
+	GPIO_InitStructure.GPIO_PuPd  = GPIO_PuPd_UP ;		/* ä¸Šæ‹‰ç”µé˜»ä½¿èƒ½ */
 	GPIO_Init(GPIOB, &GPIO_InitStructure);
 
 	/* Connect TIM pin to AF3 */
@@ -97,13 +97,13 @@ void IRD_StartWork(void)
 	TIM_ICInitStructure.TIM_Channel = TIM_Channel_3;
 	TIM_ICInitStructure.TIM_ICPolarity = TIM_ICPolarity_BothEdge;
 	TIM_ICInitStructure.TIM_ICSelection = TIM_ICSelection_DirectTI;
-	TIM_ICInitStructure.TIM_ICPrescaler = TIM_ICPSC_DIV1;			/* Ã¿´ÎÌø±ä¶¼²úÉú1´Î²¶»ñÊÂ¼þ */
+	TIM_ICInitStructure.TIM_ICPrescaler = TIM_ICPSC_DIV1;			/* æ¯æ¬¡è·³å˜éƒ½äº§ç”Ÿ1æ¬¡æ•èŽ·äº‹ä»¶ */
 	TIM_ICInitStructure.TIM_ICFilter = 0x0;
 	
 	TIM_ICInit(TIM3, &TIM_ICInitStructure);
 	
-	/* ÉèÖÃ·ÖÆµÎª 1680/2£¬ ²¶»ñ¼ÆÊýÆ÷ÖµµÄµ¥Î»ÕýºÃÊÇ 10us, ·½±ãÂö¿í±È½Ï 
-		SystemCoreClock ÊÇÖ÷Æµ. ³£ÓÃÖµ: 168000000, 180000000,192000000
+	/* è®¾ç½®åˆ†é¢‘ä¸º 1680/2ï¼Œ æ•èŽ·è®¡æ•°å™¨å€¼çš„å•ä½æ­£å¥½æ˜¯ 10us, æ–¹ä¾¿è„‰å®½æ¯”è¾ƒ 
+		SystemCoreClock æ˜¯ä¸»é¢‘. å¸¸ç”¨å€¼: 168000000, 180000000,192000000
 	*/
   	TIM_PrescalerConfig(TIM3, (SystemCoreClock / 100000) / 2, TIM_PSCReloadMode_Immediate);
 	
@@ -119,10 +119,10 @@ void IRD_StartWork(void)
 
 /*
 *********************************************************************************************************
-*	º¯ Êý Ãû: IRD_StopWork
-*	¹¦ÄÜËµÃ÷: Í£Ö¹ºìÍâ½âÂë
-*	ÐÎ    ²Î: ÎÞ
-*	·µ »Ø Öµ: ÎÞ
+*	å‡½ æ•° å: IRD_StopWork
+*	åŠŸèƒ½è¯´æ˜Ž: åœæ­¢çº¢å¤–è§£ç 
+*	å½¢    å‚: æ— 
+*	è¿” å›ž å€¼: æ— 
 *********************************************************************************************************
 */
 void IRD_StopWork(void)
@@ -134,10 +134,10 @@ void IRD_StopWork(void)
 
 /*
 *********************************************************************************************************
-*	º¯ Êý Ãû: IRD_DecodeNec
-*	¹¦ÄÜËµÃ÷: °´ÕÕNEC±àÂë¸ñÊ½ÊµÊ±½âÂë
-*	ÐÎ    ²Î: _width Âö³å¿í¶È£¬µ¥Î» 10us
-*	·µ »Ø Öµ: ÎÞ
+*	å‡½ æ•° å: IRD_DecodeNec
+*	åŠŸèƒ½è¯´æ˜Ž: æŒ‰ç…§NECç¼–ç æ ¼å¼å®žæ—¶è§£ç 
+*	å½¢    å‚: _width è„‰å†²å®½åº¦ï¼Œå•ä½ 10us
+*	è¿” å›ž å€¼: æ— 
 *********************************************************************************************************
 */
 void IRD_DecodeNec(uint16_t _width)
@@ -147,18 +147,18 @@ void IRD_DecodeNec(uint16_t _width)
 	static uint8_t s_Bit;
 	uint16_t TotalWitdh;
 	
-	/* NEC ¸ñÊ½ £¨5¶Î£©
-		1¡¢Òýµ¼Âë  9msµÍ + 4.5ms¸ß
-		2¡¢µÍ8Î»µØÖ·Âë  0=1.125ms  1=2.25ms    bit0ÏÈ´«
-		3¡¢¸ß8Î»µØÖ·Âë  0=1.125ms  1=2.25ms
-		4¡¢8Î»Êý¾Ý      0=1.125ms  1=2.25ms
-		5¡¢8ÎªÊýÂë·´Âë  0=1.125ms  1=2.25ms
+	/* NEC æ ¼å¼ ï¼ˆ5æ®µï¼‰
+		1ã€å¼•å¯¼ç   9msä½Ž + 4.5msé«˜
+		2ã€ä½Ž8ä½åœ°å€ç   0=1.125ms  1=2.25ms    bit0å…ˆä¼ 
+		3ã€é«˜8ä½åœ°å€ç   0=1.125ms  1=2.25ms
+		4ã€8ä½æ•°æ®      0=1.125ms  1=2.25ms
+		5ã€8ä¸ºæ•°ç åç   0=1.125ms  1=2.25ms
 	*/
 
 loop1:	
 	switch (g_tIR.Status)
 	{
-		case 0:			/* 929 µÈ´ýÒýµ¼ÂëµÍÐÅºÅ  7ms - 11ms */
+		case 0:			/* 929 ç­‰å¾…å¼•å¯¼ç ä½Žä¿¡å·  7ms - 11ms */
 			if ((_width > 700) && (_width < 1100))
 			{
 				g_tIR.Status = 1;
@@ -167,8 +167,8 @@ loop1:
 			}
 			break;
 
-		case 1:			/* 413 ÅÐ¶ÏÒýµ¼Âë¸ßÐÅºÅ  3ms - 6ms */
-			if ((_width > 313) && (_width < 600))	/* Òýµ¼Âë 4.5ms */
+		case 1:			/* 413 åˆ¤æ–­å¼•å¯¼ç é«˜ä¿¡å·  3ms - 6ms */
+			if ((_width > 313) && (_width < 600))	/* å¼•å¯¼ç  4.5ms */
 			{
 				g_tIR.Status = 2;
 			}
@@ -177,39 +177,39 @@ loop1:
 				#ifdef IR_REPEAT_SEND_EN				
 					if (g_tIR.RepeatCount >= IR_REPEAT_FILTER)
 					{
-						bsp_PutKey(g_tIR.RxBuf[2] + IR_KEY_STRAT);	/* Á¬·¢Âë */
+						bsp_PutKey(g_tIR.RxBuf[2] + IR_KEY_STRAT);	/* è¿žå‘ç  */
 					}
 					else
 					{
 						g_tIR.RepeatCount++;
 					}
 				#endif
-				g_tIR.Status = 0;	/* ¸´Î»½âÂë×´Ì¬ */
+				g_tIR.Status = 0;	/* å¤ä½è§£ç çŠ¶æ€ */
 			}
 			else
 			{
-				/* Òì³£Âö¿í */
-				g_tIR.Status = 0;	/* ¸´Î»½âÂë×´Ì¬ */
+				/* å¼‚å¸¸è„‰å®½ */
+				g_tIR.Status = 0;	/* å¤ä½è§£ç çŠ¶æ€ */
 			}
 			break;
 		
-		case 2:			/* µÍµçÆ½ÆÚ¼ä 0.56ms */
+		case 2:			/* ä½Žç”µå¹³æœŸé—´ 0.56ms */
 			if ((_width > 10) && (_width < 100))
 			{		
 				g_tIR.Status = 3;
-				s_LowWidth = _width;	/* ±£´æµÍµçÆ½¿í¶È */
+				s_LowWidth = _width;	/* ä¿å­˜ä½Žç”µå¹³å®½åº¦ */
 			}
-			else	/* Òì³£Âö¿í */
+			else	/* å¼‚å¸¸è„‰å®½ */
 			{
-				/* Òì³£Âö¿í */
-				g_tIR.Status = 0;	/* ¸´Î»½âÂëÆ÷×´Ì¬ */	
-				goto loop1;		/* ¼ÌÐøÅÐ¶ÏÍ¬²½ÐÅºÅ */
+				/* å¼‚å¸¸è„‰å®½ */
+				g_tIR.Status = 0;	/* å¤ä½è§£ç å™¨çŠ¶æ€ */	
+				goto loop1;		/* ç»§ç»­åˆ¤æ–­åŒæ­¥ä¿¡å· */
 			}
 			break;
 
-		case 3:			/* 85+25, 64+157 ¿ªÊ¼Á¬Ðø½âÂë32bit */						
+		case 3:			/* 85+25, 64+157 å¼€å§‹è¿žç»­è§£ç 32bit */						
 			TotalWitdh = s_LowWidth + _width;
-			/* 0µÄ¿í¶ÈÎª1.125ms£¬1µÄ¿í¶ÈÎª2.25ms */				
+			/* 0çš„å®½åº¦ä¸º1.125msï¼Œ1çš„å®½åº¦ä¸º2.25ms */				
 			s_Byte >>= 1;
 			if ((TotalWitdh > 92) && (TotalWitdh < 132))
 			{
@@ -221,52 +221,52 @@ loop1:
 			}	
 			else
 			{
-				/* Òì³£Âö¿í */
-				g_tIR.Status = 0;	/* ¸´Î»½âÂëÆ÷×´Ì¬ */	
-				goto loop1;		/* ¼ÌÐøÅÐ¶ÏÍ¬²½ÐÅºÅ */
+				/* å¼‚å¸¸è„‰å®½ */
+				g_tIR.Status = 0;	/* å¤ä½è§£ç å™¨çŠ¶æ€ */	
+				goto loop1;		/* ç»§ç»­åˆ¤æ–­åŒæ­¥ä¿¡å· */
 			}
 			
 			s_Bit++;
-			if (s_Bit == 8)	/* ÊÕÆë8Î» */
+			if (s_Bit == 8)	/* æ”¶é½8ä½ */
 			{
 				g_tIR.RxBuf[0] = s_Byte;
 				s_Byte = 0;
 			}
-			else if (s_Bit == 16)	/* ÊÕÆë16Î» */
+			else if (s_Bit == 16)	/* æ”¶é½16ä½ */
 			{
 				g_tIR.RxBuf[1] = s_Byte;
 				s_Byte = 0;
 			}
-			else if (s_Bit == 24)	/* ÊÕÆë24Î» */
+			else if (s_Bit == 24)	/* æ”¶é½24ä½ */
 			{
 				g_tIR.RxBuf[2] = s_Byte;
 				s_Byte = 0;
 			}
-			else if (s_Bit == 32)	/* ÊÕÆë32Î» */
+			else if (s_Bit == 32)	/* æ”¶é½32ä½ */
 			{
 				g_tIR.RxBuf[3] = s_Byte;
 								
-				if (g_tIR.RxBuf[2] + g_tIR.RxBuf[3] == 255)	/* ¼ì²éÐ£Ñé */
+				if (g_tIR.RxBuf[2] + g_tIR.RxBuf[3] == 255)	/* æ£€æŸ¥æ ¡éªŒ */
 				{
-					bsp_PutKey(g_tIR.RxBuf[2] + IR_KEY_STRAT);	/* ½«¼üÖµ·ÅÈëKEY FIFO */
+					bsp_PutKey(g_tIR.RxBuf[2] + IR_KEY_STRAT);	/* å°†é”®å€¼æ”¾å…¥KEY FIFO */
 					
-					g_tIR.RepeatCount = 0;	/* ÖØ·¢¼ÆÊýÆ÷ */										
+					g_tIR.RepeatCount = 0;	/* é‡å‘è®¡æ•°å™¨ */										
 				}
 				
-				g_tIR.Status = 0;	/* µÈ´ýÏÂÒ»×é±àÂë */
+				g_tIR.Status = 0;	/* ç­‰å¾…ä¸‹ä¸€ç»„ç¼–ç  */
 				break;
 			}
-			g_tIR.Status = 2;	/* ¼ÌÐøÏÂÒ»¸öbit */
+			g_tIR.Status = 2;	/* ç»§ç»­ä¸‹ä¸€ä¸ªbit */
 			break;						
 	}
 }
 
 /*
 *********************************************************************************************************
-*	º¯ Êý Ãû: TIM3_IRQHandler
-*	¹¦ÄÜËµÃ÷: TIM3ÖÐ¶Ï·þÎñ³ÌÐò
-*	ÐÎ    ²Î: ÎÞ
-*	·µ »Ø Öµ: ÎÞ
+*	å‡½ æ•° å: TIM3_IRQHandler
+*	åŠŸèƒ½è¯´æ˜Ž: TIM3ä¸­æ–­æœåŠ¡ç¨‹åº
+*	å½¢    å‚: æ— 
+*	è¿” å›ž å€¼: æ— 
 *********************************************************************************************************
 */
 void TIM3_IRQHandler(void)
@@ -278,13 +278,13 @@ void TIM3_IRQHandler(void)
 	{
 		TIM_ClearITPendingBit(TIM3, TIM_IT_CC3);
 
-		NowCapture = TIM_GetCapture3(TIM3);	/* ¶ÁÈ¡²¶»ñµÄ¼ÆÊýÆ÷Öµ£¬¼ÆÊýÆ÷Öµ´Ó0-65535Ñ­»·¼ÆÊý */
+		NowCapture = TIM_GetCapture3(TIM3);	/* è¯»å–æ•èŽ·çš„è®¡æ•°å™¨å€¼ï¼Œè®¡æ•°å™¨å€¼ä»Ž0-65535å¾ªçŽ¯è®¡æ•° */
 
 		if (NowCapture >= g_tIR.LastCapture)
 		{
 			Width = NowCapture - g_tIR.LastCapture;
 		}
-		else if (NowCapture < g_tIR.LastCapture)	/* ¼ÆÊýÆ÷µÖ´ï×î´ó²¢·­×ª */
+		else if (NowCapture < g_tIR.LastCapture)	/* è®¡æ•°å™¨æŠµè¾¾æœ€å¤§å¹¶ç¿»è½¬ */
 		{
 			Width = ((0xFFFF - g_tIR.LastCapture) + NowCapture);
 		}			
@@ -295,11 +295,11 @@ void TIM3_IRQHandler(void)
 			return;
 		}
 				
-		g_tIR.LastCapture = NowCapture;	/* ±£´æµ±Ç°¼ÆÊýÆ÷£¬ÓÃÓÚÏÂ´Î¼ÆËã²îÖµ */
+		g_tIR.LastCapture = NowCapture;	/* ä¿å­˜å½“å‰è®¡æ•°å™¨ï¼Œç”¨äºŽä¸‹æ¬¡è®¡ç®—å·®å€¼ */
 		
-		IRD_DecodeNec(Width);		/* ½âÂë */		
+		IRD_DecodeNec(Width);		/* è§£ç  */		
 	}
 }
 
 
-/***************************** °²¸»À³µç×Ó www.armfly.com (END OF FILE) *********************************/
+/***************************** å®‰å¯ŒèŽ±ç”µå­ www.armfly.com (END OF FILE) *********************************/

@@ -89,7 +89,7 @@
 /   1    - ASCII (Valid for only non-LFN configuration) */
 
 
-#define	_USE_LFN	2		/* 0 to 3 ¡¾ÓÉ0 ĞŞ¸Ä 2£¬Ö§³Ö³¤ÎÄ¼şÃû£¬Ê¹ÓÃ¶ÑÕ»±£´æ¡¿*/
+#define	_USE_LFN	2		/* 0 to 3 ã€ç”±0 ä¿®æ”¹ 2ï¼Œæ”¯æŒé•¿æ–‡ä»¶åï¼Œä½¿ç”¨å †æ ˆä¿å­˜ã€‘*/
 #define	_MAX_LFN	255		/* Maximum LFN length to handle (12 to 255) */
 /* The _USE_LFN option switches the LFN feature.
 /
@@ -119,7 +119,7 @@
 /  FatFs supports only BMP. */
 
 
-#define _FS_RPATH		0	/* 0 to 2 ¡¾ÓÉ0ĞŞ¸Ä1£¬Ö§³ÖÏà¶ÔÄ¿Â¼·ÃÎÊ¡¿ */
+#define _FS_RPATH		0	/* 0 to 2 ã€ç”±0ä¿®æ”¹1ï¼Œæ”¯æŒç›¸å¯¹ç›®å½•è®¿é—®ã€‘ */
 /* The _FS_RPATH option configures relative path feature.
 /
 /   0: Disable relative path feature and remove related functions.
@@ -133,7 +133,7 @@
 / Drive/Volume Configurations
 /---------------------------------------------------------------------------*/
 
-#define _VOLUMES	3		/* ¡¾ÓÉ0 ĞŞ¸Ä 3, Ö§³Ö3¸öÅÌ·û¡¿ */
+#define _VOLUMES	3		/* ã€ç”±0 ä¿®æ”¹ 3, æ”¯æŒ3ä¸ªç›˜ç¬¦ã€‘ */
 /* Number of volumes (logical drives) to be used. */
 
 
@@ -183,7 +183,7 @@
 / System Configurations
 /---------------------------------------------------------------------------*/
 
-#define	_FS_LOCK	3	/* 0:Disable or >=1:Enable ¡¾ÓÉ0 ĞŞ¸Ä 3, Ö§³ÖÍ¬Ê±´ò¿ª3¸öÎÄ¼ş¡¿*/
+#define	_FS_LOCK	3	/* 0:Disable or >=1:Enable ã€ç”±0 ä¿®æ”¹ 3, æ”¯æŒåŒæ—¶æ‰“å¼€3ä¸ªæ–‡ä»¶ã€‘*/
 /* To enable file lock control feature, set _FS_LOCK to non-zero value.
 /  The value defines how many files/sub-directories can be opened simultaneously
 /  with file lock control. This feature uses bss _FS_LOCK * 12 bytes. */
@@ -201,7 +201,7 @@
 */
 
 
-#define _WORD_ACCESS	1	/* 0 or 1 ¡¾ÓÉ0 ĞŞ¸Ä 1, STM32Ö§³ÖWORD¡¿*/
+#define _WORD_ACCESS	1	/* 0 or 1 ã€ç”±0 ä¿®æ”¹ 1, STM32æ”¯æŒWORDã€‘*/
 /* The _WORD_ACCESS option is an only platform dependent option. It defines
 /  which access method is used to the word data on the FAT volume.
 /

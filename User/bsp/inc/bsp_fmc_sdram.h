@@ -1,16 +1,16 @@
 /*
 *********************************************************************************************************
 *
-*	ģ������ : �ⲿSDRAM����ģ��
-*	�ļ����� : bsp_fmc_sdram.h
-*	��    �� : V1.0
-*	˵    �� : ͷ�ļ�
+*	模块名称 : 外部SDRAM驱动模块
+*	文件名称 : bsp_fmc_sdram.h
+*	版    本 : V1.0
+*	说    明 : 头文件
 *
-*	�޸ļ�¼ :
-*		�汾��  ����       ����    ˵��
-*		v1.0    2014-05-04 armfly  ST�̼���汾 V1.3.0
+*	修改记录 :
+*		版本号  日期       作者    说明
+*		v1.0    2014-05-04 armfly  ST固件库版本 V1.3.0
 *
-*	Copyright (C), 2014-2015, ���������� www.armfly.com
+*	Copyright (C), 2014-2015, 安富莱电子 www.armfly.com
 *
 *********************************************************************************************************
 */
@@ -21,13 +21,13 @@
 #define EXT_SDRAM_ADDR  	((uint32_t)0xC0000000)
 #define EXT_SDRAM_SIZE		(16 * 1024 * 1024)
 
-/* LCD�Դ�,��1ҳ, ����2M�ֽ� */
+/* LCD显存,第1页, 分配2M字节 */
 #define SDRAM_LCD_BUF1 		EXT_SDRAM_ADDR
 
-/* LCD�Դ�,��2ҳ, ����2M�ֽ� */
+/* LCD显存,第2页, 分配2M字节 */
 #define SDRAM_LCD_BUF2		(EXT_SDRAM_ADDR + 2 * 1024 * 1024)
 
-/* ʣ�µ�12M�ֽڣ��ṩ��Ӧ�ó���ʹ�� */
+/* 剩下的12M字节，提供给应用程序使用 */
 #define SDRAM_APP_BUF		(EXT_SDRAM_ADDR + 4 * 1024 * 1024)
 #define SDRAM_APP_SIZE		(12 * 1024 * 1024)
 
@@ -37,4 +37,4 @@ uint32_t bsp_TestExtSDRAM2(void);
 
 #endif
 
-/***************************** ���������� www.armfly.com (END OF FILE) *********************************/
+/***************************** 安富莱电子 www.armfly.com (END OF FILE) *********************************/

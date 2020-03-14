@@ -1,18 +1,18 @@
 /*
 *********************************************************************************************************
 *
-*	Ä£¿éÃû³Æ : SPI×ÜÏßÇı¶¯
-*	ÎÄ¼şÃû³Æ : bsp_spi_bus.h
-*	°æ    ±¾ : V1.2
-*	Ëµ    Ã÷ : SPI×ÜÏßµ×²ãÇı¶¯¡£Ìá¹©SPIÅäÖÃ¡¢ÊÕ·¢Êı¾İ¡¢¶àÉè±¸¹²ÏíSPIÖ§³Ö¡£
-*	ĞŞ¸Ä¼ÇÂ¼ :
-*		°æ±¾ºÅ  ÈÕÆÚ        ×÷Õß    ËµÃ÷
-*       v1.0    2014-10-24 armfly  Ê×°æ¡£½«´®ĞĞFLASH¡¢TSC2046¡¢VS1053¡¢AD7705¡¢ADS1256µÈSPIÉè±¸µÄÅäÖÃ
-*									ºÍÊÕ·¢Êı¾İµÄº¯Êı½øĞĞ»ã×Ü·ÖÀà¡£²¢½â¾ö²»Í¬ËÙ¶ÈµÄÉè±¸¼äµÄ¹²ÏíÎÊÌâ¡£
-*		V1.1	2015-02-25 armfly  Ó²¼şSPIÊ±£¬Ã»ÓĞ¿ªÆôGPIOBÊ±ÖÓ£¬ÒÑ½â¾ö¡£
-*		V1.2	2015-07-23 armfly  ĞŞ¸Ä bsp_SPI_Init() º¯Êı£¬Ôö¼Ó¿ª¹ØSPIÊ±ÖÓµÄÓï¾ä¡£¹æ·¶Ó²¼şSPIºÍÈí¼şSPIµÄºê¶¨Òå.
+*	æ¨¡å—åç§° : SPIæ€»çº¿é©±åŠ¨
+*	æ–‡ä»¶åç§° : bsp_spi_bus.h
+*	ç‰ˆ    æœ¬ : V1.2
+*	è¯´    æ˜ : SPIæ€»çº¿åº•å±‚é©±åŠ¨ã€‚æä¾›SPIé…ç½®ã€æ”¶å‘æ•°æ®ã€å¤šè®¾å¤‡å…±äº«SPIæ”¯æŒã€‚
+*	ä¿®æ”¹è®°å½• :
+*		ç‰ˆæœ¬å·  æ—¥æœŸ        ä½œè€…    è¯´æ˜
+*       v1.0    2014-10-24 armfly  é¦–ç‰ˆã€‚å°†ä¸²è¡ŒFLASHã€TSC2046ã€VS1053ã€AD7705ã€ADS1256ç­‰SPIè®¾å¤‡çš„é…ç½®
+*									å’Œæ”¶å‘æ•°æ®çš„å‡½æ•°è¿›è¡Œæ±‡æ€»åˆ†ç±»ã€‚å¹¶è§£å†³ä¸åŒé€Ÿåº¦çš„è®¾å¤‡é—´çš„å…±äº«é—®é¢˜ã€‚
+*		V1.1	2015-02-25 armfly  ç¡¬ä»¶SPIæ—¶ï¼Œæ²¡æœ‰å¼€å¯GPIOBæ—¶é’Ÿï¼Œå·²è§£å†³ã€‚
+*		V1.2	2015-07-23 armfly  ä¿®æ”¹ bsp_SPI_Init() å‡½æ•°ï¼Œå¢åŠ å¼€å…³SPIæ—¶é’Ÿçš„è¯­å¥ã€‚è§„èŒƒç¡¬ä»¶SPIå’Œè½¯ä»¶SPIçš„å®å®šä¹‰.
 *
-*	Copyright (C), 2015-2016, °²¸»À³µç×Ó www.armfly.com
+*	Copyright (C), 2015-2016, å®‰å¯Œè±ç”µå­ www.armfly.com
 *
 *********************************************************************************************************
 */
@@ -20,16 +20,16 @@
 #include "bsp.h"
 
 /*
-	°²¸»À³STM32-V5£¬ V6 ¿ª·¢°å¿ÚÏß·ÖÅä
+	å®‰å¯Œè±STM32-V5ï¼Œ V6 å¼€å‘æ¿å£çº¿åˆ†é…
 	PB3/SPI3_SCK/SPI1_SCK
 	PB4/SPI3_MISO/SPI1_MISO
 	PB5/SPI3_MOSI/SPI1_MOSI
 
-	STM32Ó²¼şSPI½Ó¿Ú = SPI3 »òÕß SPI1
-	ÓÉÓÚSPI1µÄÊ±ÖÓÔ´ÊÇ90M, SPI3µÄÊ±ÖÓÔ´ÊÇ45M¡£ÎªÁË»ñµÃ¸ü¿ìµÄËÙ¶È£¬Èí¼şÉÏÑ¡ÔñSPI1¡£
+	STM32ç¡¬ä»¶SPIæ¥å£ = SPI3 æˆ–è€… SPI1
+	ç”±äºSPI1çš„æ—¶é’Ÿæºæ˜¯90M, SPI3çš„æ—¶é’Ÿæºæ˜¯45Mã€‚ä¸ºäº†è·å¾—æ›´å¿«çš„é€Ÿåº¦ï¼Œè½¯ä»¶ä¸Šé€‰æ‹©SPI1ã€‚
 */
-#ifdef SOFT_SPI		/* Èí¼şSPI */
-	/* ¶¨ÒåGPIO¶Ë¿Ú */
+#ifdef SOFT_SPI		/* è½¯ä»¶SPI */
+	/* å®šä¹‰GPIOç«¯å£ */
 	#define RCC_SCK 	RCC_AHB1Periph_GPIOB
 	#define PORT_SCK	GPIOB
 	#define PIN_SCK		GPIO_Pin_3
@@ -68,29 +68,29 @@
 	#define CR1_SPE_Reset        ((uint16_t)0xFFBF)
 #endif
 
-uint8_t g_spi_busy = 0;		/* SPI ×ÜÏß¹²Ïí±êÖ¾ */
+uint8_t g_spi_busy = 0;		/* SPI æ€»çº¿å…±äº«æ ‡å¿— */
 
 /*
 *********************************************************************************************************
-*	º¯ Êı Ãû: bsp_InitSPIBus
-*	¹¦ÄÜËµÃ÷: ÅäÖÃSPI×ÜÏß¡£ Ö»°üÀ¨ SCK¡¢ MOSI¡¢ MISO¿ÚÏßµÄÅäÖÃ¡£²»°üÀ¨Æ¬Ñ¡CS£¬Ò²²»°üÀ¨ÍâÉèĞ¾Æ¬ÌØÓĞµÄINT¡¢BUSYµÈ
-*	ĞÎ    ²Î: ÎŞ
-*	·µ »Ø Öµ: ÎŞ
+*	å‡½ æ•° å: bsp_InitSPIBus
+*	åŠŸèƒ½è¯´æ˜: é…ç½®SPIæ€»çº¿ã€‚ åªåŒ…æ‹¬ SCKã€ MOSIã€ MISOå£çº¿çš„é…ç½®ã€‚ä¸åŒ…æ‹¬ç‰‡é€‰CSï¼Œä¹Ÿä¸åŒ…æ‹¬å¤–è®¾èŠ¯ç‰‡ç‰¹æœ‰çš„INTã€BUSYç­‰
+*	å½¢    å‚: æ— 
+*	è¿” å› å€¼: æ— 
 *********************************************************************************************************
 */
 void bsp_InitSPIBus(void)
 {
-#ifdef SOFT_SPI		/* Èí¼şSPI */
+#ifdef SOFT_SPI		/* è½¯ä»¶SPI */
 	GPIO_InitTypeDef  GPIO_InitStructure;
 
-	/* ´ò¿ªGPIOÊ±ÖÓ */
+	/* æ‰“å¼€GPIOæ—¶é’Ÿ */
 	RCC_AHB1PeriphClockCmd(RCC_SCK | RCC_MOSI | RCC_MISO, ENABLE);
 
-	/* ÅäÖÃ¼¸¸öÍÆÍêÊä³öIO */
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;		/* ÉèÎªÊä³ö¿Ú */
-	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;		/* ÉèÎªÍÆÍìÄ£Ê½ */
-	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;	/* ÉÏÏÂÀ­µç×è²»Ê¹ÄÜ */
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_25MHz;	/* IO¿Ú×î´óËÙ¶È */
+	/* é…ç½®å‡ ä¸ªæ¨å®Œè¾“å‡ºIO */
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;		/* è®¾ä¸ºè¾“å‡ºå£ */
+	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;		/* è®¾ä¸ºæ¨æŒ½æ¨¡å¼ */
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;	/* ä¸Šä¸‹æ‹‰ç”µé˜»ä¸ä½¿èƒ½ */
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_25MHz;	/* IOå£æœ€å¤§é€Ÿåº¦ */
 
 	GPIO_InitStructure.GPIO_Pin = PIN_SCK;
 	GPIO_Init(PORT_SCK, &GPIO_InitStructure);
@@ -98,29 +98,29 @@ void bsp_InitSPIBus(void)
 	GPIO_InitStructure.GPIO_Pin = PIN_MOSI;
 	GPIO_Init(PORT_MOSI, &GPIO_InitStructure);
 
-	/* ÅäÖÃGPIOÎª¸¡¶¯ÊäÈëÄ£Ê½(Êµ¼ÊÉÏCPU¸´Î»ºó¾ÍÊÇÊäÈë×´Ì¬) */
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;		/* ÉèÎªÊäÈë¿Ú */
-	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;		/* ÉèÎªÍÆÍìÄ£Ê½ */
-	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;	/* ÎŞĞèÉÏÏÂÀ­µç×è */
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_25MHz;	/* IO¿Ú×î´óËÙ¶È */
+	/* é…ç½®GPIOä¸ºæµ®åŠ¨è¾“å…¥æ¨¡å¼(å®é™…ä¸ŠCPUå¤ä½åå°±æ˜¯è¾“å…¥çŠ¶æ€) */
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;		/* è®¾ä¸ºè¾“å…¥å£ */
+	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;		/* è®¾ä¸ºæ¨æŒ½æ¨¡å¼ */
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;	/* æ— éœ€ä¸Šä¸‹æ‹‰ç”µé˜» */
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_25MHz;	/* IOå£æœ€å¤§é€Ÿåº¦ */
 
 	GPIO_InitStructure.GPIO_Pin = PIN_MISO;
 	GPIO_Init(PORT_MISO, &GPIO_InitStructure);
 #endif
 
 #ifdef HARD_SPI
-	/* Ó²¼şSPI */
+	/* ç¡¬ä»¶SPI */
 	GPIO_InitTypeDef  GPIO_InitStructure;
 
-	/* ¿ªÆôGPIOÊ±ÖÓ */
+	/* å¼€å¯GPIOæ—¶é’Ÿ */
 	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB, ENABLE);
 
 
-	/* ÅäÖÃ SCK, MISO ¡¢ MOSI Îª¸´ÓÃ¹¦ÄÜ */
+	/* é…ç½® SCK, MISO ã€ MOSI ä¸ºå¤ç”¨åŠŸèƒ½ */
 	//GPIO_PinAFConfig(GPIOB, GPIO_PinSource3, GPIO_AF_SPI3);
 	//GPIO_PinAFConfig(GPIOB, GPIO_PinSource4, GPIO_AF_SPI3);
 	//GPIO_PinAFConfig(GPIOB, GPIO_PinSource5, GPIO_AF_SPI3);
-	/* ÅäÖÃ SCK, MISO ¡¢ MOSI Îª¸´ÓÃ¹¦ÄÜ */
+	/* é…ç½® SCK, MISO ã€ MOSI ä¸ºå¤ç”¨åŠŸèƒ½ */
 	GPIO_PinAFConfig(GPIOB, GPIO_PinSource3, GPIO_AF_SPI1);
 	GPIO_PinAFConfig(GPIOB, GPIO_PinSource4, GPIO_AF_SPI1);
 	GPIO_PinAFConfig(GPIOB, GPIO_PinSource5, GPIO_AF_SPI1);
@@ -133,54 +133,54 @@ void bsp_InitSPIBus(void)
 	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_3 | GPIO_Pin_4 | GPIO_Pin_5;
 	GPIO_Init(GPIOB, &GPIO_InitStructure);
 
-	/* ´ò¿ªSPIÊ±ÖÓ */
+	/* æ‰“å¼€SPIæ—¶é’Ÿ */
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_SPI1, ENABLE);
 	
 	bsp_SPI_Init(SPI_Direction_2Lines_FullDuplex | SPI_Mode_Master | SPI_DataSize_8b
 		| SPI_CPOL_Low | SPI_CPHA_1Edge | SPI_NSS_Soft | SPI_BaudRatePrescaler_64 | SPI_FirstBit_MSB);	
 	
 	/* Activate the SPI mode (Reset I2SMOD bit in I2SCFGR register) */
-	SPI_HARD->I2SCFGR &= SPI_Mode_Select;		/* Ñ¡ÔñSPIÄ£Ê½£¬²»ÊÇI2SÄ£Ê½ */
+	SPI_HARD->I2SCFGR &= SPI_Mode_Select;		/* é€‰æ‹©SPIæ¨¡å¼ï¼Œä¸æ˜¯I2Sæ¨¡å¼ */
 
 	/*---------------------------- SPIx CRCPOLY Configuration --------------------*/
 	/* Write to SPIx CRCPOLY */
-	SPI_HARD->CRCPR = 7;		/* Ò»°ã²»ÓÃ */
+	SPI_HARD->CRCPR = 7;		/* ä¸€èˆ¬ä¸ç”¨ */
 
 
-	SPI_Cmd(SPI_HARD, DISABLE);			/* ÏÈ½ûÖ¹SPI  */
+	SPI_Cmd(SPI_HARD, DISABLE);			/* å…ˆç¦æ­¢SPI  */
 
-	SPI_Cmd(SPI_HARD, ENABLE);			/* Ê¹ÄÜSPI  */
+	SPI_Cmd(SPI_HARD, ENABLE);			/* ä½¿èƒ½SPI  */
 #endif	
 }
 
 /*
 *********************************************************************************************************
-*	º¯ Êı Ãû: bsp_SPI_Init
-*	¹¦ÄÜËµÃ÷: ÅäÖÃSTM32ÄÚ²¿SPIÓ²¼şµÄ¹¤×÷Ä£Ê½¡£ ¼ò»¯¿âº¯Êı£¬Ìá¸ßÖ´ĞĞĞ§ÂÊ¡£ ½öÓÃÓÚSPI½Ó¿Ú¼äÇĞ»»¡£
-*	ĞÎ    ²Î: _cr1 ¼Ä´æÆ÷Öµ
-*	·µ »Ø Öµ: ÎŞ
+*	å‡½ æ•° å: bsp_SPI_Init
+*	åŠŸèƒ½è¯´æ˜: é…ç½®STM32å†…éƒ¨SPIç¡¬ä»¶çš„å·¥ä½œæ¨¡å¼ã€‚ ç®€åŒ–åº“å‡½æ•°ï¼Œæé«˜æ‰§è¡Œæ•ˆç‡ã€‚ ä»…ç”¨äºSPIæ¥å£é—´åˆ‡æ¢ã€‚
+*	å½¢    å‚: _cr1 å¯„å­˜å™¨å€¼
+*	è¿” å› å€¼: æ— 
 *********************************************************************************************************
 */
-#ifdef HARD_SPI		/* Ó²¼şSPI */
+#ifdef HARD_SPI		/* ç¡¬ä»¶SPI */
 void bsp_SPI_Init(uint16_t _cr1)
 {
 	SPI_HARD->CR1 = ((SPI_HARD->CR1 & CR1_CLEAR_Mask) | _cr1);
 	  
-	//SPI_Cmd(SPI_HARD, DISABLE);			/* ÏÈ½ûÖ¹SPI  */	    
+	//SPI_Cmd(SPI_HARD, DISABLE);			/* å…ˆç¦æ­¢SPI  */	    
     SPI_HARD->CR1 &= CR1_SPE_Reset;	/* Disable the selected SPI peripheral */
 
-	//SPI_Cmd(SPI_HARD, ENABLE);			/* Ê¹ÄÜSPI  */		    
+	//SPI_Cmd(SPI_HARD, ENABLE);			/* ä½¿èƒ½SPI  */		    
     SPI_HARD->CR1 |= CR1_SPE_Set;	  /* Enable the selected SPI peripheral */
 }
 #endif
 
-#ifdef SOFT_SPI		/* Èí¼şSPI */
+#ifdef SOFT_SPI		/* è½¯ä»¶SPI */
 /*
 *********************************************************************************************************
-*	º¯ Êı Ãû: bsp_SpiDelay
-*	¹¦ÄÜËµÃ÷: Ê±ĞòÑÓ³Ù
-*	ĞÎ    ²Î: ÎŞ
-*	·µ »Ø Öµ: ÎŞ
+*	å‡½ æ•° å: bsp_SpiDelay
+*	åŠŸèƒ½è¯´æ˜: æ—¶åºå»¶è¿Ÿ
+*	å½¢    å‚: æ— 
+*	è¿” å› å€¼: æ— 
 *********************************************************************************************************
 */
 void bsp_spiDelay(void)
@@ -189,12 +189,12 @@ void bsp_spiDelay(void)
 	uint32_t i;
 
 	/*
-		ÑÓ³Ù5Ê±£¬ F407 (168MHzÖ÷Æµ£© GPIOÄ£Äâ£¬Êµ²â SCK ÖÜÆÚ = 480ns (´óÔ¼2M)
+		å»¶è¿Ÿ5æ—¶ï¼Œ F407 (168MHzä¸»é¢‘ï¼‰ GPIOæ¨¡æ‹Ÿï¼Œå®æµ‹ SCK å‘¨æœŸ = 480ns (å¤§çº¦2M)
 	*/
 	for (i = 0; i < 5; i++);
 #else
 	/*
-		²»Ìí¼ÓÑÓ³ÙÓï¾ä£¬ F407 (168MHzÖ÷Æµ£© GPIOÄ£Äâ£¬Êµ²â SCK ÖÜÆÚ = 200ns (´óÔ¼5M)
+		ä¸æ·»åŠ å»¶è¿Ÿè¯­å¥ï¼Œ F407 (168MHzä¸»é¢‘ï¼‰ GPIOæ¨¡æ‹Ÿï¼Œå®æµ‹ SCK å‘¨æœŸ = 200ns (å¤§çº¦5M)
 	*/
 #endif
 }
@@ -202,15 +202,15 @@ void bsp_spiDelay(void)
 
 /*
 *********************************************************************************************************
-*	º¯ Êı Ãû: bsp_spiWrite0
-*	¹¦ÄÜËµÃ÷: ÏòSPI×ÜÏß·¢ËÍÒ»¸ö×Ö½Ú¡£SCKÉÏÉıÑØ²É¼¯Êı¾İ, SCK¿ÕÏĞÊ±ÎªµÍµçÆ½¡£
-*	ĞÎ    ²Î: ÎŞ
-*	·µ »Ø Öµ: ÎŞ
+*	å‡½ æ•° å: bsp_spiWrite0
+*	åŠŸèƒ½è¯´æ˜: å‘SPIæ€»çº¿å‘é€ä¸€ä¸ªå­—èŠ‚ã€‚SCKä¸Šå‡æ²¿é‡‡é›†æ•°æ®, SCKç©ºé—²æ—¶ä¸ºä½ç”µå¹³ã€‚
+*	å½¢    å‚: æ— 
+*	è¿” å› å€¼: æ— 
 *********************************************************************************************************
 */
 void bsp_spiWrite0(uint8_t _ucByte)
 {
-#ifdef SOFT_SPI		/* Èí¼şSPI */
+#ifdef SOFT_SPI		/* è½¯ä»¶SPI */
 	uint8_t i;
 
 	for(i = 0; i < 8; i++)
@@ -232,32 +232,32 @@ void bsp_spiWrite0(uint8_t _ucByte)
 	bsp_spiDelay();
 #endif
 
-#ifdef HARD_SPI		/* Ó²¼şSPI */
-	/* µÈ´ı·¢ËÍ»º³åÇø¿Õ */
+#ifdef HARD_SPI		/* ç¡¬ä»¶SPI */
+	/* ç­‰å¾…å‘é€ç¼“å†²åŒºç©º */
 	while(SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_TXE) == RESET);
 
-	/* ·¢ËÍÒ»¸ö×Ö½Ú */
+	/* å‘é€ä¸€ä¸ªå­—èŠ‚ */
 	SPI_I2S_SendData(SPI1, _ucByte);
 
-	/* µÈ´ıÊı¾İ½ÓÊÕÍê±Ï */
+	/* ç­‰å¾…æ•°æ®æ¥æ”¶å®Œæ¯• */
 	while(SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_RXNE) == RESET);
 
-	/* ¶ÁÈ¡½ÓÊÕµ½µÄÊı¾İ */
+	/* è¯»å–æ¥æ”¶åˆ°çš„æ•°æ® */
 	SPI_I2S_ReceiveData(SPI1);
 #endif
 }
 
 /*
 *********************************************************************************************************
-*	º¯ Êı Ãû: bsp_spiRead0
-*	¹¦ÄÜËµÃ÷: ´ÓSPI×ÜÏß½ÓÊÕ8¸öbitÊı¾İ¡£ SCKÉÏÉıÑØ²É¼¯Êı¾İ, SCK¿ÕÏĞÊ±ÎªµÍµçÆ½¡£
-*	ĞÎ    ²Î: ÎŞ
-*	·µ »Ø Öµ: ¶Áµ½µÄÊı¾İ
+*	å‡½ æ•° å: bsp_spiRead0
+*	åŠŸèƒ½è¯´æ˜: ä»SPIæ€»çº¿æ¥æ”¶8ä¸ªbitæ•°æ®ã€‚ SCKä¸Šå‡æ²¿é‡‡é›†æ•°æ®, SCKç©ºé—²æ—¶ä¸ºä½ç”µå¹³ã€‚
+*	å½¢    å‚: æ— 
+*	è¿” å› å€¼: è¯»åˆ°çš„æ•°æ®
 *********************************************************************************************************
 */
 uint8_t bsp_spiRead0(void)
 {
-#ifdef SOFT_SPI		/* Èí¼şSPI */
+#ifdef SOFT_SPI		/* è½¯ä»¶SPI */
 	uint8_t i;
 	uint8_t read = 0;
 
@@ -277,37 +277,37 @@ uint8_t bsp_spiRead0(void)
 	return read;
 #endif
 
-#ifdef HARD_SPI		/* Ó²¼şSPI */
+#ifdef HARD_SPI		/* ç¡¬ä»¶SPI */
 	uint8_t read;
 
-	/* µÈ´ı·¢ËÍ»º³åÇø¿Õ */
+	/* ç­‰å¾…å‘é€ç¼“å†²åŒºç©º */
 	while(SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_TXE) == RESET);
 
-	/* ·¢ËÍÒ»¸ö×Ö½Ú */
+	/* å‘é€ä¸€ä¸ªå­—èŠ‚ */
 	SPI_I2S_SendData(SPI1, 0);
 
-	/* µÈ´ıÊı¾İ½ÓÊÕÍê±Ï */
+	/* ç­‰å¾…æ•°æ®æ¥æ”¶å®Œæ¯• */
 	while(SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_RXNE) == RESET);
 
-	/* ¶ÁÈ¡½ÓÊÕµ½µÄÊı¾İ */
+	/* è¯»å–æ¥æ”¶åˆ°çš„æ•°æ® */
 	read = SPI_I2S_ReceiveData(SPI1);
 
-	/* ·µ»Ø¶Áµ½µÄÊı¾İ */
+	/* è¿”å›è¯»åˆ°çš„æ•°æ® */
 	return read;
 #endif
 }
 
 /*
 *********************************************************************************************************
-*	º¯ Êı Ãû: bsp_spiWrite1
-*	¹¦ÄÜËµÃ÷: ÏòSPI×ÜÏß·¢ËÍÒ»¸ö×Ö½Ú¡£  SCKÉÏÉıÑØ²É¼¯Êı¾İ, SCK¿ÕÏĞÊ±Îª¸ßµçÆ½
-*	ĞÎ    ²Î:  ÎŞ
-*	·µ »Ø Öµ: ÎŞ
+*	å‡½ æ•° å: bsp_spiWrite1
+*	åŠŸèƒ½è¯´æ˜: å‘SPIæ€»çº¿å‘é€ä¸€ä¸ªå­—èŠ‚ã€‚  SCKä¸Šå‡æ²¿é‡‡é›†æ•°æ®, SCKç©ºé—²æ—¶ä¸ºé«˜ç”µå¹³
+*	å½¢    å‚:  æ— 
+*	è¿” å› å€¼: æ— 
 *********************************************************************************************************
 */
 void bsp_spiWrite1(uint8_t _ucByte)
 {
-#ifdef SOFT_SPI		/* Èí¼şSPI */
+#ifdef SOFT_SPI		/* è½¯ä»¶SPI */
 	uint8_t i;
 
 	for(i = 0; i < 8; i++)
@@ -323,37 +323,37 @@ void bsp_spiWrite1(uint8_t _ucByte)
 		SCK_0();
 		_ucByte <<= 1;
 		bsp_spiDelay();
-		SCK_1();				/* SCKÉÏÉıÑØ²É¼¯Êı¾İ, SCK¿ÕÏĞÊ±Îª¸ßµçÆ½ */
+		SCK_1();				/* SCKä¸Šå‡æ²¿é‡‡é›†æ•°æ®, SCKç©ºé—²æ—¶ä¸ºé«˜ç”µå¹³ */
 		bsp_spiDelay();
 	}
 #endif
 
-#ifdef HARD_SPI		/* Ó²¼şSPI */
-	/* µÈ´ı·¢ËÍ»º³åÇø¿Õ */
+#ifdef HARD_SPI		/* ç¡¬ä»¶SPI */
+	/* ç­‰å¾…å‘é€ç¼“å†²åŒºç©º */
 	while(SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_TXE) == RESET);
 
-	/* ·¢ËÍÒ»¸ö×Ö½Ú */
+	/* å‘é€ä¸€ä¸ªå­—èŠ‚ */
 	SPI_I2S_SendData(SPI1, _ucByte);
 
-	/* µÈ´ıÊı¾İ½ÓÊÕÍê±Ï */
+	/* ç­‰å¾…æ•°æ®æ¥æ”¶å®Œæ¯• */
 	while(SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_RXNE) == RESET);
 
-	/* ¶ÁÈ¡½ÓÊÕµ½µÄÊı¾İ */
+	/* è¯»å–æ¥æ”¶åˆ°çš„æ•°æ® */
 	SPI_I2S_ReceiveData(SPI1);
 #endif
 }
 
 /*
 *********************************************************************************************************
-*	º¯ Êı Ãû: bsp_spiRead1
-*	¹¦ÄÜËµÃ÷: ´ÓSPI×ÜÏß½ÓÊÕ8¸öbitÊı¾İ¡£  SCKÉÏÉıÑØ²É¼¯Êı¾İ, SCK¿ÕÏĞÊ±Îª¸ßµçÆ½
-*	ĞÎ    ²Î: ÎŞ
-*	·µ »Ø Öµ: ÎŞ
+*	å‡½ æ•° å: bsp_spiRead1
+*	åŠŸèƒ½è¯´æ˜: ä»SPIæ€»çº¿æ¥æ”¶8ä¸ªbitæ•°æ®ã€‚  SCKä¸Šå‡æ²¿é‡‡é›†æ•°æ®, SCKç©ºé—²æ—¶ä¸ºé«˜ç”µå¹³
+*	å½¢    å‚: æ— 
+*	è¿” å› å€¼: æ— 
 *********************************************************************************************************
 */
 uint8_t bsp_spiRead1(void)
 {
-#ifdef SOFT_SPI		/* Èí¼şSPI */
+#ifdef SOFT_SPI		/* è½¯ä»¶SPI */
 	uint8_t i;
 	uint8_t read = 0;
 
@@ -372,32 +372,32 @@ uint8_t bsp_spiRead1(void)
 	return read;
 #endif
 
-#ifdef HARD_SPI		/* Ó²¼şSPI */
+#ifdef HARD_SPI		/* ç¡¬ä»¶SPI */
 	uint8_t read;
 
-	/* µÈ´ı·¢ËÍ»º³åÇø¿Õ */
+	/* ç­‰å¾…å‘é€ç¼“å†²åŒºç©º */
 	while(SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_TXE) == RESET);
 
-	/* ·¢ËÍÒ»¸ö×Ö½Ú */
+	/* å‘é€ä¸€ä¸ªå­—èŠ‚ */
 	SPI_I2S_SendData(SPI1, 0);
 
-	/* µÈ´ıÊı¾İ½ÓÊÕÍê±Ï */
+	/* ç­‰å¾…æ•°æ®æ¥æ”¶å®Œæ¯• */
 	while(SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_RXNE) == RESET);
 
-	/* ¶ÁÈ¡½ÓÊÕµ½µÄÊı¾İ */
+	/* è¯»å–æ¥æ”¶åˆ°çš„æ•°æ® */
 	read = SPI_I2S_ReceiveData(SPI1);
 
-	/* ·µ»Ø¶Áµ½µÄÊı¾İ */
+	/* è¿”å›è¯»åˆ°çš„æ•°æ® */
 	return read;
 #endif
 }
 
 /*
 *********************************************************************************************************
-*	º¯ Êı Ãû: bsp_SpiBusEnter
-*	¹¦ÄÜËµÃ÷: Õ¼ÓÃSPI×ÜÏß
-*	ĞÎ    ²Î: ÎŞ
-*	·µ »Ø Öµ: 0 ±íÊ¾²»Ã¦  1±íÊ¾Ã¦
+*	å‡½ æ•° å: bsp_SpiBusEnter
+*	åŠŸèƒ½è¯´æ˜: å ç”¨SPIæ€»çº¿
+*	å½¢    å‚: æ— 
+*	è¿” å› å€¼: 0 è¡¨ç¤ºä¸å¿™  1è¡¨ç¤ºå¿™
 *********************************************************************************************************
 */
 void bsp_SpiBusEnter(void)
@@ -407,10 +407,10 @@ void bsp_SpiBusEnter(void)
 
 /*
 *********************************************************************************************************
-*	º¯ Êı Ãû: bsp_SpiBusExit
-*	¹¦ÄÜËµÃ÷: ÊÍ·ÅÕ¼ÓÃµÄSPI×ÜÏß
-*	ĞÎ    ²Î: ÎŞ
-*	·µ »Ø Öµ: 0 ±íÊ¾²»Ã¦  1±íÊ¾Ã¦
+*	å‡½ æ•° å: bsp_SpiBusExit
+*	åŠŸèƒ½è¯´æ˜: é‡Šæ”¾å ç”¨çš„SPIæ€»çº¿
+*	å½¢    å‚: æ— 
+*	è¿” å› å€¼: 0 è¡¨ç¤ºä¸å¿™  1è¡¨ç¤ºå¿™
 *********************************************************************************************************
 */
 void bsp_SpiBusExit(void)
@@ -420,10 +420,10 @@ void bsp_SpiBusExit(void)
 
 /*
 *********************************************************************************************************
-*	º¯ Êı Ãû: bsp_SpiBusBusy
-*	¹¦ÄÜËµÃ÷: ÅĞ¶ÏSPI×ÜÏßÃ¦¡£·½·¨ÊÇ¼ì²âÆäËûSPIĞ¾Æ¬µÄÆ¬Ñ¡ĞÅºÅÊÇ·ñÎª1
-*	ĞÎ    ²Î: ÎŞ
-*	·µ »Ø Öµ: 0 ±íÊ¾²»Ã¦  1±íÊ¾Ã¦
+*	å‡½ æ•° å: bsp_SpiBusBusy
+*	åŠŸèƒ½è¯´æ˜: åˆ¤æ–­SPIæ€»çº¿å¿™ã€‚æ–¹æ³•æ˜¯æ£€æµ‹å…¶ä»–SPIèŠ¯ç‰‡çš„ç‰‡é€‰ä¿¡å·æ˜¯å¦ä¸º1
+*	å½¢    å‚: æ— 
+*	è¿” å› å€¼: 0 è¡¨ç¤ºä¸å¿™  1è¡¨ç¤ºå¿™
 *********************************************************************************************************
 */
 uint8_t bsp_SpiBusBusy(void)
@@ -433,13 +433,13 @@ uint8_t bsp_SpiBusBusy(void)
 
 /*
 *********************************************************************************************************
-*	º¯ Êı Ãû: bsp_SetSpiSck
-*	¹¦ÄÜËµÃ÷: ÓÃÓÚÈí¼şÄ£Ê½¡£ÉèÖÃSCK GPIOµÄ×´Ì¬¡£ÔÚº¯ÊıCS=0Ö®Ç°±»µ÷ÓÃ£¬ÓÃÓÚ²»Í¬ÏàĞòµÄSPIÉè±¸¼äÇĞ»»¡£
-*	ĞÎ    ²Î: ÎŞ
-*	·µ »Ø Öµ: ÎŞ
+*	å‡½ æ•° å: bsp_SetSpiSck
+*	åŠŸèƒ½è¯´æ˜: ç”¨äºè½¯ä»¶æ¨¡å¼ã€‚è®¾ç½®SCK GPIOçš„çŠ¶æ€ã€‚åœ¨å‡½æ•°CS=0ä¹‹å‰è¢«è°ƒç”¨ï¼Œç”¨äºä¸åŒç›¸åºçš„SPIè®¾å¤‡é—´åˆ‡æ¢ã€‚
+*	å½¢    å‚: æ— 
+*	è¿” å› å€¼: æ— 
 *********************************************************************************************************
 */
-#ifdef SOFT_SPI		/* Èí¼şSPI */
+#ifdef SOFT_SPI		/* è½¯ä»¶SPI */
 void bsp_SetSpiSck(uint8_t _data)
 {
 	if (_data == 0)
@@ -454,4 +454,4 @@ void bsp_SetSpiSck(uint8_t _data)
 #endif
 
 
-/***************************** °²¸»À³µç×Ó www.armfly.com (END OF FILE) *********************************/
+/***************************** å®‰å¯Œè±ç”µå­ www.armfly.com (END OF FILE) *********************************/

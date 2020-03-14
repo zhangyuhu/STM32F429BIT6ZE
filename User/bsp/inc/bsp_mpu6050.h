@@ -1,16 +1,16 @@
 /*
 *********************************************************************************************************
 *
-*	Ä£¿éÃû³Æ : ÈýÖáÍÓÂÝÒÇMPU-6050Çý¶¯Ä£¿é
-*	ÎÄ¼þÃû³Æ : bsp_mpu6050.c
-*	°æ    ±¾ : V1.0
-*	Ëµ    Ã÷ : Í·ÎÄ¼þ
+*	æ¨¡å—åç§° : ä¸‰è½´é™€èžºä»ªMPU-6050é©±åŠ¨æ¨¡å—
+*	æ–‡ä»¶åç§° : bsp_mpu6050.c
+*	ç‰ˆ    æœ¬ : V1.0
+*	è¯´    æ˜Ž : å¤´æ–‡ä»¶
 *
-*	ÐÞ¸Ä¼ÇÂ¼ :
-*		°æ±¾ºÅ  ÈÕÆÚ       ×÷Õß    ËµÃ÷
-*		v1.0    2012-10-12 armfly  ST¹Ì¼þ¿â°æ±¾ V2.1.0
+*	ä¿®æ”¹è®°å½• :
+*		ç‰ˆæœ¬å·  æ—¥æœŸ       ä½œè€…    è¯´æ˜Ž
+*		v1.0    2012-10-12 armfly  STå›ºä»¶åº“ç‰ˆæœ¬ V2.1.0
 *
-*	Copyright (C), 2012-2013, °²¸»À³µç×Ó www.armfly.com
+*	Copyright (C), 2012-2013, å®‰å¯ŒèŽ±ç”µå­ www.armfly.com
 *
 *********************************************************************************************************
 */
@@ -18,16 +18,16 @@
 #ifndef _BSP_MPU6050_H
 #define _BSP_MPU6050_H
 
-#define MPU6050_SLAVE_ADDRESS    0xD0		/* I2C´Ó»úµØÖ· */
+#define MPU6050_SLAVE_ADDRESS    0xD0		/* I2Cä»Žæœºåœ°å€ */
 
 //****************************************
-// ¶¨ÒåMPU6050ÄÚ²¿µØÖ·
+// å®šä¹‰MPU6050å†…éƒ¨åœ°å€
 //****************************************
-#define	SMPLRT_DIV		0x19	//ÍÓÂÝÒÇ²ÉÑùÂÊ£¬µäÐÍÖµ£º0x07(125Hz)
-#define	CONFIG			0x1A	//µÍÍ¨ÂË²¨ÆµÂÊ£¬µäÐÍÖµ£º0x06(5Hz)
-#define	GYRO_CONFIG		0x1B	//ÍÓÂÝÒÇ×Ô¼ì¼°²âÁ¿·¶Î§£¬µäÐÍÖµ£º0x18(²»×Ô¼ì£¬2000deg/s)
+#define	SMPLRT_DIV		0x19	//é™€èžºä»ªé‡‡æ ·çŽ‡ï¼Œå…¸åž‹å€¼ï¼š0x07(125Hz)
+#define	CONFIG			0x1A	//ä½Žé€šæ»¤æ³¢é¢‘çŽ‡ï¼Œå…¸åž‹å€¼ï¼š0x06(5Hz)
+#define	GYRO_CONFIG		0x1B	//é™€èžºä»ªè‡ªæ£€åŠæµ‹é‡èŒƒå›´ï¼Œå…¸åž‹å€¼ï¼š0x18(ä¸è‡ªæ£€ï¼Œ2000deg/s)
 
-#define	ACCEL_CONFIG	0x1C	//¼ÓËÙ¼Æ×Ô¼ì¡¢²âÁ¿·¶Î§¼°¸ßÍ¨ÂË²¨ÆµÂÊ£¬µäÐÍÖµ£º0x01(²»×Ô¼ì£¬2G£¬5Hz)
+#define	ACCEL_CONFIG	0x1C	//åŠ é€Ÿè®¡è‡ªæ£€ã€æµ‹é‡èŒƒå›´åŠé«˜é€šæ»¤æ³¢é¢‘çŽ‡ï¼Œå…¸åž‹å€¼ï¼š0x01(ä¸è‡ªæ£€ï¼Œ2Gï¼Œ5Hz)
 
 #define	ACCEL_XOUT_H	0x3B
 #define	ACCEL_XOUT_L	0x3C
@@ -46,8 +46,8 @@
 #define	GYRO_ZOUT_H		0x47
 #define	GYRO_ZOUT_L		0x48
 
-#define	PWR_MGMT_1		0x6B	//µçÔ´¹ÜÀí£¬µäÐÍÖµ£º0x00(Õý³£ÆôÓÃ)
-#define	WHO_AM_I		0x75	//IICµØÖ·¼Ä´æÆ÷(Ä¬ÈÏÊýÖµ0x68£¬Ö»¶Á)
+#define	PWR_MGMT_1		0x6B	//ç”µæºç®¡ç†ï¼Œå…¸åž‹å€¼ï¼š0x00(æ­£å¸¸å¯ç”¨)
+#define	WHO_AM_I		0x75	//IICåœ°å€å¯„å­˜å™¨(é»˜è®¤æ•°å€¼0x68ï¼Œåªè¯»)
 
 typedef struct
 {
@@ -73,4 +73,4 @@ void MPU6050_ReadData(void);
 
 #endif
 
-/***************************** °²¸»À³µç×Ó www.armfly.com (END OF FILE) *********************************/
+/***************************** å®‰å¯ŒèŽ±ç”µå­ www.armfly.com (END OF FILE) *********************************/

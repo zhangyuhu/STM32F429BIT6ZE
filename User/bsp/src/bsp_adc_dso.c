@@ -1,16 +1,16 @@
 /*
 *********************************************************************************************************
 *
-*	Ä£¿éÃû³Æ : Ê¾²¨Æ÷Ä£¿éADCµ×²ãµÄÇı¶¯
-*	ÎÄ¼şÃû³Æ : bsp_adc_dso.c
-*	°æ    ±¾ : V1.0
-*	Ëµ    Ã÷ : Ê¹ÓÃSTM32ÄÚ²¿ADC£¬Í¬²½²É¼¯Á½Â·²¨ĞÎ¡£Õ¼ÓÃÁË²¿·ÖGPIO¿ØÖÆÊ¾²¨Æ÷Ä£¿éµÄÔöÒæºÍñîºÏ·½Ê½¡£
+*	æ¨¡å—åç§° : ç¤ºæ³¢å™¨æ¨¡å—ADCåº•å±‚çš„é©±åŠ¨
+*	æ–‡ä»¶åç§° : bsp_adc_dso.c
+*	ç‰ˆ    æœ¬ : V1.0
+*	è¯´    æ˜ : ä½¿ç”¨STM32å†…éƒ¨ADCï¼ŒåŒæ­¥é‡‡é›†ä¸¤è·¯æ³¢å½¢ã€‚å ç”¨äº†éƒ¨åˆ†GPIOæ§åˆ¶ç¤ºæ³¢å™¨æ¨¡å—çš„å¢ç›Šå’Œè€¦åˆæ–¹å¼ã€‚
 *
-*	ĞŞ¸Ä¼ÇÂ¼ :
-*		°æ±¾ºÅ  ÈÕÆÚ        ×÷Õß     ËµÃ÷
-*		V1.0    2015-10-06  armfly  ÕıÊ½·¢²¼
+*	ä¿®æ”¹è®°å½• :
+*		ç‰ˆæœ¬å·  æ—¥æœŸ        ä½œè€…     è¯´æ˜
+*		V1.0    2015-10-06  armfly  æ­£å¼å‘å¸ƒ
 *
-*	Copyright (C), 2015-2020, °²¸»À³µç×Ó www.armfly.com
+*	Copyright (C), 2015-2020, å®‰å¯Œè±ç”µå­ www.armfly.com
 *
 *********************************************************************************************************
 */
@@ -18,33 +18,33 @@
 #include "bsp.h"
 
 /*
-	STM32-V6¿ª·¢°å£¬Ê¾²¨Æ÷Ä£¿éGPIO¶¨Òå
+	STM32-V6å¼€å‘æ¿ï¼Œç¤ºæ³¢å™¨æ¨¡å—GPIOå®šä¹‰
 
 	---------------------------------------------------------
-	D112-1 °æ±¾µÄÊ¾²¨Æ÷Ä£¿é £¨¾É°æ£©
-		Ê¾²¨Æ÷Í¨µÀ1
+	D112-1 ç‰ˆæœ¬çš„ç¤ºæ³¢å™¨æ¨¡å— ï¼ˆæ—§ç‰ˆï¼‰
+		ç¤ºæ³¢å™¨é€šé“1
 			PC0 = ADC123_IN10
-			AC1 = PG10  ¿ØÖÆAC-DCÇĞ»», 1±íÊ¾DC, 0±íÊ¾AC
-			G1  = PC6   ¿ØÖÆË¥¼õ±È, 1±íÊ¾1:1£¬ 0±íÊ¾1:5
+			AC1 = PG10  æ§åˆ¶AC-DCåˆ‡æ¢, 1è¡¨ç¤ºDC, 0è¡¨ç¤ºAC
+			G1  = PC6   æ§åˆ¶è¡°å‡æ¯”, 1è¡¨ç¤º1:1ï¼Œ 0è¡¨ç¤º1:5
 
-		Ê¾²¨Æ÷Í¨µÀ2
+		ç¤ºæ³¢å™¨é€šé“2
 			PF10 = ADC3_IN8
-			AC2  = PB7  ¿ØÖÆAC-DCÇĞ»», 1±íÊ¾DC, 0±íÊ¾AC
-			G2   = PC7  ¿ØÖÆË¥¼õ±È, 1±íÊ¾1:1£¬ 0±íÊ¾1:5
+			AC2  = PB7  æ§åˆ¶AC-DCåˆ‡æ¢, 1è¡¨ç¤ºDC, 0è¡¨ç¤ºAC
+			G2   = PC7  æ§åˆ¶è¡°å‡æ¯”, 1è¡¨ç¤º1:1ï¼Œ 0è¡¨ç¤º1:5
 
 	---------------------------------------------------------
-	D112-2 °æ±¾µÄÊ¾²¨Æ÷Ä£¿é  £¨ĞÂ°æ£©
-		Ê¾²¨Æ÷Í¨µÀ1
+	D112-2 ç‰ˆæœ¬çš„ç¤ºæ³¢å™¨æ¨¡å—  ï¼ˆæ–°ç‰ˆï¼‰
+		ç¤ºæ³¢å™¨é€šé“1
 			PC3  = ADC123_IN13
-			AC1  = PB7    ¿ØÖÆAC-DCÇĞ»», 1±íÊ¾DC, 0±íÊ¾AC
-			G1A  = PC6    ¿ØÖÆË¥¼õ±È
-			G1B  = PC7    ¿ØÖÆË¥¼õ±È
+			AC1  = PB7    æ§åˆ¶AC-DCåˆ‡æ¢, 1è¡¨ç¤ºDC, 0è¡¨ç¤ºAC
+			G1A  = PC6    æ§åˆ¶è¡°å‡æ¯”
+			G1B  = PC7    æ§åˆ¶è¡°å‡æ¯”
 
-		Ê¾²¨Æ÷Í¨µÀ2
+		ç¤ºæ³¢å™¨é€šé“2
 			PC0  = ADC123_IN10
-			AC2  = PA6   ¿ØÖÆAC-DCÇĞ»», 1±íÊ¾DC, 0±íÊ¾AC
-			G2A  = PG10  ¿ØÖÆË¥¼õ±È
-			G2B  = PA5   ¿ØÖÆË¥¼õ±È		
+			AC2  = PA6   æ§åˆ¶AC-DCåˆ‡æ¢, 1è¡¨ç¤ºDC, 0è¡¨ç¤ºAC
+			G2A  = PG10  æ§åˆ¶è¡°å‡æ¯”
+			G2B  = PA5   æ§åˆ¶è¡°å‡æ¯”		
 */
 
 #ifdef	D112_1
@@ -114,7 +114,7 @@
 #define G2B_1()		GPIO_G2B->BSRRL = PIN_G2B
 
 
-/* ADCÍ¨µÀÅäÖÃ */
+/* ADCé€šé“é…ç½® */
 #define GPIO_CH1	GPIOC
 #define PIN_CH1     GPIO_Pin_3
 #define RCC_CH1     RCC_AHB1Periph_GPIOC
@@ -127,10 +127,10 @@
 
 /*
 *********************************************************************************************************
-*	º¯ Êı Ãû: DSO_ConfigCtrlGPIO
-*	¹¦ÄÜËµÃ÷: ÅäÖÃ¿ØÖÆÓÃÍ¨µÀñîºÏºÍÔöÒæµÄGPIO
-*	ĞÎ    ²Î: ÎŞ
-*	·µ »Ø Öµ: ÎŞ
+*	å‡½ æ•° å: DSO_ConfigCtrlGPIO
+*	åŠŸèƒ½è¯´æ˜: é…ç½®æ§åˆ¶ç”¨é€šé“è€¦åˆå’Œå¢ç›Šçš„GPIO
+*	å½¢    å‚: æ— 
+*	è¿” å› å€¼: æ— 
 *********************************************************************************************************
 */
 void DSO_ConfigCtrlGPIO(void)
@@ -139,11 +139,11 @@ void DSO_ConfigCtrlGPIO(void)
 	
 	RCC_AHB1PeriphClockCmd(RCC_AC1 | RCC_AC2 | RCC_G1A | RCC_G2A | RCC_G2A | RCC_G2B, ENABLE);
 	
-	/* ÅäÖÃÒı½ÅÎªÍÆÍìÊä³öÄ£Ê½ */
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;		/* ÉèÎªÊä³ö¿Ú */
-	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;		/* ÉèÎªÍÆÍìÄ£Ê½ */
-	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;	/* ÉÏÏÂÀ­µç×è²»Ê¹ÄÜ */
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_25MHz;	/* IO¿Ú×î´óËÙ¶È */
+	/* é…ç½®å¼•è„šä¸ºæ¨æŒ½è¾“å‡ºæ¨¡å¼ */
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;		/* è®¾ä¸ºè¾“å‡ºå£ */
+	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;		/* è®¾ä¸ºæ¨æŒ½æ¨¡å¼ */
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;	/* ä¸Šä¸‹æ‹‰ç”µé˜»ä¸ä½¿èƒ½ */
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_25MHz;	/* IOå£æœ€å¤§é€Ÿåº¦ */
 
 	GPIO_InitStructure.GPIO_Pin = PIN_AC1;
 	GPIO_Init(GPIO_AC1, &GPIO_InitStructure);		
@@ -164,20 +164,20 @@ void DSO_ConfigCtrlGPIO(void)
 	GPIO_Init(GPIO_G2B, &GPIO_InitStructure);		
 
 #if 0	
-	DSO_SetDC(1, 0);	/* CH1Ñ¡ÔñACñîºÏ */
-	DSO_SetDC(2, 0);	/* CH1Ñ¡ÔñACñîºÏ */
-	DSO_SetGain(1, 0);	/* CH1Ñ¡ÔñĞ¡ÔöÒæ Ë¥¼õ1/5, µÚ2¸ö²ÎÊı1±íÊ¾²»Ë¥¼õ1;1 */
-	DSO_SetGain(2, 0);	/* CH2Ñ¡ÔñĞ¡ÔöÒæ Ë¥¼õ1/5, µÚ2¸ö²ÎÊı1±íÊ¾²»Ë¥¼õ1;1 */	
+	DSO_SetDC(1, 0);	/* CH1é€‰æ‹©ACè€¦åˆ */
+	DSO_SetDC(2, 0);	/* CH1é€‰æ‹©ACè€¦åˆ */
+	DSO_SetGain(1, 0);	/* CH1é€‰æ‹©å°å¢ç›Š è¡°å‡1/5, ç¬¬2ä¸ªå‚æ•°1è¡¨ç¤ºä¸è¡°å‡1;1 */
+	DSO_SetGain(2, 0);	/* CH2é€‰æ‹©å°å¢ç›Š è¡°å‡1/5, ç¬¬2ä¸ªå‚æ•°1è¡¨ç¤ºä¸è¡°å‡1;1 */	
 #endif	
 }
 
 /*
 *********************************************************************************************************
-*	º¯ Êı Ãû: DSO_SetDC
-*	¹¦ÄÜËµÃ÷: ¿ØÖÆAC DCñîºÏÄ£Ê½
-*	ĞÎ    ²Î: _ch : Í¨µÀ1»ò2
-*			  _mode : 0»ò1.  1±íÊ¾DCñîºÏ 0±íÊ¾ACñîºÏ
-*	·µ »Ø Öµ: ÎŞ
+*	å‡½ æ•° å: DSO_SetDC
+*	åŠŸèƒ½è¯´æ˜: æ§åˆ¶AC DCè€¦åˆæ¨¡å¼
+*	å½¢    å‚: _ch : é€šé“1æˆ–2
+*			  _mode : 0æˆ–1.  1è¡¨ç¤ºDCè€¦åˆ 0è¡¨ç¤ºACè€¦åˆ
+*	è¿” å› å€¼: æ— 
 *********************************************************************************************************
 */
 void DSO_SetDC(uint8_t _ch, uint8_t _mode)
@@ -191,7 +191,7 @@ void DSO_SetDC(uint8_t _ch, uint8_t _mode)
 	{
 		GPIO_WriteBit(GPIO_AC2, PIN_AC2, (BitAction)_mode);
 	}
-#else	/* Éı¼¶°æ */
+#else	/* å‡çº§ç‰ˆ */
 	if (_ch == 1)
 	{
 		if (_mode == 1)
@@ -221,16 +221,16 @@ void DSO_SetDC(uint8_t _ch, uint8_t _mode)
 
 /*
 *********************************************************************************************************
-*	º¯ Êı Ãû: SetGainHigh
-*	¹¦ÄÜËµÃ÷: ¿ØÖÆÔöÒæÄ£Ê½
-*	ĞÎ    ²Î: _ch : Í¨µÀ1»ò2
-*			  _gain : 0»ò1.  1±íÊ¾1:1£¬ 0±íÊ¾Ë¥¼õ1/5
-*	·µ »Ø Öµ: ÎŞ
+*	å‡½ æ•° å: SetGainHigh
+*	åŠŸèƒ½è¯´æ˜: æ§åˆ¶å¢ç›Šæ¨¡å¼
+*	å½¢    å‚: _ch : é€šé“1æˆ–2
+*			  _gain : 0æˆ–1.  1è¡¨ç¤º1:1ï¼Œ 0è¡¨ç¤ºè¡°å‡1/5
+*	è¿” å› å€¼: æ— 
 *********************************************************************************************************
 */
 void DSO_SetGain(uint8_t _ch, uint8_t _gain)
 {	
-#ifdef	D112_1	/* ¾É°å */
+#ifdef	D112_1	/* æ—§æ¿ */
 	if (_ch == 1)
 	{
 		GPIO_WriteBit(GPIO_G1A, PIN_G1A, (BitAction)_gain);
@@ -239,7 +239,7 @@ void DSO_SetGain(uint8_t _ch, uint8_t _gain)
 	{
 		GPIO_WriteBit(GPIO_G2A, PIN_G2A, (BitAction)_gain);
 	}
-#else		/* Éı¼¶°æ D112-2 */
+#else		/* å‡çº§ç‰ˆ D112-2 */
 	if (_ch == 1)
 	{
 		if (_gain == 0)
@@ -291,37 +291,37 @@ void DSO_SetGain(uint8_t _ch, uint8_t _gain)
 
 /*
 *********************************************************************************************************
-*	º¯ Êı Ãû: DSO_StartADC
-*	¹¦ÄÜËµÃ÷: Ö÷ÒªÍê³ÉÄ£ÄâÁ¿GPIOµÄÅäÖÃ¡¢ADCµÄÅäÖÃ¡¢¶¨Ê±Æ÷µÄÅäÖÃÒÔ¼°DMAµÄÅäÖÃ¡£
-*			- PC0/ADC123_10 £º CH1Í¨µÀ£¬ADC1£¬DMA2_Stream0
-*			- PF10/ADC3_1N8 £º CH2Í¨µÀ, ADC3£¬DMA2_Stream1
-*			- Á½¸öADC¹¤×÷ÔÚ¶ÀÁ¢Ä£Ê½
-*			- ¾ßÓĞÏàÍ¬µÄÍâ²¿´¥·¢£¬ADC_ExternalTrigConv_T1_CC1
-*			- TIM1µÄCC1ÆµÂÊµÄ¾ö¶¨ÁË²ÉÑùÆµÂÊ
+*	å‡½ æ•° å: DSO_StartADC
+*	åŠŸèƒ½è¯´æ˜: ä¸»è¦å®Œæˆæ¨¡æ‹Ÿé‡GPIOçš„é…ç½®ã€ADCçš„é…ç½®ã€å®šæ—¶å™¨çš„é…ç½®ä»¥åŠDMAçš„é…ç½®ã€‚
+*			- PC0/ADC123_10 ï¼š CH1é€šé“ï¼ŒADC1ï¼ŒDMA2_Stream0
+*			- PF10/ADC3_1N8 ï¼š CH2é€šé“, ADC3ï¼ŒDMA2_Stream1
+*			- ä¸¤ä¸ªADCå·¥ä½œåœ¨ç‹¬ç«‹æ¨¡å¼
+*			- å…·æœ‰ç›¸åŒçš„å¤–éƒ¨è§¦å‘ï¼ŒADC_ExternalTrigConv_T1_CC1
+*			- TIM1çš„CC1é¢‘ç‡çš„å†³å®šäº†é‡‡æ ·é¢‘ç‡
 *
-*	ĞÎ    ²Î: _uiBufAddr1 : DMAÄ¿±êµØÖ·£¬CH1Êı¾İ´æ·ÅµÄ»º³åÇøµØÖ·
-*			  _uiBufAddr2 : DMAÄ¿±êµØÖ·£¬CH2Êı¾İ´æ·ÅµÄ»º³åÇøµØÖ·
-*			  _uiCount : »º³åÇøµÄÑù±¾¸öÊı (²»ÊÇ×Ö½ÚÊı)£¬Á½Í¨µÀÍ¬²½²É¼¯.
-*			  _uiFreq : ²ÉÑùÆµÂÊ£¬ Hz
-*	·µ »Ø Öµ: ÎŞ
+*	å½¢    å‚: _uiBufAddr1 : DMAç›®æ ‡åœ°å€ï¼ŒCH1æ•°æ®å­˜æ”¾çš„ç¼“å†²åŒºåœ°å€
+*			  _uiBufAddr2 : DMAç›®æ ‡åœ°å€ï¼ŒCH2æ•°æ®å­˜æ”¾çš„ç¼“å†²åŒºåœ°å€
+*			  _uiCount : ç¼“å†²åŒºçš„æ ·æœ¬ä¸ªæ•° (ä¸æ˜¯å­—èŠ‚æ•°)ï¼Œä¸¤é€šé“åŒæ­¥é‡‡é›†.
+*			  _uiFreq : é‡‡æ ·é¢‘ç‡ï¼Œ Hz
+*	è¿” å› å€¼: æ— 
 *********************************************************************************************************
 */
 void DSO_StartADC(uint32_t _uiBufAddr1, uint32_t _uiBufAddr2, uint32_t _uiCount, uint32_t _uiFreq)
 {			
-	/* ÅäÖÃGPIO. */
+	/* é…ç½®GPIO. */
 	{
 		GPIO_InitTypeDef GPIO_InitStructure;
 		
 		RCC_AHB1PeriphClockCmd(RCC_CH1 | RCC_CH2, ENABLE);
 		
-		/* ÅäÖÃADCÒı½ÅÎªÄ£ÄâÊäÈëÄ£Ê½ ******************************/
+		/* é…ç½®ADCå¼•è„šä¸ºæ¨¡æ‹Ÿè¾“å…¥æ¨¡å¼ ******************************/
 		GPIO_InitStructure.GPIO_Pin = PIN_CH1;
 		GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AN;
 		GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL ;
 		GPIO_InitStructure.GPIO_Speed = GPIO_Speed_25MHz;
 		GPIO_Init(GPIO_CH1, &GPIO_InitStructure);
 
-		/* ÅäÖÃADCÒı½ÅÎªÄ£ÄâÊäÈëÄ£Ê½ ******************************/
+		/* é…ç½®ADCå¼•è„šä¸ºæ¨¡æ‹Ÿè¾“å…¥æ¨¡å¼ ******************************/
 		GPIO_InitStructure.GPIO_Pin = PIN_CH2;
 		GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AN;
 		GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL ;
@@ -329,24 +329,24 @@ void DSO_StartADC(uint32_t _uiBufAddr1, uint32_t _uiBufAddr2, uint32_t _uiCount,
 		GPIO_Init(GPIO_CH2, &GPIO_InitStructure);		
 	}
 
-	/* DMAµÄÅäÖÃÑ¡Ôñ¼ûÊÖ²á 205Ò³ ±í 35. DMA1 ÇëÇóÓ³Éä + ±í 36. DMA2 ÇëÇóÓ³Éä */ 
+	/* DMAçš„é…ç½®é€‰æ‹©è§æ‰‹å†Œ 205é¡µ è¡¨ 35. DMA1 è¯·æ±‚æ˜ å°„ + è¡¨ 36. DMA2 è¯·æ±‚æ˜ å°„ */ 
 	{
 		DMA_InitTypeDef       DMA_InitStructure;
 		
 		RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_DMA2, ENABLE);
 		
-		/* DMA2 Stream 0 channel 0 ÅäÖÃÓÃÓÚADC1 **************************************/
-		DMA_DeInit(DMA2_Stream0);	/* ÄÚ²¿»áÇåÒ»Ğ©±êÖ¾£¬±ØĞë¼ÓÕâ¾ä»°£¬·ñÔòÔÙ´ÎÆô¶¯DMAÎŞ·´Ó¦ */
+		/* DMA2 Stream 0 channel 0 é…ç½®ç”¨äºADC1 **************************************/
+		DMA_DeInit(DMA2_Stream0);	/* å†…éƒ¨ä¼šæ¸…ä¸€äº›æ ‡å¿—ï¼Œå¿…é¡»åŠ è¿™å¥è¯ï¼Œå¦åˆ™å†æ¬¡å¯åŠ¨DMAæ— ååº” */
 		DMA_InitStructure.DMA_Channel = DMA_Channel_0;
 		DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t)&ADC1->DR;
-		DMA_InitStructure.DMA_Memory0BaseAddr = _uiBufAddr1;	/* Ä¿±êµØÖ· */
+		DMA_InitStructure.DMA_Memory0BaseAddr = _uiBufAddr1;	/* ç›®æ ‡åœ°å€ */
 		DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralToMemory;
 		DMA_InitStructure.DMA_BufferSize = _uiCount;
 		DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;
 		DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;
 		DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_HalfWord;
 		DMA_InitStructure.DMA_MemoryDataSize = DMA_PeripheralDataSize_HalfWord;
-		DMA_InitStructure.DMA_Mode = DMA_Mode_Normal;	// ÎŞĞèÑ­»·Ä£Ê½ DMA_Mode_Circular;
+		DMA_InitStructure.DMA_Mode = DMA_Mode_Normal;	// æ— éœ€å¾ªç¯æ¨¡å¼ DMA_Mode_Circular;
 		DMA_InitStructure.DMA_Priority = DMA_Priority_High;
 		DMA_InitStructure.DMA_FIFOMode = DMA_FIFOMode_Disable;
 		DMA_InitStructure.DMA_FIFOThreshold = DMA_FIFOThreshold_HalfFull;
@@ -361,18 +361,18 @@ void DSO_StartADC(uint32_t _uiBufAddr1, uint32_t _uiBufAddr2, uint32_t _uiCount,
 		
 		RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_DMA2, ENABLE);
 		
-		/* DMA2 Stream 1 channel 2 ÅäÖÃÓÃÓÚADC3 **************************************/
-		DMA_DeInit(DMA2_Stream1);	/* ÄÚ²¿»áÇåÒ»Ğ©±êÖ¾£¬±ØĞë¼ÓÕâ¾ä»°£¬·ñÔòÔÙ´ÎÆô¶¯DMAÎŞ·´Ó¦ */
+		/* DMA2 Stream 1 channel 2 é…ç½®ç”¨äºADC3 **************************************/
+		DMA_DeInit(DMA2_Stream1);	/* å†…éƒ¨ä¼šæ¸…ä¸€äº›æ ‡å¿—ï¼Œå¿…é¡»åŠ è¿™å¥è¯ï¼Œå¦åˆ™å†æ¬¡å¯åŠ¨DMAæ— ååº” */
 		DMA_InitStructure.DMA_Channel = DMA_Channel_2;
 		DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t)&ADC3->DR;
-		DMA_InitStructure.DMA_Memory0BaseAddr = _uiBufAddr2;	/* Ä¿±êµØÖ· */
+		DMA_InitStructure.DMA_Memory0BaseAddr = _uiBufAddr2;	/* ç›®æ ‡åœ°å€ */
 		DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralToMemory;
 		DMA_InitStructure.DMA_BufferSize = _uiCount;
 		DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;
 		DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;
 		DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_HalfWord;
 		DMA_InitStructure.DMA_MemoryDataSize = DMA_PeripheralDataSize_HalfWord;
-		DMA_InitStructure.DMA_Mode = DMA_Mode_Normal;	// ÎŞĞèÑ­»·Ä£Ê½ DMA_Mode_Circular;
+		DMA_InitStructure.DMA_Mode = DMA_Mode_Normal;	// æ— éœ€å¾ªç¯æ¨¡å¼ DMA_Mode_Circular;
 		DMA_InitStructure.DMA_Priority = DMA_Priority_High;
 		DMA_InitStructure.DMA_FIFOMode = DMA_FIFOMode_Disable;
 		DMA_InitStructure.DMA_FIFOThreshold = DMA_FIFOThreshold_HalfFull;
@@ -383,14 +383,14 @@ void DSO_StartADC(uint32_t _uiBufAddr1, uint32_t _uiBufAddr2, uint32_t _uiCount,
 		DMA_Cmd(DMA2_Stream1, ENABLE);
 	}
 	
-	/* ADC¹«¹²²¿·Ö³õÊ¼»¯**********************************************************/
+	/* ADCå…¬å…±éƒ¨åˆ†åˆå§‹åŒ–**********************************************************/
 	{
 		/*
 		***************************************************************************
 		  PCLK2 = HCLK / 2
-		  ÏÂÃæÑ¡ÔñµÄÊÇ2·ÖÆµ
-		  ADCCLK = PCLK2 /2 = HCLK / 4 = 168 / 4 = 42M  [ÊÖ²á×î´óÊ±36M£¬´ËÊ±ÓĞ³¬Æµ]
-		  ADC²ÉÑùÆµÂÊ£º Sampling Time + Conversion Time = 3 + 12 cycles = 15cyc
+		  ä¸‹é¢é€‰æ‹©çš„æ˜¯2åˆ†é¢‘
+		  ADCCLK = PCLK2 /2 = HCLK / 4 = 168 / 4 = 42M  [æ‰‹å†Œæœ€å¤§æ—¶36Mï¼Œæ­¤æ—¶æœ‰è¶…é¢‘]
+		  ADCé‡‡æ ·é¢‘ç‡ï¼š Sampling Time + Conversion Time = 3 + 12 cycles = 15cyc
 						Conversion Time = 42MHz / 15cyc = 2.8Mbps.		
 		****************************************************************************
 		*/
@@ -403,7 +403,7 @@ void DSO_StartADC(uint32_t _uiBufAddr1, uint32_t _uiBufAddr2, uint32_t _uiCount,
 		ADC_CommonInit(&ADC_CommonInitStructure);
 	}
 	
-	/* ÅäÖÃ PC0/ADC1_IN10  ******************************************************************/
+	/* é…ç½® PC0/ADC1_IN10  ******************************************************************/
 	{
 		ADC_InitTypeDef       ADC_InitStructure;
 		
@@ -417,21 +417,21 @@ void DSO_StartADC(uint32_t _uiBufAddr1, uint32_t _uiBufAddr2, uint32_t _uiCount,
 		ADC_InitStructure.ADC_DataAlign = ADC_DataAlign_Right;
 		ADC_InitStructure.ADC_NbrOfConversion = 1;
 
-		/* ADC1 ¹æÔòÍ¨µÀÅäÖÃ -------------------------------------------------------*/
+		/* ADC1 è§„åˆ™é€šé“é…ç½® -------------------------------------------------------*/
 		ADC_Init(ADC1, &ADC_InitStructure);
 		ADC_RegularChannelConfig(ADC1, CHAN_CH1, 1, ADC_SampleTime_3Cycles);
 
-		/* Ê¹ÄÜ ADC1 DMA */
+		/* ä½¿èƒ½ ADC1 DMA */
 		ADC_DMACmd(ADC1, ENABLE);
 
-		/* Ê¹ÄÜDMAÇëÇó ×îºóÒ»¸ö´«Êä½áÊøºó¼ÌĞøÊ¹ÄÜDMA, ¶ÔÓÚÑ­»·Ä£Ê½±ØĞëÊ¹ÄÜ -------*/
+		/* ä½¿èƒ½DMAè¯·æ±‚ æœ€åä¸€ä¸ªä¼ è¾“ç»“æŸåç»§ç»­ä½¿èƒ½DMA, å¯¹äºå¾ªç¯æ¨¡å¼å¿…é¡»ä½¿èƒ½ -------*/
 		//ADC_DMARequestAfterLastTransferCmd(ADC1, ENABLE);
 
 		/* Enable ADC1 --------------------------------------------------------------*/
 		ADC_Cmd(ADC1, ENABLE);
 	}
 	
-	/* ÅäÖÃ PF10/ADC3_IN8  ******************************************************************/
+	/* é…ç½® PF10/ADC3_IN8  ******************************************************************/
 	{
 		ADC_InitTypeDef       ADC_InitStructure;
 		
@@ -445,30 +445,30 @@ void DSO_StartADC(uint32_t _uiBufAddr1, uint32_t _uiBufAddr2, uint32_t _uiCount,
 		ADC_InitStructure.ADC_DataAlign = ADC_DataAlign_Right;
 		ADC_InitStructure.ADC_NbrOfConversion = 1;
 
-		/* ADC1 ¹æÔòÍ¨µÀÅäÖÃ -------------------------------------------------------*/
+		/* ADC1 è§„åˆ™é€šé“é…ç½® -------------------------------------------------------*/
 		ADC_Init(ADC3, &ADC_InitStructure);
 		ADC_RegularChannelConfig(ADC3, CHAN_CH2, 1, ADC_SampleTime_3Cycles);
 
-		/* Ê¹ÄÜ ADC3 DMA */
+		/* ä½¿èƒ½ ADC3 DMA */
 		ADC_DMACmd(ADC3, ENABLE);
 
-		/* Ê¹ÄÜDMAÇëÇó ×îºóÒ»¸ö´«Êä½áÊøºó¼ÌĞøÊ¹ÄÜDMA, ¶ÔÓÚÑ­»·Ä£Ê½±ØĞëÊ¹ÄÜ -------*/
+		/* ä½¿èƒ½DMAè¯·æ±‚ æœ€åä¸€ä¸ªä¼ è¾“ç»“æŸåç»§ç»­ä½¿èƒ½DMA, å¯¹äºå¾ªç¯æ¨¡å¼å¿…é¡»ä½¿èƒ½ -------*/
 		//ADC_DMARequestAfterLastTransferCmd(ADC3, ENABLE);
 
 		/* Enable ADC3 --------------------------------------------------------------*/
 		ADC_Cmd(ADC3, ENABLE);
 	}
 
-	/* ÅäÖÃ²ÉÑù´¥·¢¶¨Ê±Æ÷£¬Ê¹ÓÃTIM1 CC1 */
-	DSO_SetSampRate(_uiFreq);	/* ĞŞ¸Ä²ÉÑùÆµÂÊ£¬²¢Æô¶¯TIM */
+	/* é…ç½®é‡‡æ ·è§¦å‘å®šæ—¶å™¨ï¼Œä½¿ç”¨TIM1 CC1 */
+	DSO_SetSampRate(_uiFreq);	/* ä¿®æ”¹é‡‡æ ·é¢‘ç‡ï¼Œå¹¶å¯åŠ¨TIM */
 }
 
 /*
 *********************************************************************************************************
-*	º¯ Êı Ãû: DSO_StopADC
-*	¹¦ÄÜËµÃ÷: ¹Ø±ÕADC²ÉÑùËùÓĞµÄÍâÉè¡£ADC, DMA, TIM
-*	ĞÎ    ²Î: ÎŞ
-*	·µ »Ø Öµ: ÎŞ
+*	å‡½ æ•° å: DSO_StopADC
+*	åŠŸèƒ½è¯´æ˜: å…³é—­ADCé‡‡æ ·æ‰€æœ‰çš„å¤–è®¾ã€‚ADC, DMA, TIM
+*	å½¢    å‚: æ— 
+*	è¿” å› å€¼: æ— 
 *********************************************************************************************************
 */
 void DSO_StopADC(void)
@@ -492,26 +492,26 @@ void DSO_StopADC(void)
 
 /*
 *********************************************************************************************************
-*	º¯ Êı Ãû: PauseADC
-*	¹¦ÄÜËµÃ÷: ÔİÍ£ADC²ÉÑù¡£×¼±¸´¦ÀíÊı¾İ¡£±£Ö¤ÏÂ´ÎDMAÕı³£Æô¶¯¡£
-*	ĞÎ    ²Î: ÎŞ
-*	·µ »Ø Öµ: ÎŞ
+*	å‡½ æ•° å: PauseADC
+*	åŠŸèƒ½è¯´æ˜: æš‚åœADCé‡‡æ ·ã€‚å‡†å¤‡å¤„ç†æ•°æ®ã€‚ä¿è¯ä¸‹æ¬¡DMAæ­£å¸¸å¯åŠ¨ã€‚
+*	å½¢    å‚: æ— 
+*	è¿” å› å€¼: æ— 
 *********************************************************************************************************
 */
 void DSO_PauseADC(void)
 {
 	TIM_Cmd(TIM1, DISABLE);
 
-	ADC_DMACmd(ADC1, DISABLE);	/* Õâ¾ä»°±ØĞëÓĞ£¬·ñÔòÎŞ·¨Æô¶¯ÏÂ´ÎDMA */
+	ADC_DMACmd(ADC1, DISABLE);	/* è¿™å¥è¯å¿…é¡»æœ‰ï¼Œå¦åˆ™æ— æ³•å¯åŠ¨ä¸‹æ¬¡DMA */
 	ADC_DMACmd(ADC3, DISABLE);
 }
 
 /*
 *********************************************************************************************************
-*	º¯ Êı Ãû: SetSampRate
-*	¹¦ÄÜËµÃ÷: ĞŞ¸Ä²ÉÑùÆµÂÊ
-*	ĞÎ    ²Î: freq : ²ÉÑùÆµÂÊ µ¥Î»Hz
-*	·µ »Ø Öµ: ÎŞ
+*	å‡½ æ•° å: SetSampRate
+*	åŠŸèƒ½è¯´æ˜: ä¿®æ”¹é‡‡æ ·é¢‘ç‡
+*	å½¢    å‚: freq : é‡‡æ ·é¢‘ç‡ å•ä½Hz
+*	è¿” å› å€¼: æ— 
 *********************************************************************************************************
 */
 void DSO_SetSampRate(uint32_t _ulFreq)
@@ -519,51 +519,51 @@ void DSO_SetSampRate(uint32_t _ulFreq)
 	TIM_TimeBaseInitTypeDef  TIM_TimeBaseStructure;
     TIM_OCInitTypeDef  TIM_OCInitStructure;
 
-    RCC_APB2PeriphClockCmd(RCC_APB2Periph_TIM1, ENABLE);	/* Ê¹ÄÜTIM1Ê±ÖÓ */
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_TIM1, ENABLE);	/* ä½¿èƒ½TIM1æ—¶é’Ÿ */
 
     TIM_Cmd(TIM1, DISABLE);
 	TIM_SetCounter(TIM1, 0);
     /*
     ********************************************************************************
-    system_stm32f4xx.c ÎÄ¼şÖĞ void SetSysClock(void) º¯Êı¶ÔÊ±ÖÓµÄÅäÖÃÈçÏÂ£º
+    system_stm32f4xx.c æ–‡ä»¶ä¸­ void SetSysClock(void) å‡½æ•°å¯¹æ—¶é’Ÿçš„é…ç½®å¦‚ä¸‹ï¼š
 
     HCLK = SYSCLK / 1     (AHB1Periph)
     PCLK2 = HCLK / 2      (APB2Periph)
     PCLK1 = HCLK / 4      (APB1Periph)
 
-    ÒòÎªAPB1 prescaler != 1, ËùÒÔ APB1ÉÏµÄTIMxCLK = PCLK1 x 2 = SystemCoreClock / 2;
-    ÒòÎªAPB2 prescaler != 1, ËùÒÔ APB2ÉÏµÄTIMxCLK = PCLK2 x 2 = SystemCoreClock;
+    å› ä¸ºAPB1 prescaler != 1, æ‰€ä»¥ APB1ä¸Šçš„TIMxCLK = PCLK1 x 2 = SystemCoreClock / 2;
+    å› ä¸ºAPB2 prescaler != 1, æ‰€ä»¥ APB2ä¸Šçš„TIMxCLK = PCLK2 x 2 = SystemCoreClock;
 
-    APB1 ¶¨Ê±Æ÷ÓĞ TIM2, TIM3 ,TIM4, TIM5, TIM6, TIM7, TIM12, TIM13, TIM14
-    APB2 ¶¨Ê±Æ÷ÓĞ TIM1, TIM8 ,TIM9, TIM10, TIM11
+    APB1 å®šæ—¶å™¨æœ‰ TIM2, TIM3 ,TIM4, TIM5, TIM6, TIM7, TIM12, TIM13, TIM14
+    APB2 å®šæ—¶å™¨æœ‰ TIM1, TIM8 ,TIM9, TIM10, TIM11
 
-    TIM1 ¸üĞÂÖÜÆÚÊÇ = TIM1CLK / £¨TIM_Period + 1£©/£¨TIM_Prescaler + 1£©
+    TIM1 æ›´æ–°å‘¨æœŸæ˜¯ = TIM1CLK / ï¼ˆTIM_Period + 1ï¼‰/ï¼ˆTIM_Prescaler + 1ï¼‰
     ********************************************************************************
     */
 
     TIM_TimeBaseStructInit(&TIM_TimeBaseStructure);
 
-    /* ARR×Ô¶¯ÖØ×°ÔØ¼Ä´æÆ÷ÖÜÆÚµÄÖµ(¶¨Ê±Ê±¼ä£©µ½ÉèÖÃÆµÂÊºó²úÉú¸ö¸üĞÂ»òÕßÖĞ¶Ï. */
+    /* ARRè‡ªåŠ¨é‡è£…è½½å¯„å­˜å™¨å‘¨æœŸçš„å€¼(å®šæ—¶æ—¶é—´ï¼‰åˆ°è®¾ç½®é¢‘ç‡åäº§ç”Ÿä¸ªæ›´æ–°æˆ–è€…ä¸­æ–­. */
 	TIM_TimeBaseStructure.TIM_Period =  168000000 / (_ulFreq) - 1;
-    TIM_TimeBaseStructure.TIM_Prescaler = 0;	/* ²»·ÖÆµ */
+    TIM_TimeBaseStructure.TIM_Prescaler = 0;	/* ä¸åˆ†é¢‘ */
     TIM_TimeBaseStructure.TIM_ClockDivision = 0x0;
     TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
-	TIM_TimeBaseStructure.TIM_RepetitionCounter = 0x0000;		/* TIM1 ºÍ TIM8 ±ØĞëÉèÖÃ */		
+	TIM_TimeBaseStructure.TIM_RepetitionCounter = 0x0000;		/* TIM1 å’Œ TIM8 å¿…é¡»è®¾ç½® */		
     TIM_TimeBaseInit(TIM1, &TIM_TimeBaseStructure);
 	
-    /**************ADC1 ADC3µÄ´¥·¢***********************************************/
+    /**************ADC1 ADC3çš„è§¦å‘***********************************************/
     TIM_OCInitStructure.TIM_OCMode = TIM_OCMode_PWM1;
     TIM_OCInitStructure.TIM_OutputState = TIM_OutputState_Enable;
     TIM_OCInitStructure.TIM_Pulse = (TIM_TimeBaseStructure.TIM_Period + 1) / 2;
     TIM_OCInitStructure.TIM_OCPolarity = TIM_OCPolarity_Low;
-	TIM_OCInitStructure.TIM_OutputNState = TIM_OutputNState_Enable;		/* only for TIM1 and TIM8. ´Ë´¦ºÍÕıÏàÒı½Å²»Í¬ */	
+	TIM_OCInitStructure.TIM_OutputNState = TIM_OutputNState_Enable;		/* only for TIM1 and TIM8. æ­¤å¤„å’Œæ­£ç›¸å¼•è„šä¸åŒ */	
 	TIM_OCInitStructure.TIM_OCNPolarity = TIM_OCNPolarity_High;			/* only for TIM1 and TIM8. */		 
 	TIM_OCInitStructure.TIM_OCIdleState = TIM_OCIdleState_Reset;		/* only for TIM1 and TIM8. */
 	TIM_OCInitStructure.TIM_OCNIdleState = TIM_OCNIdleState_Reset;		/* only for TIM1 and TIM8. */		
     TIM_OC1Init(TIM1, &TIM_OCInitStructure);
 
     TIM_Cmd(TIM1, ENABLE);
-    TIM_CtrlPWMOutputs(TIM1, ENABLE);	/* Ê¹ÄÜPWM Êä³ö, ²»ÊÇÊä³öµ½GPIO */
+    TIM_CtrlPWMOutputs(TIM1, ENABLE);	/* ä½¿èƒ½PWM è¾“å‡º, ä¸æ˜¯è¾“å‡ºåˆ°GPIO */
 }
 
-/***************************** °²¸»À³µç×Ó www.armfly.com (END OF FILE) *********************************/
+/***************************** å®‰å¯Œè±ç”µå­ www.armfly.com (END OF FILE) *********************************/

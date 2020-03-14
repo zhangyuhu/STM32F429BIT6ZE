@@ -1,11 +1,11 @@
 /*
 *********************************************************************************************************
 *
-*	Ä£¿éÃû³Æ : ESP8266 ´®¿ÚWIFIÄ£¿éÇý¶¯³ÌÐò
-*	ÎÄ¼þÃû³Æ : bsp_esp8266.c
-*	Ëµ    Ã÷ : Í·ÎÄ¼þ
+*	æ¨¡å—åç§° : ESP8266 ä¸²å£WIFIæ¨¡å—é©±åŠ¨ç¨‹åº
+*	æ–‡ä»¶åç§° : bsp_esp8266.c
+*	è¯´    æ˜Ž : å¤´æ–‡ä»¶
 *
-*	Copyright (C), 2015-2020, °²¸»À³µç×Ó www.armfly.com
+*	Copyright (C), 2015-2020, å®‰å¯ŒèŽ±ç”µå­ www.armfly.com
 *
 *********************************************************************************************************
 */
@@ -13,35 +13,35 @@
 #ifndef __BSP_ESP8266_H
 #define __BSP_ESP8266_H
 
-#define COM_ESP8266	COM6		/* Ñ¡Ôñ´®¿Ú */
+#define COM_ESP8266	COM6		/* é€‰æ‹©ä¸²å£ */
 
-/* ¶¨ÒåÏÂÃæÕâ¾ä»°, ½«°ÑÊÕµ½µÄ×Ö·û·¢ËÍµ½µ÷ÊÔ´®¿Ú1 */
+/* å®šä¹‰ä¸‹é¢è¿™å¥è¯, å°†æŠŠæ”¶åˆ°çš„å­—ç¬¦å‘é€åˆ°è°ƒè¯•ä¸²å£1 */
 #define ESP8266_TO_COM1_EN
 
-/* ±¾Ä£¿é²¿·Öº¯ÊýÓÃµ½ÁËÈí¼þ¶¨Ê±Æ÷×îºó1¸öID¡£ Òò´ËÖ÷³ÌÐòµ÷ÓÃ±¾Ä£¿éµÄº¯ÊýÊ±£¬Çë×¢Òâ»Ø±Ü¶¨Ê±Æ÷ TMR_COUNT - 1¡£
+/* æœ¬æ¨¡å—éƒ¨åˆ†å‡½æ•°ç”¨åˆ°äº†è½¯ä»¶å®šæ—¶å™¨æœ€åŽ1ä¸ªIDã€‚ å› æ­¤ä¸»ç¨‹åºè°ƒç”¨æœ¬æ¨¡å—çš„å‡½æ•°æ—¶ï¼Œè¯·æ³¨æ„å›žé¿å®šæ—¶å™¨ TMR_COUNT - 1ã€‚
   bsp_StartTimer(3, _usTimeOut);
 
-  TMR_COUNT ÔÚ bsp_timer.h ÎÄ¼þ¶¨Òå
+  TMR_COUNT åœ¨ bsp_timer.h æ–‡ä»¶å®šä¹‰
 */
 #define ESP8266_TMR_ID	(TMR_COUNT - 1)
 
-/* ´®¿ÚÉè±¸½á¹¹Ìå */
+/* ä¸²å£è®¾å¤‡ç»“æž„ä½“ */
 typedef struct
 {
-	char ssid[33];	/* SSIDÊÇÒ»¸öÎÞÏß¾ÖÓòÍøÂç£¨WLAN£©µÄÃû³Æ¡£SSIDÊÇÇø·Ö´óÐ¡Ð´µÄÎÄ±¾×Ö·û´®£¬×î´ó³¤¶È32¸ö×Ö·û */
-	uint8_t ecn;	/* ¼ÓÃÜ·½Ê½ 
+	char ssid[33];	/* SSIDæ˜¯ä¸€ä¸ªæ— çº¿å±€åŸŸç½‘ç»œï¼ˆWLANï¼‰çš„åç§°ã€‚SSIDæ˜¯åŒºåˆ†å¤§å°å†™çš„æ–‡æœ¬å­—ç¬¦ä¸²ï¼Œæœ€å¤§é•¿åº¦32ä¸ªå­—ç¬¦ */
+	uint8_t ecn;	/* åŠ å¯†æ–¹å¼ 
 						0   OPEN
 						1   WEP
 						2   WPA_PSK
 						3   WPA2_PSK
 						4   WPA_WPA2_PSK
 					*/
-	int32_t rssi;		/* ÐÅºÅÇ¿¶È */
-	uint8_t mac[20];	/* MACµØÖ·×Ö·û´®*/
-	uint8_t ch;			/* ÐÅµÀ */
+	int32_t rssi;		/* ä¿¡å·å¼ºåº¦ */
+	uint8_t mac[20];	/* MACåœ°å€å­—ç¬¦ä¸²*/
+	uint8_t ch;			/* ä¿¡é“ */
 }WIFI_AP_T;
 
-/* ¼ÓÃÜ·½Ê½ */
+/* åŠ å¯†æ–¹å¼ */
 enum
 {
 	ECN_OPEN = 0,
@@ -51,7 +51,7 @@ enum
 	ECN_WPA_WPA2_PSK = 4,
 };
 
-/* ¹©Íâ²¿µ÷ÓÃµÄº¯ÊýÉùÃ÷ */
+/* ä¾›å¤–éƒ¨è°ƒç”¨çš„å‡½æ•°å£°æ˜Ž */
 void bsp_InitESP8266(void);
 void ESP8266_Reset(void);
 void ESP8266_PowerOn(void);
@@ -75,4 +75,4 @@ uint8_t ESP8266_JoinAP(char *_ssid, char *_pwd, uint16_t _timeout);
 
 #endif
 
-/***************************** °²¸»À³µç×Ó www.armfly.com (END OF FILE) *********************************/
+/***************************** å®‰å¯ŒèŽ±ç”µå­ www.armfly.com (END OF FILE) *********************************/

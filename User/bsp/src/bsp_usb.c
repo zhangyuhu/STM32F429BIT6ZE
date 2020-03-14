@@ -1,22 +1,22 @@
 /*
 *********************************************************************************************************
 *
-*	Ä£¿éÃû³Æ : USBµ×²ãGPIO¡¢ÖĞ¶ÏÅäÖÃ
-*	ÎÄ¼şÃû³Æ : bsp_usb.c
-*	°æ    ±¾ : V1.0
-*	Ëµ    Ã÷ : Ìá¹©USBµ×²ã½Ó¿Ú. ¸ù¾İ usb_bsp.c £¨V2.1.0£¬ 19-March-2012£©ĞŞ¸Ä¡£
+*	æ¨¡å—åç§° : USBåº•å±‚GPIOã€ä¸­æ–­é…ç½®
+*	æ–‡ä»¶åç§° : bsp_usb.c
+*	ç‰ˆ    æœ¬ : V1.0
+*	è¯´    æ˜ : æä¾›USBåº•å±‚æ¥å£. æ ¹æ® usb_bsp.c ï¼ˆV2.1.0ï¼Œ 19-March-2012ï¼‰ä¿®æ”¹ã€‚
 *
-*	ĞŞ¸Ä¼ÇÂ¼ :
-*		°æ±¾ºÅ  ÈÕÆÚ        ×÷Õß     ËµÃ÷
-*		V1.0    2013-02-01 armfly  ÕıÊ½·¢²¼
+*	ä¿®æ”¹è®°å½• :
+*		ç‰ˆæœ¬å·  æ—¥æœŸ        ä½œè€…     è¯´æ˜
+*		V1.0    2013-02-01 armfly  æ­£å¼å‘å¸ƒ
 *
-*	Copyright (C), 2013-2014, °²¸»À³µç×Ó www.armfly.com
+*	Copyright (C), 2013-2014, å®‰å¯Œè±ç”µå­ www.armfly.com
 *
 *********************************************************************************************************
 */
 
 /*
-	usbd_usr.h ÎÄ¼ş´Ó¿âÖĞÒÆ³öÀ´·Åµ½ÓÃ»§³ÌĞò
+	usbd_usr.h æ–‡ä»¶ä»åº“ä¸­ç§»å‡ºæ¥æ”¾åˆ°ç”¨æˆ·ç¨‹åº
 	Libraries\STM32_USB_Device_Library\Core\inc\usbd_usr.h
 */
 
@@ -36,7 +36,7 @@ void USB_OTG_BSP_Init(USB_OTG_CORE_HANDLE *pdev)
 {
 	GPIO_InitTypeDef GPIO_InitStructure;
 
-	/* Ïà¹ØµÄGPIOÈ«²¿ÇĞ»»µ½ÊäÈëÄ£Ê½ */
+	/* ç›¸å…³çš„GPIOå…¨éƒ¨åˆ‡æ¢åˆ°è¾“å…¥æ¨¡å¼ */
 	{
 		RCC_AHB1PeriphClockCmd( RCC_AHB1Periph_GPIOA | RCC_AHB1Periph_GPIOB, ENABLE);
 
@@ -52,7 +52,7 @@ void USB_OTG_BSP_Init(USB_OTG_CORE_HANDLE *pdev)
 	/* USB Host */
 	if (pdev == &USB_OTG_Core)
 	{
-		/* °²¸»À³STM32-V5¿ª·¢°åÖ»Ê¹ÓÃ2¸ùÏß PB14/OTG_HS_DM ºÍ PB15/OTG_HS_DP ½ÓUÅÌ */
+		/* å®‰å¯Œè±STM32-V5å¼€å‘æ¿åªä½¿ç”¨2æ ¹çº¿ PB14/OTG_HS_DM å’Œ PB15/OTG_HS_DP æ¥Uç›˜ */
 		RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB , ENABLE);
 
 		GPIO_InitStructure.GPIO_Pin = GPIO_Pin_14 | GPIO_Pin_15;
@@ -89,12 +89,12 @@ void USB_OTG_BSP_Init(USB_OTG_CORE_HANDLE *pdev)
 #endif
 }
 
-/* ¹Ø±ÕËùÓĞºÍUSBÏà¹ØµÄÖĞ¶Ï  */
+/* å…³é—­æ‰€æœ‰å’ŒUSBç›¸å…³çš„ä¸­æ–­  */
 void USB_OTG_BSP_DisableInterrupt(void)
 {
 	NVIC_InitTypeDef NVIC_InitStructure;
 
-	/* ÏÈ¹Ø±ÕËùÓĞºÍUSBÏà¹ØµÄÖĞ¶Ï */
+	/* å…ˆå…³é—­æ‰€æœ‰å’ŒUSBç›¸å…³çš„ä¸­æ–­ */
 
 	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1;
 	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 3;
@@ -125,7 +125,7 @@ void USB_OTG_BSP_EnableInterrupt(USB_OTG_CORE_HANDLE *pdev)
 
 	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_1);
 
-	/* ÏÈ¹Ø±ÕËùÓĞºÍUSBÏà¹ØµÄÖĞ¶Ï */
+	/* å…ˆå…³é—­æ‰€æœ‰å’ŒUSBç›¸å…³çš„ä¸­æ–­ */
 	USB_OTG_BSP_DisableInterrupt();
 #if 0
 	/* USB Host */
@@ -135,7 +135,7 @@ void USB_OTG_BSP_EnableInterrupt(USB_OTG_CORE_HANDLE *pdev)
 		NVIC_InitStructure.NVIC_IRQChannel = OTG_HS_IRQn;	/* USE_USB_OTG_HS */
 		NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1;
 		NVIC_InitStructure.NVIC_IRQChannelSubPriority = 3;
-		NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;		/* Ê¹ÄÜ OTG_HS_IRQn */
+		NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;		/* ä½¿èƒ½ OTG_HS_IRQn */
 		NVIC_Init(&NVIC_InitStructure);
 	}
 #else
@@ -174,7 +174,7 @@ void USB_OTG_BSP_EnableInterrupt(USB_OTG_CORE_HANDLE *pdev)
 
 void USB_OTG_BSP_DriveVBUS(USB_OTG_CORE_HANDLE *pdev, uint8_t state)
 {
-	/* °²¸»À³STM32-V5¿ª·¢°å²»Ö§³Ö¶ÔÍâ¹©µçµÄ¿ØÖÆ */
+	/* å®‰å¯Œè±STM32-V5å¼€å‘æ¿ä¸æ”¯æŒå¯¹å¤–ä¾›ç”µçš„æ§åˆ¶ */
 }
 
 /**
@@ -186,7 +186,7 @@ void USB_OTG_BSP_DriveVBUS(USB_OTG_CORE_HANDLE *pdev, uint8_t state)
 
 void  USB_OTG_BSP_ConfigVBUS(USB_OTG_CORE_HANDLE *pdev)
 {
-	/* °²¸»À³STM32-V5¿ª·¢°å²»Ö§³Ö¶ÔÍâ¹©µçµÄ¿ØÖÆ */
+	/* å®‰å¯Œè±STM32-V5å¼€å‘æ¿ä¸æ”¯æŒå¯¹å¤–ä¾›ç”µçš„æ§åˆ¶ */
 }
 
 /**

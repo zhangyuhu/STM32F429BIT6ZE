@@ -1,50 +1,50 @@
 /*
 *********************************************************************************************************
 *
-*	Ä£¿éÃû³Æ : µç×èÊ½´¥Ãþ°åÇý¶¯Ä£¿é
-*	ÎÄ¼þÃû³Æ : bsp_touch.c
-*	°æ    ±¾ : V1.8
-*	Ëµ    Ã÷ : Çý¶¯i2c½Ó¿ÚµÄ´¥ÃþÐ¾Æ¬¡£ 
-*	ÐÞ¸Ä¼ÇÂ¼ :
-*		°æ±¾ºÅ  ÈÕÆÚ        ×÷Õß    ËµÃ÷
-*       v1.0    2012-07-06 armfly  ST¹Ì¼þ¿âV3.5.0°æ±¾¡£
-*		v1.1    2012-10-22 armfly  Ôö¼Ó4µãÐ£×¼
-*		v1.2    2012-11-07 armfly  ½â¾ö4µãÐ£×¼µÄXY½»»»·ÖÖ§µÄbug
-*		v1.3    2012-12-17 armfly  ´¥ÃþÐ£×¼º¯ÊýÔö¼ÓÈë¿Ú²ÎÊý:µÈ´ýÊ±¼ä
-*		V1.4    2013-07-26 armfly  ¸ü¸Ä TOUCH_DataFilter() ÂË²¨Ëã·¨
-*		V1.5    2013-07-32 armfly  ÐÞ¸ÄTOUCH_WaitRelease(),¼ÆÊýÆ÷ÐèÒªÇåÁã
+*	æ¨¡å—åç§° : ç”µé˜»å¼è§¦æ‘¸æ¿é©±åŠ¨æ¨¡å—
+*	æ–‡ä»¶åç§° : bsp_touch.c
+*	ç‰ˆ    æœ¬ : V1.8
+*	è¯´    æ˜Ž : é©±åŠ¨i2cæŽ¥å£çš„è§¦æ‘¸èŠ¯ç‰‡ã€‚ 
+*	ä¿®æ”¹è®°å½• :
+*		ç‰ˆæœ¬å·  æ—¥æœŸ        ä½œè€…    è¯´æ˜Ž
+*       v1.0    2012-07-06 armfly  STå›ºä»¶åº“V3.5.0ç‰ˆæœ¬ã€‚
+*		v1.1    2012-10-22 armfly  å¢žåŠ 4ç‚¹æ ¡å‡†
+*		v1.2    2012-11-07 armfly  è§£å†³4ç‚¹æ ¡å‡†çš„XYäº¤æ¢åˆ†æ”¯çš„bug
+*		v1.3    2012-12-17 armfly  è§¦æ‘¸æ ¡å‡†å‡½æ•°å¢žåŠ å…¥å£å‚æ•°:ç­‰å¾…æ—¶é—´
+*		V1.4    2013-07-26 armfly  æ›´æ”¹ TOUCH_DataFilter() æ»¤æ³¢ç®—æ³•
+*		V1.5    2013-07-32 armfly  ä¿®æ”¹TOUCH_WaitRelease(),è®¡æ•°å™¨éœ€è¦æ¸…é›¶
 *		V1.6    2014-10-20 armfly
-*					(1) ÐÞ¸Ä TOUCH_PutKey() º¯Êý£¬ÊµÏÖ´¥ÃþÆÁµÄºáÆÁºÍÊúÆÁ¶¯Ì¬ÇÐ»».
-*					(2) param ½á¹¹Ôö¼ÓÐ£×¼Ê±µ±Ç°µÄÆÁÄ»·½Ïò±äÁ¿ TouchDirection
-*					(3) µ÷ÊÔ3.5´çµÄ´¥ÃþÐ¾Æ¬¡£ÐÞ¸ÄSPIÏà¹ØÅäÖÃº¯Êý¡£
-*					(4) ÓÉÓÚ´¥ÃþÐ¾Æ¬TSC2046ºÍ´®ÐÐFLASH,NRF24L01,MP3µÈÄ£¿é¹²ÏíSPI×ÜÏß¡£Òò´ËÐèÒª
-*						ÔÚ´¥ÃþÖÐ¶Ïº¯ÊýÖÐÅÐ¶Ï×ÜÏß³åÍ». Ôö¼Óº¯Êý bsp_SpiBusBusy() ÅÐÃ¦.
-*					(5) TSC2046Ôö¼ÓÈí¼þÄ£ÄâSPI (Èí¼þÄ£Äâ·½Ê½·½±ãSPIÉè±¸¹²Ïí)
-*		V1.7    2015-01-02 armfly  ¼Æ»®½«´¥ÃþÉ¨ÃèÓÉ1msÒ»´ÎÐÞ¸ÄÎª10msÒ»´Î¡£Î´¶¨¡£
-*				2015-04-21 armfly ÐÞ¸Ä TOUCH_InitHard() º¯Êý¡£GT811_InitHard() Ö´ÐÐºóÖ±½Óreturn
-*		V1.8	2015-10-30 armfly Ôö¼Ó 4.3´çµçÈÝ´¥Ãþ FT5x06
-*					(1) Ìí¼Ó void TOUCH_CapScan(void) º¯Êý
+*					(1) ä¿®æ”¹ TOUCH_PutKey() å‡½æ•°ï¼Œå®žçŽ°è§¦æ‘¸å±çš„æ¨ªå±å’Œç«–å±åŠ¨æ€åˆ‡æ¢.
+*					(2) param ç»“æž„å¢žåŠ æ ¡å‡†æ—¶å½“å‰çš„å±å¹•æ–¹å‘å˜é‡ TouchDirection
+*					(3) è°ƒè¯•3.5å¯¸çš„è§¦æ‘¸èŠ¯ç‰‡ã€‚ä¿®æ”¹SPIç›¸å…³é…ç½®å‡½æ•°ã€‚
+*					(4) ç”±äºŽè§¦æ‘¸èŠ¯ç‰‡TSC2046å’Œä¸²è¡ŒFLASH,NRF24L01,MP3ç­‰æ¨¡å—å…±äº«SPIæ€»çº¿ã€‚å› æ­¤éœ€è¦
+*						åœ¨è§¦æ‘¸ä¸­æ–­å‡½æ•°ä¸­åˆ¤æ–­æ€»çº¿å†²çª. å¢žåŠ å‡½æ•° bsp_SpiBusBusy() åˆ¤å¿™.
+*					(5) TSC2046å¢žåŠ è½¯ä»¶æ¨¡æ‹ŸSPI (è½¯ä»¶æ¨¡æ‹Ÿæ–¹å¼æ–¹ä¾¿SPIè®¾å¤‡å…±äº«)
+*		V1.7    2015-01-02 armfly  è®¡åˆ’å°†è§¦æ‘¸æ‰«æç”±1msä¸€æ¬¡ä¿®æ”¹ä¸º10msä¸€æ¬¡ã€‚æœªå®šã€‚
+*				2015-04-21 armfly ä¿®æ”¹ TOUCH_InitHard() å‡½æ•°ã€‚GT811_InitHard() æ‰§è¡ŒåŽç›´æŽ¥return
+*		V1.8	2015-10-30 armfly å¢žåŠ  4.3å¯¸ç”µå®¹è§¦æ‘¸ FT5x06
+*					(1) æ·»åŠ  void TOUCH_CapScan(void) å‡½æ•°
 *
-*	Copyright (C), 2015-2020, °²¸»À³µç×Ó www.armfly.com
+*	Copyright (C), 2015-2020, å®‰å¯ŒèŽ±ç”µå­ www.armfly.com
 *
 *********************************************************************************************************
 */
 
 #include "bsp.h"
-#include "param.h"	/* °üº¬²ÎÊý´æ´¢Ä£¿é */
+#include "param.h"	/* åŒ…å«å‚æ•°å­˜å‚¨æ¨¡å— */
 
-/* µ÷ÊÔ´òÓ¡Óï¾ä */
+/* è°ƒè¯•æ‰“å°è¯­å¥ */
 //#define touch_printf       printf
 #define touch_printf(...) 
 
-/* Ã¿1msÉ¨ÃèÒ»´Î×ø±ê */
-#define DOWN_VALID		30	/* °´ÏÂ30ms ºó, ¿ªÊ¼Í³¼ÆADC */
-#define SAMPLE_COUNT	20	/* °´ÏÂºó 20ms´¦ÀíÒ»´Î×ø±ê */
+/* æ¯1msæ‰«æä¸€æ¬¡åæ ‡ */
+#define DOWN_VALID		30	/* æŒ‰ä¸‹30ms åŽ, å¼€å§‹ç»Ÿè®¡ADC */
+#define SAMPLE_COUNT	20	/* æŒ‰ä¸‹åŽ 20mså¤„ç†ä¸€æ¬¡åæ ‡ */
 
 /*
-	´¥ÃþÆÁÐ£×¼µãÏà¶ÔÆÁÄ»ÏñËØËÄ½ÇµÄÆ«ÒÆÏñËØ
-	µÚ1¸öµã £º x1 = CALIB_OFFSET, y1 = CALIB_OFFSET
-	µÚ2¸öµã £º x2 = LCD_GetWidth() - CALIB_OFFSET, y2 = LCD_GetHeight() - CALIB_OFFSET
+	è§¦æ‘¸å±æ ¡å‡†ç‚¹ç›¸å¯¹å±å¹•åƒç´ å››è§’çš„åç§»åƒç´ 
+	ç¬¬1ä¸ªç‚¹ ï¼š x1 = CALIB_OFFSET, y1 = CALIB_OFFSET
+	ç¬¬2ä¸ªç‚¹ ï¼š x2 = LCD_GetWidth() - CALIB_OFFSET, y2 = LCD_GetHeight() - CALIB_OFFSET
 */
 #define CALIB_OFFSET	20
 #define TP_X1	CALIB_OFFSET
@@ -59,10 +59,10 @@
 #define TP_X4	(LCD_GetWidth() - CALIB_OFFSET)
 #define TP_Y4	CALIB_OFFSET
 
-/* ÓÐÐ§ADCÖµµÄÅÐ¶ÏÃÅÏÞ. Ì«½Ó½üADCÁÙ½çÖµµÄ×ø±êÈÏÎªÎÞÐ§ */
+/* æœ‰æ•ˆADCå€¼çš„åˆ¤æ–­é—¨é™. å¤ªæŽ¥è¿‘ADCä¸´ç•Œå€¼çš„åæ ‡è®¤ä¸ºæ— æ•ˆ */
 #define ADC_VALID_OFFSET	2
 
-/* ´¥ÆÁÄ£¿éÓÃµ½µÄÈ«¾Ö±äÁ¿ */
+/* è§¦å±æ¨¡å—ç”¨åˆ°çš„å…¨å±€å˜é‡ */
 TOUCH_T g_tTP;
 
 uint8_t g_TouchType;
@@ -80,10 +80,10 @@ int32_t TOUCH_Abs(int32_t x);
 
 /*
 *********************************************************************************************************
-*	º¯ Êý Ãû: bsp_DetectLcdType
-*	¹¦ÄÜËµÃ÷: Í¨¹ýI2C´¥ÃþÐ¾Æ¬£¬Ê¶±ðLCDÄ£×éÀàÐÍ¡£½á¹û´æ·ÅÔÚÈ«¾Ö±äÁ¿ g_LcdType ºÍ g_TouchType
-*	ÐÎ    ²Î: ÎÞ
-*	·µ »Ø Öµ: ÎÞ
+*	å‡½ æ•° å: bsp_DetectLcdType
+*	åŠŸèƒ½è¯´æ˜Ž: é€šè¿‡I2Cè§¦æ‘¸èŠ¯ç‰‡ï¼Œè¯†åˆ«LCDæ¨¡ç»„ç±»åž‹ã€‚ç»“æžœå­˜æ”¾åœ¨å…¨å±€å˜é‡ g_LcdType å’Œ g_TouchType
+*	å½¢    å‚: æ— 
+*	è¿” å›ž å€¼: æ— 
 *********************************************************************************************************
 */
 void bsp_DetectLcdType(void)
@@ -93,19 +93,19 @@ void bsp_DetectLcdType(void)
 	g_TouchType = 0xFF;
 	g_LcdType = 0xFF;
 	
-	/* 50ms£¬µÈ´ýGT811¸´Î»¾ÍÐ÷£¬²ÅÄÜÌ½²âGT811Ð¾Æ¬ ID */
+	/* 50msï¼Œç­‰å¾…GT811å¤ä½å°±ç»ªï¼Œæ‰èƒ½æŽ¢æµ‹GT811èŠ¯ç‰‡ ID */
 	for (i = 0; i < 5; i++)
 	{
 		/*
-			GT811µçÈÝ´¥Ãþ, ÓÐ 800 * 480 ºÍ 1024 * 600 Á½ÖÖ·Ö±æÂÊ£¨¸ù¾ÝGT811µÄ Sensor IDÊ¶±ð£¨ÓÐ3¸ö×´Ì¬£©		
-			GT811 µÄ´ÓÉè±¸µØÖ·ÓÐÈý×é¿ÉÑ¡£¬ÒÔ·½±ãÖ÷¿Øµ÷Åä¡£Èý×éµØÖ··Ö±ðÎª£º0xBA/0xBB¡¢0x6E/0x6FºÍ0x28/0x29		
+			GT811ç”µå®¹è§¦æ‘¸, æœ‰ 800 * 480 å’Œ 1024 * 600 ä¸¤ç§åˆ†è¾¨çŽ‡ï¼ˆæ ¹æ®GT811çš„ Sensor IDè¯†åˆ«ï¼ˆæœ‰3ä¸ªçŠ¶æ€ï¼‰		
+			GT811 çš„ä»Žè®¾å¤‡åœ°å€æœ‰ä¸‰ç»„å¯é€‰ï¼Œä»¥æ–¹ä¾¿ä¸»æŽ§è°ƒé…ã€‚ä¸‰ç»„åœ°å€åˆ†åˆ«ä¸ºï¼š0xBA/0xBBã€0x6E/0x6Få’Œ0x28/0x29		
 		*/
 		if (i2c_CheckDevice(GT811_I2C_ADDR1) == 0)
 		{
 			g_GT811.i2c_addr = GT811_I2C_ADDR1;
 			g_TouchType = CT_GT811;
 			g_LcdType = LCD_70_800X480;		
-			touch_printf("¼ì²âµ½7.0´çµçÈÝ´¥ÃþÆÁ 800x480\r\n");
+			touch_printf("æ£€æµ‹åˆ°7.0å¯¸ç”µå®¹è§¦æ‘¸å± 800x480\r\n");
 			break;
 		}
 
@@ -114,11 +114,11 @@ void bsp_DetectLcdType(void)
 			g_GT811.i2c_addr = GT811_I2C_ADDR3;
 			g_TouchType = CT_GT811;
 			g_LcdType = LCD_70_1024X600;
-			touch_printf("¼ì²âµ½7.0´çµçÈÝ´¥ÃþÆÁ 1024x600\r\n");
+			touch_printf("æ£€æµ‹åˆ°7.0å¯¸ç”µå®¹è§¦æ‘¸å± 1024x600\r\n");
 			break;
 		}		
 		
-		/* FTÏµÁÐµçÈÝ´¥Ãþ´¥Ãþ : 4.3´çid = 0x55    5.0´çid = 0x0A  7.0´çid = 0x06 */
+		/* FTç³»åˆ—ç”µå®¹è§¦æ‘¸è§¦æ‘¸ : 4.3å¯¸id = 0x55    5.0å¯¸id = 0x0A  7.0å¯¸id = 0x06 */
 		if (i2c_CheckDevice(FT5X06_I2C_ADDR) == 0)
 		{
 			uint8_t id;
@@ -128,43 +128,43 @@ void bsp_DetectLcdType(void)
 			{
 				g_TouchType = CT_FT5X06;
 				g_LcdType = LCD_43_480X272;		
-				touch_printf("¼ì²âµ½4.3´çµçÈÝ´¥ÃþÆÁ\r\n");
+				touch_printf("æ£€æµ‹åˆ°4.3å¯¸ç”µå®¹è§¦æ‘¸å±\r\n");
 			}
 			else if (id == 0x0A)
 			{
 				g_TouchType = CT_FT5X06;
 				g_LcdType = LCD_50_800X480;		
-				touch_printf("¼ì²âµ½5.0´çµçÈÝ´¥ÃþÆÁ\r\n");				
+				touch_printf("æ£€æµ‹åˆ°5.0å¯¸ç”µå®¹è§¦æ‘¸å±\r\n");				
 			}
-			else	/* id == 0x06 ±íÊ¾7´çµçÈÝÆÁ£¨FTÐ¾Æ¬£© */
+			else	/* id == 0x06 è¡¨ç¤º7å¯¸ç”µå®¹å±ï¼ˆFTèŠ¯ç‰‡ï¼‰ */
 			{
 				g_TouchType = CT_FT5X06;
 				g_LcdType = LCD_70_800X480;		
-				touch_printf("¼ì²âµ½7.0´çµçÈÝ´¥ÃþÆÁ\r\n");					
+				touch_printf("æ£€æµ‹åˆ°7.0å¯¸ç”µå®¹è§¦æ‘¸å±\r\n");					
 			}
 			break;
 		}
 
-		/* µç×è´¥Ãþ°å */		
+		/* ç”µé˜»è§¦æ‘¸æ¿ */		
 		if (i2c_CheckDevice(STMPE811_I2C_ADDRESS) == 0)
 		{
 			/*			
-				0  = 4.3´çÆÁ£¨480X272£©
-				1  = 5.0´çÆÁ£¨480X272£©
-				2  = 5.0´çÆÁ£¨800X480£©
-				3  = 7.0´çÆÁ£¨800X480£©
-				4  = 7.0´çÆÁ£¨1024X600£©
-				5  = 3.5´çÆÁ£¨480X320£©			
+				0  = 4.3å¯¸å±ï¼ˆ480X272ï¼‰
+				1  = 5.0å¯¸å±ï¼ˆ480X272ï¼‰
+				2  = 5.0å¯¸å±ï¼ˆ800X480ï¼‰
+				3  = 7.0å¯¸å±ï¼ˆ800X480ï¼‰
+				4  = 7.0å¯¸å±ï¼ˆ1024X600ï¼‰
+				5  = 3.5å¯¸å±ï¼ˆ480X320ï¼‰			
 			*/					
 			uint8_t id;			
 			
-			g_TouchType = CT_STMPE811;	/* ´¥ÃþÀàÐÍ */
+			g_TouchType = CT_STMPE811;	/* è§¦æ‘¸ç±»åž‹ */
 			
-			STMPE811_InitHard();	/* ±ØÐëÏÈÅäÖÃ²ÅÄÜ¶ÁÈ¡ID */
+			STMPE811_InitHard();	/* å¿…é¡»å…ˆé…ç½®æ‰èƒ½è¯»å–ID */
 			
-			id = STMPE811_ReadIO();	/* Ê¶±ðLCDÓ²¼þÀàÐÍ */
+			id = STMPE811_ReadIO();	/* è¯†åˆ«LCDç¡¬ä»¶ç±»åž‹ */
 
-			touch_printf("¼ì²âµ½µç×è´¥ÃþÆÁ, id = %d\r\n", id);
+			touch_printf("æ£€æµ‹åˆ°ç”µé˜»è§¦æ‘¸å±, id = %d\r\n", id);
 			switch (id)
 			{
 				case 0:
@@ -203,16 +203,16 @@ void bsp_DetectLcdType(void)
 	
 	if (i == 5)
 	{
-		touch_printf("Î´Ê¶±ð³öÏÔÊ¾Ä£¿é\r\n");
+		touch_printf("æœªè¯†åˆ«å‡ºæ˜¾ç¤ºæ¨¡å—\r\n");
 	}
 }
 	
 /*
 *********************************************************************************************************
-*	º¯ Êý Ãû: TOUCH_InitHard
-*	¹¦ÄÜËµÃ÷: ³õÊ¼»¯´¥ÃþÐ¾Æ¬¡£ ÔÙÖ®Ç°£¬±ØÐëÏÈÖ´ÐÐ bsp_DetectLcdType() Ê¶±ð´¥Ãþ³ö´¥ÃþÐ¾Æ¬ÐÍºÅ.
-*	ÐÎ    ²Î: ÎÞ
-*	·µ »Ø Öµ: ÎÞ
+*	å‡½ æ•° å: TOUCH_InitHard
+*	åŠŸèƒ½è¯´æ˜Ž: åˆå§‹åŒ–è§¦æ‘¸èŠ¯ç‰‡ã€‚ å†ä¹‹å‰ï¼Œå¿…é¡»å…ˆæ‰§è¡Œ bsp_DetectLcdType() è¯†åˆ«è§¦æ‘¸å‡ºè§¦æ‘¸èŠ¯ç‰‡åž‹å·.
+*	å½¢    å‚: æ— 
+*	è¿” å›ž å€¼: æ— 
 *********************************************************************************************************
 */
 void TOUCH_InitHard(void)
@@ -221,19 +221,19 @@ void TOUCH_InitHard(void)
 	
 	switch (g_TouchType)
 	{
-		case CT_GT811:			/* µçÈÝ´¥Ãþ 7´ç */
+		case CT_GT811:			/* ç”µå®¹è§¦æ‘¸ 7å¯¸ */
 			GT811_InitHard();
 			break;
 		
-		case CT_FT5X06:			/* µçÈÝ´¥Ãþ 4.3´ç */
+		case CT_FT5X06:			/* ç”µå®¹è§¦æ‘¸ 4.3å¯¸ */
 			FT5X06_InitHard();
 			break;
 		
-		case CT_STMPE811:		/* µç×èµÄ */
-			//STMPE811_InitHard();   < bsp_DetectLcdType() ÄÚ²¿ÒÑ¾­Ö´ÐÐ³õÊ¼»¯ 
-			g_tTP.usMaxAdc = 4095;	/* 12Î»ADC */	
+		case CT_STMPE811:		/* ç”µé˜»çš„ */
+			//STMPE811_InitHard();   < bsp_DetectLcdType() å†…éƒ¨å·²ç»æ‰§è¡Œåˆå§‹åŒ– 
+			g_tTP.usMaxAdc = 4095;	/* 12ä½ADC */	
 		
-			TOUCH_LoadParam();	/* ¶ÁÈ¡Ð£×¼²ÎÊý */
+			TOUCH_LoadParam();	/* è¯»å–æ ¡å‡†å‚æ•° */
 			g_tTP.Write = g_tTP.Read = 0;
 			g_tTP.Enable = 1;
 			break;
@@ -245,48 +245,48 @@ void TOUCH_InitHard(void)
 
 /*
 *********************************************************************************************************
-*	º¯ Êý Ãû: TOUCH_ReadAdcX
-*	¹¦ÄÜËµÃ÷: »ñµÃ´¥Ãþ°åX·½ÏòADC²ÉÑùÖµ£¬ ÒÑ½øÐÐÂË²¨´¦Àí
-*	ÐÎ    ²Î:  ÎÞ
-*	·µ »Ø Öµ: X ·½ÏòADCÖµ
+*	å‡½ æ•° å: TOUCH_ReadAdcX
+*	åŠŸèƒ½è¯´æ˜Ž: èŽ·å¾—è§¦æ‘¸æ¿Xæ–¹å‘ADCé‡‡æ ·å€¼ï¼Œ å·²è¿›è¡Œæ»¤æ³¢å¤„ç†
+*	å½¢    å‚:  æ— 
+*	è¿” å›ž å€¼: X æ–¹å‘ADCå€¼
 *********************************************************************************************************
 */
 uint16_t TOUCH_ReadAdcX(void)
 {
 	uint16_t usAdc;
 
-	__set_PRIMASK(1);  		/* ¹ØÖÐ¶Ï */
+	__set_PRIMASK(1);  		/* å…³ä¸­æ–­ */
 	usAdc = g_tTP.usAdcNowX;
-	__set_PRIMASK(0);  		/* ¿ªÖÐ¶Ï */
+	__set_PRIMASK(0);  		/* å¼€ä¸­æ–­ */
 
 	return usAdc;
 }
 
 /*
 *********************************************************************************************************
-*	º¯ Êý Ãû: TOUCH_ReadAdcY
-*	¹¦ÄÜËµÃ÷: »ñµÃ´¥Ãþ°åY·½ÏòADC²ÉÑùÖµ£¬ ÒÑ½øÐÐÂË²¨´¦Àí
-*	ÐÎ    ²Î:  ÎÞ
-*	·µ »Ø Öµ: Y ×ø±êÖµ£¬ÔÊÐí¸ºÖµ
+*	å‡½ æ•° å: TOUCH_ReadAdcY
+*	åŠŸèƒ½è¯´æ˜Ž: èŽ·å¾—è§¦æ‘¸æ¿Yæ–¹å‘ADCé‡‡æ ·å€¼ï¼Œ å·²è¿›è¡Œæ»¤æ³¢å¤„ç†
+*	å½¢    å‚:  æ— 
+*	è¿” å›ž å€¼: Y åæ ‡å€¼ï¼Œå…è®¸è´Ÿå€¼
 *********************************************************************************************************
 */
 uint16_t TOUCH_ReadAdcY(void)
 {
 	uint16_t usAdc;
 
-	__set_PRIMASK(1);  		/* ¹ØÖÐ¶Ï */
+	__set_PRIMASK(1);  		/* å…³ä¸­æ–­ */
 	usAdc = g_tTP.usAdcNowY;
-	__set_PRIMASK(0);  		/* ¿ªÖÐ¶Ï */
+	__set_PRIMASK(0);  		/* å¼€ä¸­æ–­ */
 
 	return usAdc;
 }
 
 /*
 *********************************************************************************************************
-*	º¯ Êý Ãû: TOUCH_PutKey
-*	¹¦ÄÜËµÃ÷: ½«1¸ö´¥Ãþµã×ø±êÖµÑ¹Èë´¥ÃþFIFO»º³åÇø¡£ÓÃÓÚµç×è´¥ÃþÆÁ¡£
-*	ÐÎ    ²Î: _usX, _usY ×ø±êÖµ
-*	·µ »Ø Öµ: ÎÞ
+*	å‡½ æ•° å: TOUCH_PutKey
+*	åŠŸèƒ½è¯´æ˜Ž: å°†1ä¸ªè§¦æ‘¸ç‚¹åæ ‡å€¼åŽ‹å…¥è§¦æ‘¸FIFOç¼“å†²åŒºã€‚ç”¨äºŽç”µé˜»è§¦æ‘¸å±ã€‚
+*	å½¢    å‚: _usX, _usY åæ ‡å€¼
+*	è¿” å›ž å€¼: æ— 
 *********************************************************************************************************
 */
 void TOUCH_PutKey(uint8_t _ucEvent, uint16_t _usX, uint16_t _usY)
@@ -296,7 +296,7 @@ void TOUCH_PutKey(uint8_t _ucEvent, uint16_t _usX, uint16_t _usY)
 
 	g_tTP.Event[g_tTP.Write] = _ucEvent;
 
-	if (g_GT811.Enable == 1)	/* µçÈÝÆÁ (ÎÞÐèÐ£×¼) */
+	if (g_GT811.Enable == 1)	/* ç”µå®¹å± (æ— éœ€æ ¡å‡†) */
 	{
 		xx = _usX;
 		yy = _usY;
@@ -306,101 +306,101 @@ void TOUCH_PutKey(uint8_t _ucEvent, uint16_t _usX, uint16_t _usY)
 		xx = _usX;
 		yy = _usY;
 	}
-	else	/* µç×èÆÁ */
+	else	/* ç”µé˜»å± */
 	{
 		xx = TOUCH_TransX(_usX, _usY);
 		yy = TOUCH_TransY(_usX, _usY);
 	}
 	
-	/* ºáÆÁºÍÊúÆÁ·½ÏòÊ¶±ð */
+	/* æ¨ªå±å’Œç«–å±æ–¹å‘è¯†åˆ« */
 	switch (g_tParam.TouchDirection)
 	{
-		case 0:	/* Ð£×¼´¥ÃþÊ±£¬ÆÁÄ»·½ÏòÎª0 */
-			if (g_LcdDirection == 0)		/* ºáÆÁ */
+		case 0:	/* æ ¡å‡†è§¦æ‘¸æ—¶ï¼Œå±å¹•æ–¹å‘ä¸º0 */
+			if (g_LcdDirection == 0)		/* æ¨ªå± */
 			{
 				x = xx;
 				y = yy;
 			}
-			else if (g_LcdDirection == 1)	/* ºáÆÁ180¡ã*/
+			else if (g_LcdDirection == 1)	/* æ¨ªå±180Â°*/
 			{
 				x = g_LcdWidth - xx - 1;
 				y = g_LcdHeight - yy - 1;
 			}
-			else if (g_LcdDirection == 2)	/* ÊúÆÁ */
+			else if (g_LcdDirection == 2)	/* ç«–å± */
 			{
 				y = xx;
 				x = g_LcdWidth - yy - 1;
 			}
-			else if (g_LcdDirection == 3)	/* ÊúÆÁ180¡ã */
+			else if (g_LcdDirection == 3)	/* ç«–å±180Â° */
 			{
 				y = g_LcdHeight - xx - 1;
 				x = yy;
 			}
 			break;
 
-		case 1:	/* Ð£×¼´¥ÃþÊ±£¬ÆÁÄ»·½ÏòÎª1 */
-			if (g_LcdDirection == 0)		/* ºáÆÁ */
+		case 1:	/* æ ¡å‡†è§¦æ‘¸æ—¶ï¼Œå±å¹•æ–¹å‘ä¸º1 */
+			if (g_LcdDirection == 0)		/* æ¨ªå± */
 			{
 				x = g_LcdWidth - xx - 1;
 				y = g_LcdHeight - yy - 1;
 			}
-			else if (g_LcdDirection == 1)	/* ºáÆÁ180¡ã*/
+			else if (g_LcdDirection == 1)	/* æ¨ªå±180Â°*/
 			{
 				x = xx;
 				y = yy;
 			}
-			else if (g_LcdDirection == 2)	/* ÊúÆÁ */
+			else if (g_LcdDirection == 2)	/* ç«–å± */
 			{
 				y = g_LcdHeight - xx - 1;
 				x = yy;
 			}
-			else if (g_LcdDirection == 3)	/* ÊúÆÁ180¡ã */
+			else if (g_LcdDirection == 3)	/* ç«–å±180Â° */
 			{
 				y = xx;
 				x = g_LcdWidth - yy - 1;
 			}
 			break;
 
-		case 2:	/* Ð£×¼´¥ÃþÊ±£¬ÆÁÄ»·½ÏòÎª2 */
-			if (g_LcdDirection == 0)		/* ºáÆÁ */
+		case 2:	/* æ ¡å‡†è§¦æ‘¸æ—¶ï¼Œå±å¹•æ–¹å‘ä¸º2 */
+			if (g_LcdDirection == 0)		/* æ¨ªå± */
 			{
 				y = xx;
 				x = g_LcdWidth - yy - 1;
 			}
-			else if (g_LcdDirection == 1)	/* ºáÆÁ180¡ã*/
+			else if (g_LcdDirection == 1)	/* æ¨ªå±180Â°*/
 			{
 				y = g_LcdHeight - xx - 1;
 				x = yy;
 			}
-			else if (g_LcdDirection == 2)	/* ÊúÆÁ */
+			else if (g_LcdDirection == 2)	/* ç«–å± */
 			{
 				x = xx;
 				y = yy;
 			}
-			else if (g_LcdDirection == 3)	/* ÊúÆÁ180¡ã */
+			else if (g_LcdDirection == 3)	/* ç«–å±180Â° */
 			{
 				x = g_LcdWidth - xx - 1;
 				y = g_LcdHeight - yy - 1;
 			}
 			break;
 
-		case 3:	/* Ð£×¼´¥ÃþÊ±£¬ÆÁÄ»·½ÏòÎª3 */
-			if (g_LcdDirection == 0)		/* ºáÆÁ */
+		case 3:	/* æ ¡å‡†è§¦æ‘¸æ—¶ï¼Œå±å¹•æ–¹å‘ä¸º3 */
+			if (g_LcdDirection == 0)		/* æ¨ªå± */
 			{
 				y = xx;
 				x = g_LcdWidth - yy - 1;
 			}
-			else if (g_LcdDirection == 1)	/* ºáÆÁ180¡ã*/
+			else if (g_LcdDirection == 1)	/* æ¨ªå±180Â°*/
 			{
 				y = g_LcdHeight - xx - 1;
 				x = yy;
 			}
-			else if (g_LcdDirection == 2)	/* ÊúÆÁ */
+			else if (g_LcdDirection == 2)	/* ç«–å± */
 			{
 				x = g_LcdWidth - xx - 1;
 				y = g_LcdHeight - yy - 1;
 			}
-			else if (g_LcdDirection == 3)	/* ÊúÆÁ180¡ã */
+			else if (g_LcdDirection == 3)	/* ç«–å±180Â° */
 			{
 				x = xx;
 				y = yy;
@@ -408,7 +408,7 @@ void TOUCH_PutKey(uint8_t _ucEvent, uint16_t _usX, uint16_t _usY)
 			break;
 
 		default:
-			g_tParam.TouchDirection = 0;	/* ·½Ïò²ÎÊýÎÞÐ§Ê±£¬¾ÀÕýÎªÈ±Ê¡µÄºáÆÁ */
+			g_tParam.TouchDirection = 0;	/* æ–¹å‘å‚æ•°æ— æ•ˆæ—¶ï¼Œçº æ­£ä¸ºç¼ºçœçš„æ¨ªå± */
 			break;
 	}
 
@@ -420,20 +420,20 @@ void TOUCH_PutKey(uint8_t _ucEvent, uint16_t _usX, uint16_t _usY)
 		g_tTP.Write = 0;
 	}
 	
-	/* µ÷ÊÔÓï¾ä£¬´òÓ¡adcºÍ×ø±ê */
+	/* è°ƒè¯•è¯­å¥ï¼Œæ‰“å°adcå’Œåæ ‡ */
 	touch_printf("%d - (%d, %d) adcX=%d,adcY=%d\r\n", _ucEvent, x, y, g_tTP.usAdcNowX, g_tTP.usAdcNowY);
 }
 
 /*
 *********************************************************************************************************
-*	º¯ Êý Ãû: TOUCH_GetKey
-*	¹¦ÄÜËµÃ÷: ´Ó´¥ÃþFIFO»º³åÇø¶ÁÈ¡Ò»¸ö×ø±êÖµ¡£
-*	ÐÎ    ²Î: ÎÞ
-*	·µ »Ø Öµ:
-*			TOUCH_NONE      ±íÊ¾ÎÞÊÂ¼þ
-*			TOUCH_DOWN      °´ÏÂ
-*			TOUCH_MOVE      ÒÆ¶¯
-*			TOUCH_RELEASE	ÊÍ·Å
+*	å‡½ æ•° å: TOUCH_GetKey
+*	åŠŸèƒ½è¯´æ˜Ž: ä»Žè§¦æ‘¸FIFOç¼“å†²åŒºè¯»å–ä¸€ä¸ªåæ ‡å€¼ã€‚
+*	å½¢    å‚: æ— 
+*	è¿” å›ž å€¼:
+*			TOUCH_NONE      è¡¨ç¤ºæ— äº‹ä»¶
+*			TOUCH_DOWN      æŒ‰ä¸‹
+*			TOUCH_MOVE      ç§»åŠ¨
+*			TOUCH_RELEASE	é‡Šæ”¾
 *********************************************************************************************************
 */
 uint8_t TOUCH_GetKey(int16_t *_pX, int16_t *_pY)
@@ -460,27 +460,27 @@ uint8_t TOUCH_GetKey(int16_t *_pX, int16_t *_pY)
 
 /*
 *********************************************************************************************************
-*	º¯ Êý Ãû: TOUCH_CelarFIFO
-*	¹¦ÄÜËµÃ÷: Çå³ý´¥ÃþFIFO»º³åÇø
-*	ÐÎ    ²Î:  ÎÞ
-*	·µ »Ø Öµ: ÎÞ
+*	å‡½ æ•° å: TOUCH_CelarFIFO
+*	åŠŸèƒ½è¯´æ˜Ž: æ¸…é™¤è§¦æ‘¸FIFOç¼“å†²åŒº
+*	å½¢    å‚:  æ— 
+*	è¿” å›ž å€¼: æ— 
 *********************************************************************************************************
 */
 void TOUCH_CelarFIFO(void)
 {
-	__set_PRIMASK(1);  		/* ¹ØÖÐ¶Ï */
+	__set_PRIMASK(1);  		/* å…³ä¸­æ–­ */
 	g_tTP.Write = g_tTP.Read;
-	__set_PRIMASK(0);  		/* ¿ªÖÐ¶Ï */
+	__set_PRIMASK(0);  		/* å¼€ä¸­æ–­ */
 }
 
 /*
 *********************************************************************************************************
-*	º¯ Êý Ãû: TOUCH_InRect
-*	¹¦ÄÜËµÃ÷: ÅÐ¶Ïµ±Ç°×ø±êÊÇ·ñÎ»ÓÚ¾ØÐÎ¿òÄÚ
-*	ÐÎ    ²Î:  _usX, _usY: ÊäÈë×ø±ê
-*			_usRectX,_usRectY: ¾ØÐÎÆðµã
-*			_usRectH¡¢_usRectW : ¾ØÐÎ¸ß¶ÈºÍ¿í¶È
-*	·µ »Ø Öµ: 1 ±íÊ¾ÔÚ·¶Î§ÄÚ
+*	å‡½ æ•° å: TOUCH_InRect
+*	åŠŸèƒ½è¯´æ˜Ž: åˆ¤æ–­å½“å‰åæ ‡æ˜¯å¦ä½äºŽçŸ©å½¢æ¡†å†…
+*	å½¢    å‚:  _usX, _usY: è¾“å…¥åæ ‡
+*			_usRectX,_usRectY: çŸ©å½¢èµ·ç‚¹
+*			_usRectHã€_usRectW : çŸ©å½¢é«˜åº¦å’Œå®½åº¦
+*	è¿” å›ž å€¼: 1 è¡¨ç¤ºåœ¨èŒƒå›´å†…
 *********************************************************************************************************
 */
 uint8_t TOUCH_InRect(uint16_t _usX, uint16_t _usY,
@@ -499,11 +499,11 @@ uint8_t TOUCH_InRect(uint16_t _usX, uint16_t _usY,
 
 /*
 *********************************************************************************************************
-*	º¯ Êý Ãû: TOUCH_MoveValid
-*	¹¦ÄÜËµÃ÷: ÅÐ¶Ïµ±Ç°×ø±êºÍÉÏ´Î×ø±êÊÇ·ñÆ«²îÌ«´ó
-*	ÐÎ    ²Î:  _usX1, _usY1: ×ø±ê1
-*			  _usX2, _usY2: ×ø±ê2
-*	·µ »Ø Öµ: 1 ±íÊ¾ÓÐÐ§µã£¬ 0 ±íÊ¾·Éµã
+*	å‡½ æ•° å: TOUCH_MoveValid
+*	åŠŸèƒ½è¯´æ˜Ž: åˆ¤æ–­å½“å‰åæ ‡å’Œä¸Šæ¬¡åæ ‡æ˜¯å¦åå·®å¤ªå¤§
+*	å½¢    å‚:  _usX1, _usY1: åæ ‡1
+*			  _usX2, _usY2: åæ ‡2
+*	è¿” å›ž å€¼: 1 è¡¨ç¤ºæœ‰æ•ˆç‚¹ï¼Œ 0 è¡¨ç¤ºé£žç‚¹
 *********************************************************************************************************
 */
 uint8_t TOUCH_MoveValid(uint16_t _usX1, uint16_t _usY1, uint16_t _usX2, uint16_t _usY2)
@@ -532,10 +532,10 @@ uint8_t TOUCH_MoveValid(uint16_t _usX1, uint16_t _usY1, uint16_t _usX2, uint16_t
 
 /*
 *********************************************************************************************************
-*	º¯ Êý Ãû: TOUCH_CapScan
-*	¹¦ÄÜËµÃ÷: I2C½Ó¿ÚµçÈÝ´¥Ãþ°åÉ¨Ãèº¯Êý£¬·ÅÔÚ bsp_Idle()Ö´ÐÐ£¡
-*	ÐÎ    ²Î: ÎÞ
-*	·µ »Ø Öµ: ÎÞ
+*	å‡½ æ•° å: TOUCH_CapScan
+*	åŠŸèƒ½è¯´æ˜Ž: I2CæŽ¥å£ç”µå®¹è§¦æ‘¸æ¿æ‰«æå‡½æ•°ï¼Œæ”¾åœ¨ bsp_Idle()æ‰§è¡Œï¼
+*	å½¢    å‚: æ— 
+*	è¿” å›ž å€¼: æ— 
 *********************************************************************************************************
 */
 void TOUCH_CapScan(void)
@@ -555,10 +555,10 @@ void TOUCH_CapScan(void)
 
 /*
 *********************************************************************************************************
-*	º¯ Êý Ãû: TOUCH_Scan
-*	¹¦ÄÜËµÃ÷: ´¥Ãþ°åÊÂ¼þ¼ì²â³ÌÐò¡£¸Ãº¯Êý±»ÖÜÆÚÐÔµ÷ÓÃ£¬Ã¿msµ÷ÓÃ1´Î. ¼û bsp_Timer.c
-*	ÐÎ    ²Î:  ÎÞ
-*	·µ »Ø Öµ: ÎÞ
+*	å‡½ æ•° å: TOUCH_Scan
+*	åŠŸèƒ½è¯´æ˜Ž: è§¦æ‘¸æ¿äº‹ä»¶æ£€æµ‹ç¨‹åºã€‚è¯¥å‡½æ•°è¢«å‘¨æœŸæ€§è°ƒç”¨ï¼Œæ¯msè°ƒç”¨1æ¬¡. è§ bsp_Timer.c
+*	å½¢    å‚:  æ— 
+*	è¿” å›ž å€¼: æ— 
 *********************************************************************************************************
 */
 void TOUCH_Scan(void)
@@ -570,18 +570,18 @@ void TOUCH_Scan(void)
 	static uint8_t s_ucPos = 0;
 	static uint8_t s_count = 0;
 	static uint8_t s_down = 0;
-	static uint16_t s_usSaveAdcX, s_usSaveAdcY; /* ÓÃÓÚ´¥±ÊÌ§ÆðÊÂ¼þ£¬±£´æ°´ÏÂºÍÒÆ¶¯µÄ×îºó²ÉÑùÖµ */
+	static uint16_t s_usSaveAdcX, s_usSaveAdcY; /* ç”¨äºŽè§¦ç¬”æŠ¬èµ·äº‹ä»¶ï¼Œä¿å­˜æŒ‰ä¸‹å’Œç§»åŠ¨çš„æœ€åŽé‡‡æ ·å€¼ */
 	static uint8_t s_ms = 0;
 
 	if (g_GT811.Enable == 1)
 	{
-		GT811_Timer1ms();	/* µçÈÝ´¥ÃþÆÁ³ÌÐò¼ÆÊýÆ÷ */
+		GT811_Timer1ms();	/* ç”µå®¹è§¦æ‘¸å±ç¨‹åºè®¡æ•°å™¨ */
 		return;
 	}
 	
 	if (g_tFT5X06.Enable == 1)
 	{
-		FT5X06_Timer1ms();	/* µçÈÝ´¥ÃþÆÁ³ÌÐò¼ÆÊýÆ÷ */
+		FT5X06_Timer1ms();	/* ç”µå®¹è§¦æ‘¸å±ç¨‹åºè®¡æ•°å™¨ */
 		return;
 	}
 	
@@ -595,37 +595,37 @@ void TOUCH_Scan(void)
 		return;
 	}
 	
-	/* 2ms½øÈëÒ»´Î */
+	/* 2msè¿›å…¥ä¸€æ¬¡ */
 	s_ms = 0;
 	
-	/* ´¥±ÊÖÐ¶Ï·¢Éú */
+	/* è§¦ç¬”ä¸­æ–­å‘ç”Ÿ */
 	if (STMPE811_PenInt())
 	{
-		/* »ñµÃÔ­Ê¼µÄADCÖµ£¬Î´ÂË²¨ */
+		/* èŽ·å¾—åŽŸå§‹çš„ADCå€¼ï¼Œæœªæ»¤æ³¢ */
 		usAdcX = STMPE811_ReadX();
 		usAdcY = STMPE811_ReadY();
 
 		if (TOUCH_PressValid(usAdcX, usAdcY))
 		{
-			/* °´Ñ¹30msÖ®ºó²Å¿ªÊ¼²É¼¯Êý¾Ý */
+			/* æŒ‰åŽ‹30msä¹‹åŽæ‰å¼€å§‹é‡‡é›†æ•°æ® */
 			if (s_count >= DOWN_VALID / 2)
 			{
 				s_usXBuf[s_ucPos] = usAdcX;
 				s_usYBuf[s_ucPos] = usAdcY;
 
-				/* ²É¼¯20msÊý¾Ý½øÐÐÂË²¨ */
+				/* é‡‡é›†20msæ•°æ®è¿›è¡Œæ»¤æ³¢ */
 				if (++s_ucPos >= SAMPLE_COUNT / 2)
 				{
 					s_ucPos = 0;
 
-					/* ¶ÔADC²ÉÑùÖµ½øÐÐÈí¼þÂË²¨ */
+					/* å¯¹ADCé‡‡æ ·å€¼è¿›è¡Œè½¯ä»¶æ»¤æ³¢ */
 					g_tTP.usAdcNowX = TOUCH_DataFilter(s_usXBuf, SAMPLE_COUNT / 2);
 					g_tTP.usAdcNowY = TOUCH_DataFilter(s_usYBuf, SAMPLE_COUNT / 2);
 
 					if (s_down == 0)
 					{
 						s_down = 1;
-						/* ´¥Ãþ°´ÏÂÊÂ¼þ */
+						/* è§¦æ‘¸æŒ‰ä¸‹äº‹ä»¶ */
 						TOUCH_PutKey(TOUCH_DOWN, g_tTP.usAdcNowX, g_tTP.usAdcNowY);
 						
 						s_usSaveAdcX = g_tTP.usAdcNowX;
@@ -635,7 +635,7 @@ void TOUCH_Scan(void)
 					{
 						if (TOUCH_MoveValid(s_usSaveAdcX, s_usSaveAdcY, g_tTP.usAdcNowX, g_tTP.usAdcNowY))
 						{
-							/* ´¥ÃþÒÆ¶¯ÊÂ¼þ */
+							/* è§¦æ‘¸ç§»åŠ¨äº‹ä»¶ */
 							TOUCH_PutKey(TOUCH_MOVE, g_tTP.usAdcNowX, g_tTP.usAdcNowY);
 							
 							s_usSaveAdcX = g_tTP.usAdcNowX;
@@ -659,7 +659,7 @@ void TOUCH_Scan(void)
 			{
 				if (--s_count == 0)
 				{
-					/* ´¥ÃþÊÍ·ÅÊÂ¼þ */
+					/* è§¦æ‘¸é‡Šæ”¾äº‹ä»¶ */
 					//TOUCH_PutKey(TOUCH_RELEASE, g_tTP.usAdcNowX, g_tTP.usAdcNowY);
 					TOUCH_PutKey(TOUCH_RELEASE, s_usSaveAdcX, s_usSaveAdcY);
 
@@ -669,7 +669,7 @@ void TOUCH_Scan(void)
 					s_count = 0;
 					s_down = 0;
 					
-					STMPE811_ClearInt();		/* Çå´¥±ÊÖÐ¶Ï±êÖ¾ */
+					STMPE811_ClearInt();		/* æ¸…è§¦ç¬”ä¸­æ–­æ ‡å¿— */
 				}
 			}
 			s_ucPos = 0;
@@ -679,10 +679,10 @@ void TOUCH_Scan(void)
 
 /*
 *********************************************************************************************************
-*	º¯ Êý Ãû: CalTwoPoint
-*	¹¦ÄÜËµÃ÷: ¸ù¾Ý2µãÖ±Ïß·½³Ì£¬¼ÆËãYÖµ
-*	ÐÎ    ²Î:  2¸öµãµÄ×ø±êºÍxÊäÈëÁ¿
-*	·µ »Ø Öµ: x¶ÔÓ¦µÄyÖµ
+*	å‡½ æ•° å: CalTwoPoint
+*	åŠŸèƒ½è¯´æ˜Ž: æ ¹æ®2ç‚¹ç›´çº¿æ–¹ç¨‹ï¼Œè®¡ç®—Yå€¼
+*	å½¢    å‚:  2ä¸ªç‚¹çš„åæ ‡å’Œxè¾“å…¥é‡
+*	è¿” å›ž å€¼: xå¯¹åº”çš„yå€¼
 *********************************************************************************************************
 */
 static int32_t CalTwoPoint(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint16_t x)
@@ -692,15 +692,15 @@ static int32_t CalTwoPoint(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, u
 
 /*
 *********************************************************************************************************
-*	º¯ Êý Ãû: TOUCH_TransX
-*	¹¦ÄÜËµÃ÷: ½«´¥ÃþADCÖµ×ª»»ÎªÏñËØ×ø±ê
-*	ÐÎ    ²Î:  ÎÞ
-*	·µ »Ø Öµ: X ×ø±êÖµ£¬ÔÊÐí¸ºÖµ
+*	å‡½ æ•° å: TOUCH_TransX
+*	åŠŸèƒ½è¯´æ˜Ž: å°†è§¦æ‘¸ADCå€¼è½¬æ¢ä¸ºåƒç´ åæ ‡
+*	å½¢    å‚:  æ— 
+*	è¿” å›ž å€¼: X åæ ‡å€¼ï¼Œå…è®¸è´Ÿå€¼
 *********************************************************************************************************
 */
 static int16_t TOUCH_TransX(uint16_t _usAdcX, uint16_t _usAdcY)
 {
-#if CALIB_POINT_COUNT == 2	/* 2µãÐ£×¼ */
+#if CALIB_POINT_COUNT == 2	/* 2ç‚¹æ ¡å‡† */
 	uint16_t x;
 	int32_t y;
 
@@ -731,34 +731,34 @@ static int16_t TOUCH_TransX(uint16_t _usAdcX, uint16_t _usAdcY)
 		}
 	}
 	return y;
-#else		/* 4µãÐ£×¼ */
+#else		/* 4ç‚¹æ ¡å‡† */
 	uint16_t x, x1, x2;
 	int32_t y;
 
-	if (g_tTP.XYChange == 0)	/* X Y ×ø±ê²»½»»» */
+	if (g_tTP.XYChange == 0)	/* X Y åæ ‡ä¸äº¤æ¢ */
 	{
 		x = _usAdcX;
 
-		/* ¸ù¾Ý Y ADC ÊµÊ±¼ÆËãÖ±Ïß·½³ÌµÄ²Î¿¼µãx1, x2
-			if  _usAdcY = usAdcY1 then  È¡µã = (AdcX1, TP_X1, AdcX4, TP_X4, _usAdcY)
-			if  _usAdcY = usAdcY2 then  È¡µã = (AdcX3, TP_X3, AdcX2, TP_X2, _usAdcY)
+		/* æ ¹æ® Y ADC å®žæ—¶è®¡ç®—ç›´çº¿æ–¹ç¨‹çš„å‚è€ƒç‚¹x1, x2
+			if  _usAdcY = usAdcY1 then  å–ç‚¹ = (AdcX1, TP_X1, AdcX4, TP_X4, _usAdcY)
+			if  _usAdcY = usAdcY2 then  å–ç‚¹ = (AdcX3, TP_X3, AdcX2, TP_X2, _usAdcY)
 
-			ÆäÖÐ TP_X1 = TP_X3;  TP_X4 = TP_X1 , ÕâÊÇ³ÌÐòÉè¶¨µÄÐ£×¼Î»ÖÃµÄÏñËØ×ø±ê, ÊÇ¹Ì¶¨µÄ¡£
-			ÎÒÃÇ½öÐèÒª¶¯Ì¬¼ÆËã¶ÔµÚ1¸öºÍµÚ3¸ö²ÎÊý¡£Í¬Ñù²ÉÓÃ2µãÖ±Ïß·½³Ì¼ÆËã¡£
+			å…¶ä¸­ TP_X1 = TP_X3;  TP_X4 = TP_X1 , è¿™æ˜¯ç¨‹åºè®¾å®šçš„æ ¡å‡†ä½ç½®çš„åƒç´ åæ ‡, æ˜¯å›ºå®šçš„ã€‚
+			æˆ‘ä»¬ä»…éœ€è¦åŠ¨æ€è®¡ç®—å¯¹ç¬¬1ä¸ªå’Œç¬¬3ä¸ªå‚æ•°ã€‚åŒæ ·é‡‡ç”¨2ç‚¹ç›´çº¿æ–¹ç¨‹è®¡ç®—ã€‚
 		*/
 		x1 = CalTwoPoint(g_tTP.usAdcY1, g_tTP.usAdcX1, g_tTP.usAdcY2,  g_tTP.usAdcX3, _usAdcY);
 		x2 = CalTwoPoint(g_tTP.usAdcY1, g_tTP.usAdcX4, g_tTP.usAdcY2,  g_tTP.usAdcX2, _usAdcY);
 	}
-	else						/* X Y ×ø±ê½»»» */
+	else						/* X Y åæ ‡äº¤æ¢ */
 	{
 		x = _usAdcY;
 
-		/* ¸ù¾Ý X ADC ÊµÊ±¼ÆËãÖ±Ïß·½³ÌµÄ²Î¿¼µãx1, x2
-			if  _usAdcX = usAdcX1 then  È¡µã = (AdcY1, TP_X1, AdcY4, TP_X4, _usAdcX)
-			if  _usAdcX = usAdcX2 then  È¡µã = (AdcY3, TP_X3, AdcY2, TP_X2, _usAdcX)
+		/* æ ¹æ® X ADC å®žæ—¶è®¡ç®—ç›´çº¿æ–¹ç¨‹çš„å‚è€ƒç‚¹x1, x2
+			if  _usAdcX = usAdcX1 then  å–ç‚¹ = (AdcY1, TP_X1, AdcY4, TP_X4, _usAdcX)
+			if  _usAdcX = usAdcX2 then  å–ç‚¹ = (AdcY3, TP_X3, AdcY2, TP_X2, _usAdcX)
 
-			ÆäÖÐ TP_X1 = TP_X3;  TP_X4 = TP_X1 , ÕâÊÇ³ÌÐòÉè¶¨µÄÐ£×¼Î»ÖÃµÄÏñËØ×ø±ê, ÊÇ¹Ì¶¨µÄ¡£
-			ÎÒÃÇ½öÐèÒª¶¯Ì¬¼ÆËã¶ÔµÚ1¸öºÍµÚ3¸ö²ÎÊý¡£Í¬Ñù²ÉÓÃ2µãÖ±Ïß·½³Ì¼ÆËã¡£
+			å…¶ä¸­ TP_X1 = TP_X3;  TP_X4 = TP_X1 , è¿™æ˜¯ç¨‹åºè®¾å®šçš„æ ¡å‡†ä½ç½®çš„åƒç´ åæ ‡, æ˜¯å›ºå®šçš„ã€‚
+			æˆ‘ä»¬ä»…éœ€è¦åŠ¨æ€è®¡ç®—å¯¹ç¬¬1ä¸ªå’Œç¬¬3ä¸ªå‚æ•°ã€‚åŒæ ·é‡‡ç”¨2ç‚¹ç›´çº¿æ–¹ç¨‹è®¡ç®—ã€‚
 		*/
 		x1 = CalTwoPoint(g_tTP.usAdcX1, g_tTP.usAdcY1, g_tTP.usAdcX2,  g_tTP.usAdcY3, _usAdcX);
 		x2 = CalTwoPoint(g_tTP.usAdcX1, g_tTP.usAdcY4, g_tTP.usAdcX2,  g_tTP.usAdcY2, _usAdcX);
@@ -770,7 +770,7 @@ static int16_t TOUCH_TransX(uint16_t _usAdcX, uint16_t _usAdcY)
 	}
 	else
 	{
-		/* ¸ù¾Ý2µãÖ±Ïß·½³Ì£¬¼ÆËã×ø±ê */
+		/* æ ¹æ®2ç‚¹ç›´çº¿æ–¹ç¨‹ï¼Œè®¡ç®—åæ ‡ */
 		//y = CalTwoPoint(x1, TP_X1, x2, TP_X2, x);
 		CalTwoPoint(x1, g_tTP.usLcdX1, x2, g_tTP.usLcd2, x);
 	}
@@ -780,15 +780,15 @@ static int16_t TOUCH_TransX(uint16_t _usAdcX, uint16_t _usAdcY)
 
 /*
 *********************************************************************************************************
-*	º¯ Êý Ãû: TOUCH_TransY
-*	¹¦ÄÜËµÃ÷: ½«´¥ÃþADCÖµ×ª»»ÎªÏñËØ×ø±ê
-*	ÐÎ    ²Î:  ÎÞ
-*	·µ »Ø Öµ: Y ×ø±êÖµ£¬ÔÊÐí¸ºÖµ
+*	å‡½ æ•° å: TOUCH_TransY
+*	åŠŸèƒ½è¯´æ˜Ž: å°†è§¦æ‘¸ADCå€¼è½¬æ¢ä¸ºåƒç´ åæ ‡
+*	å½¢    å‚:  æ— 
+*	è¿” å›ž å€¼: Y åæ ‡å€¼ï¼Œå…è®¸è´Ÿå€¼
 *********************************************************************************************************
 */
 static int16_t TOUCH_TransY(uint16_t _usAdcX, uint16_t _usAdcY)
 {
-#if CALIB_POINT_COUNT == 2	/* 2µãÐ£×¼ */
+#if CALIB_POINT_COUNT == 2	/* 2ç‚¹æ ¡å‡† */
 	int32_t x;
 	int32_t y;
 
@@ -819,34 +819,34 @@ static int16_t TOUCH_TransY(uint16_t _usAdcX, uint16_t _usAdcY)
 		}
 	}
 	return y;
-#else		/* 4µãÐ£×¼ */
+#else		/* 4ç‚¹æ ¡å‡† */
 	int32_t x, x1, x2;
 	int32_t y;
 
-	if (g_tTP.XYChange == 0)	/* X Y ×ø±ê²»½»»» */
+	if (g_tTP.XYChange == 0)	/* X Y åæ ‡ä¸äº¤æ¢ */
 	{
 		x = _usAdcY;
 
-		/* ¸ù¾Ý X ADC ÊµÊ±¼ÆËãÖ±Ïß·½³ÌµÄ²Î¿¼µãx1, x2
-			if  _usAdcX = usAdcX1 then  È¡µã = (AdcY1, TP_Y1, AdcY3, TP_Y3, _usAdcX)
-			if  _usAdcX = usAdcX2 then  È¡µã = (AdcY4, TP_Y4, AdcY2, TP_Y2, _usAdcX)
+		/* æ ¹æ® X ADC å®žæ—¶è®¡ç®—ç›´çº¿æ–¹ç¨‹çš„å‚è€ƒç‚¹x1, x2
+			if  _usAdcX = usAdcX1 then  å–ç‚¹ = (AdcY1, TP_Y1, AdcY3, TP_Y3, _usAdcX)
+			if  _usAdcX = usAdcX2 then  å–ç‚¹ = (AdcY4, TP_Y4, AdcY2, TP_Y2, _usAdcX)
 
-			ÆäÖÐ TP_Y1 = TP_Y4;  TP_Y3 = TP_Y2 , ÕâÊÇ³ÌÐòÉè¶¨µÄÐ£×¼Î»ÖÃµÄÏñËØ×ø±ê, ÊÇ¹Ì¶¨µÄ¡£
-			ÎÒÃÇ½öÐèÒª¶¯Ì¬¼ÆËã¶ÔµÚ1¸öºÍµÚ3¸ö²ÎÊý¡£Í¬Ñù²ÉÓÃ2µãÖ±Ïß·½³Ì¼ÆËã¡£
+			å…¶ä¸­ TP_Y1 = TP_Y4;  TP_Y3 = TP_Y2 , è¿™æ˜¯ç¨‹åºè®¾å®šçš„æ ¡å‡†ä½ç½®çš„åƒç´ åæ ‡, æ˜¯å›ºå®šçš„ã€‚
+			æˆ‘ä»¬ä»…éœ€è¦åŠ¨æ€è®¡ç®—å¯¹ç¬¬1ä¸ªå’Œç¬¬3ä¸ªå‚æ•°ã€‚åŒæ ·é‡‡ç”¨2ç‚¹ç›´çº¿æ–¹ç¨‹è®¡ç®—ã€‚
 		*/
 		x1 = CalTwoPoint(g_tTP.usAdcX1, g_tTP.usAdcY1, g_tTP.usAdcX2,  g_tTP.usAdcY4, _usAdcX);
 		x2 = CalTwoPoint(g_tTP.usAdcX1, g_tTP.usAdcY3, g_tTP.usAdcX2,  g_tTP.usAdcY2, _usAdcX);
 	}
-	else						/* X Y ×ø±ê½»»» */
+	else						/* X Y åæ ‡äº¤æ¢ */
 	{
 		x = _usAdcX;
 
-		/* ¸ù¾Ý X ADC ÊµÊ±¼ÆËãÖ±Ïß·½³ÌµÄ²Î¿¼µãx1, x2
-			if  _usAdcY = usAdcY1 then  È¡µã = (AdcX1, TP_Y1, AdcX3, TP_Y3, _usAdcY)
-			if  _usAdcY = usAdcY2 then  È¡µã = (AdcX4, TP_Y4, AdcX2, TP_Y2, _usAdcY)
+		/* æ ¹æ® X ADC å®žæ—¶è®¡ç®—ç›´çº¿æ–¹ç¨‹çš„å‚è€ƒç‚¹x1, x2
+			if  _usAdcY = usAdcY1 then  å–ç‚¹ = (AdcX1, TP_Y1, AdcX3, TP_Y3, _usAdcY)
+			if  _usAdcY = usAdcY2 then  å–ç‚¹ = (AdcX4, TP_Y4, AdcX2, TP_Y2, _usAdcY)
 
-			ÆäÖÐ TP_Y1 = TP_Y3;  TP_Y4 = TP_Y2 , ÕâÊÇ³ÌÐòÉè¶¨µÄÐ£×¼Î»ÖÃµÄÏñËØ×ø±ê, ÊÇ¹Ì¶¨µÄ¡£
-			ÎÒÃÇ½öÐèÒª¶¯Ì¬¼ÆËã¶ÔµÚ1¸öºÍµÚ3¸ö²ÎÊý¡£Í¬Ñù²ÉÓÃ2µãÖ±Ïß·½³Ì¼ÆËã¡£
+			å…¶ä¸­ TP_Y1 = TP_Y3;  TP_Y4 = TP_Y2 , è¿™æ˜¯ç¨‹åºè®¾å®šçš„æ ¡å‡†ä½ç½®çš„åƒç´ åæ ‡, æ˜¯å›ºå®šçš„ã€‚
+			æˆ‘ä»¬ä»…éœ€è¦åŠ¨æ€è®¡ç®—å¯¹ç¬¬1ä¸ªå’Œç¬¬3ä¸ªå‚æ•°ã€‚åŒæ ·é‡‡ç”¨2ç‚¹ç›´çº¿æ–¹ç¨‹è®¡ç®—ã€‚
 		*/
 		x1 = CalTwoPoint(g_tTP.usAdcY1, g_tTP.usAdcX1, g_tTP.usAdcY2,  g_tTP.usAdcX4, _usAdcY);
 		x2 = CalTwoPoint(g_tTP.usAdcY1, g_tTP.usAdcX3, g_tTP.usAdcY2,  g_tTP.usAdcX2, _usAdcY);
@@ -858,7 +858,7 @@ static int16_t TOUCH_TransY(uint16_t _usAdcX, uint16_t _usAdcY)
 	}
 	else
 	{
-		/* ¸ù¾Ý2µãÖ±Ïß·½³Ì£¬¼ÆËã×ø±ê */
+		/* æ ¹æ®2ç‚¹ç›´çº¿æ–¹ç¨‹ï¼Œè®¡ç®—åæ ‡ */
 		//y = CalTwoPoint(x1, TP_Y1, x2, TP_Y2, x);
 		y = CalTwoPoint(x1, g_tTP.usLcdY1, x2, g_tTP.usLcdY2, x);
 	}
@@ -868,10 +868,10 @@ static int16_t TOUCH_TransY(uint16_t _usAdcX, uint16_t _usAdcY)
 
 /*
 *********************************************************************************************************
-*	º¯ Êý Ãû: TOUCH_GetX
-*	¹¦ÄÜËµÃ÷: »ñµÃµ±Ç°µÄµÄ´¥Ãþ×ø±êX
-*	ÐÎ    ²Î:  ÎÞ
-*	·µ »Ø Öµ: X ×ø±êÖµ£¬ÔÊÐí¸ºÖµ
+*	å‡½ æ•° å: TOUCH_GetX
+*	åŠŸèƒ½è¯´æ˜Ž: èŽ·å¾—å½“å‰çš„çš„è§¦æ‘¸åæ ‡X
+*	å½¢    å‚:  æ— 
+*	è¿” å›ž å€¼: X åæ ‡å€¼ï¼Œå…è®¸è´Ÿå€¼
 *********************************************************************************************************
 */
 int16_t TOUCH_GetX(void)
@@ -881,10 +881,10 @@ int16_t TOUCH_GetX(void)
 
 /*
 *********************************************************************************************************
-*	º¯ Êý Ãû: TOUCH_GetY
-*	¹¦ÄÜËµÃ÷: »ñµÃµ±Ç°µÄµÄ´¥Ãþ×ø±êY
-*	ÐÎ    ²Î:  ÎÞ
-*	·µ »Ø Öµ: Y ×ø±êÖµ£¬ÔÊÐí¸ºÖµ
+*	å‡½ æ•° å: TOUCH_GetY
+*	åŠŸèƒ½è¯´æ˜Ž: èŽ·å¾—å½“å‰çš„çš„è§¦æ‘¸åæ ‡Y
+*	å½¢    å‚:  æ— 
+*	è¿” å›ž å€¼: Y åæ ‡å€¼ï¼Œå…è®¸è´Ÿå€¼
 *********************************************************************************************************
 */
 int16_t TOUCH_GetY(void)
@@ -894,10 +894,10 @@ int16_t TOUCH_GetY(void)
 
 /*
 *********************************************************************************************************
-*	º¯ Êý Ãû: TOUCH_DataFilter
-*	¹¦ÄÜËµÃ÷: ¶Ô²ÉÑùÊý¾Ý½øÐÐÂË²¨
-*	ÐÎ    ²Î:  ÎÞ
-*	·µ »Ø Öµ: X ×ø±êÖµ£¬ÔÊÐí¸ºÖµ
+*	å‡½ æ•° å: TOUCH_DataFilter
+*	åŠŸèƒ½è¯´æ˜Ž: å¯¹é‡‡æ ·æ•°æ®è¿›è¡Œæ»¤æ³¢
+*	å½¢    å‚:  æ— 
+*	è¿” å›ž å€¼: X åæ ‡å€¼ï¼Œå…è®¸è´Ÿå€¼
 *********************************************************************************************************
 */
 static uint16_t TOUCH_DataFilter(uint16_t *_pBuf, uint8_t _ucCount)
@@ -918,7 +918,7 @@ static uint16_t TOUCH_DataFilter(uint16_t *_pBuf, uint8_t _ucCount)
 	uint16_t usTemp;
 	uint32_t uiSum;
 
-	/* ÉýÐòÅÅÁÐ */
+	/* å‡åºæŽ’åˆ— */
     do
 	{
 		flag = 0;
@@ -946,55 +946,55 @@ static uint16_t TOUCH_DataFilter(uint16_t *_pBuf, uint8_t _ucCount)
 
 /*
 *********************************************************************************************************
-*	º¯ Êý Ãû: TOUCH_DispPoint1
-*	¹¦ÄÜËµÃ÷: ÏÔÊ¾µÚ1¸öÐ£×¼µã
-*	ÐÎ    ²Î:  _ucIndex = 0 : ±íÊ¾µÚ1¸öµã£» _ucIndex = 1 ±íÊ¾µÚ2¸öµã;
-*	·µ »Ø Öµ: ÎÞ
+*	å‡½ æ•° å: TOUCH_DispPoint1
+*	åŠŸèƒ½è¯´æ˜Ž: æ˜¾ç¤ºç¬¬1ä¸ªæ ¡å‡†ç‚¹
+*	å½¢    å‚:  _ucIndex = 0 : è¡¨ç¤ºç¬¬1ä¸ªç‚¹ï¼› _ucIndex = 1 è¡¨ç¤ºç¬¬2ä¸ªç‚¹;
+*	è¿” å›ž å€¼: æ— 
 *********************************************************************************************************
 */
 static void TOUCH_DispPoint(uint8_t _ucIndex)
 {
-	FONT_T tFont16;			/* ¶¨ÒåÒ»¸ö×ÖÌå½á¹¹Ìå±äÁ¿£¬ÓÃÓÚÉèÖÃ×ÖÌå²ÎÊý */
+	FONT_T tFont16;			/* å®šä¹‰ä¸€ä¸ªå­—ä½“ç»“æž„ä½“å˜é‡ï¼Œç”¨äºŽè®¾ç½®å­—ä½“å‚æ•° */
 
-	/* ÉèÖÃ×ÖÌå²ÎÊý */
+	/* è®¾ç½®å­—ä½“å‚æ•° */
 	{
-		tFont16.FontCode = FC_ST_16;	/* ×ÖÌå´úÂë 16µãÕó */
-		tFont16.FrontColor = CL_WHITE;		/* ×ÖÌåÑÕÉ« 0 »ò 1 */
-		tFont16.BackColor = CL_BLUE;	/* ÎÄ×Ö±³¾°ÑÕÉ« */
-		tFont16.Space = 0;			/* ÎÄ×Ö¼ä¾à£¬µ¥Î» = ÏñËØ */
+		tFont16.FontCode = FC_ST_16;	/* å­—ä½“ä»£ç  16ç‚¹é˜µ */
+		tFont16.FrontColor = CL_WHITE;		/* å­—ä½“é¢œè‰² 0 æˆ– 1 */
+		tFont16.BackColor = CL_BLUE;	/* æ–‡å­—èƒŒæ™¯é¢œè‰² */
+		tFont16.Space = 0;			/* æ–‡å­—é—´è·ï¼Œå•ä½ = åƒç´  */
 	}
 
 /*
-	µÚ1¸öµã £º x1 = CALIB_OFFSET, y1 = CALIB_OFFSET
-	µÚ2¸öµã £º x2 = LCD_GetHeight() - CALIB_OFFSET, y2 = LCD_GetWidth - CALIB_OFFSET
+	ç¬¬1ä¸ªç‚¹ ï¼š x1 = CALIB_OFFSET, y1 = CALIB_OFFSET
+	ç¬¬2ä¸ªç‚¹ ï¼š x2 = LCD_GetHeight() - CALIB_OFFSET, y2 = LCD_GetWidth - CALIB_OFFSET
 */
 	if (_ucIndex == 0)
 	{
-		LCD_ClrScr(CL_BLUE);  		/* ÇåÆÁ£¬±³¾°À¶É« */
+		LCD_ClrScr(CL_BLUE);  		/* æ¸…å±ï¼ŒèƒŒæ™¯è“è‰² */
 
-		/* ÔÚÆÁÄ»±ßÑØ»æÖÆ2¸ö¾ØÐÎ¿ò(ÓÃÓÚ¼ì²âÃæ°å±ßÔµÏñËØÊÇ·ñÕý³£) */
+		/* åœ¨å±å¹•è¾¹æ²¿ç»˜åˆ¶2ä¸ªçŸ©å½¢æ¡†(ç”¨äºŽæ£€æµ‹é¢æ¿è¾¹ç¼˜åƒç´ æ˜¯å¦æ­£å¸¸) */
 		LCD_DrawRect(0, 0, LCD_GetHeight(), LCD_GetWidth(), CL_WHITE);
 		LCD_DrawRect(2, 2, LCD_GetHeight() - 4, LCD_GetWidth() - 4, CL_YELLOW);
 
-		LCD_DispStr(50, 10, "Ð£×¼´¥ÃþÆÁ", &tFont16);		/* ÔÚ(8,3)×ø±ê´¦ÏÔÊ¾Ò»´®ºº×Ö */
+		LCD_DispStr(50, 10, "æ ¡å‡†è§¦æ‘¸å±", &tFont16);		/* åœ¨(8,3)åæ ‡å¤„æ˜¾ç¤ºä¸€ä¸²æ±‰å­— */
 
 		LCD_DrawCircle(TP_X1, TP_Y1, 6, CL_WHITE);
 	}
 	else if (_ucIndex == 1)
 	{
-		LCD_DrawCircle(TP_X1, TP_Y1, 6, CL_BLUE);			/* ²Á³ýµÚ1¸öµã */
+		LCD_DrawCircle(TP_X1, TP_Y1, 6, CL_BLUE);			/* æ“¦é™¤ç¬¬1ä¸ªç‚¹ */
 
 		LCD_DrawCircle(TP_X2, TP_Y2, 6, CL_WHITE);
 	}
 	else if (_ucIndex == 2)
 	{
-		LCD_DrawCircle(TP_X2, TP_Y2, 6, CL_BLUE);			/* ²Á³ýµÚ2¸öµã */
+		LCD_DrawCircle(TP_X2, TP_Y2, 6, CL_BLUE);			/* æ“¦é™¤ç¬¬2ä¸ªç‚¹ */
 
 		LCD_DrawCircle(TP_X3, TP_Y3, 6, CL_WHITE);
 	}
 	else
 	{
-		LCD_DrawCircle(TP_X3, TP_Y3, 6, CL_BLUE);			/* ²Á³ýµÚ3¸öµã */
+		LCD_DrawCircle(TP_X3, TP_Y3, 6, CL_BLUE);			/* æ“¦é™¤ç¬¬3ä¸ªç‚¹ */
 
 		LCD_DrawCircle(TP_X4, TP_Y4, 6, CL_WHITE);
 	}
@@ -1002,10 +1002,10 @@ static void TOUCH_DispPoint(uint8_t _ucIndex)
 
 /*
 *********************************************************************************************************
-*	º¯ Êý Ãû: TOUCH_PressValid
-*	¹¦ÄÜËµÃ÷: ÅÐ¶Ï°´Ñ¹ÊÇ·ñÓÐÐ§£¬¸ù¾ÝX, YµÄADCÖµ½øÐÐ´óÖÂÅÐ¶Ï
-*	ÐÎ    ²Î:  ÎÞ
-*	·µ »Ø Öµ: 1 ±íÊ¾ÓÐÐ§£» 0 ±íÊ¾ÎÞÐ§
+*	å‡½ æ•° å: TOUCH_PressValid
+*	åŠŸèƒ½è¯´æ˜Ž: åˆ¤æ–­æŒ‰åŽ‹æ˜¯å¦æœ‰æ•ˆï¼Œæ ¹æ®X, Yçš„ADCå€¼è¿›è¡Œå¤§è‡´åˆ¤æ–­
+*	å½¢    å‚:  æ— 
+*	è¿” å›ž å€¼: 1 è¡¨ç¤ºæœ‰æ•ˆï¼› 0 è¡¨ç¤ºæ— æ•ˆ
 *********************************************************************************************************
 */
 static uint8_t	TOUCH_PressValid(uint16_t _usX, uint16_t _usY)
@@ -1024,10 +1024,10 @@ static uint8_t	TOUCH_PressValid(uint16_t _usX, uint16_t _usY)
 
 /*
 *********************************************************************************************************
-*	º¯ Êý Ãû: TOUCH_WaitRelease
-*	¹¦ÄÜËµÃ÷: µÈ´ý´¥±ÊÊÍ·Å
-*	ÐÎ    ²Î:  ÎÞ
-*	·µ »Ø Öµ: ÎÞ
+*	å‡½ æ•° å: TOUCH_WaitRelease
+*	åŠŸèƒ½è¯´æ˜Ž: ç­‰å¾…è§¦ç¬”é‡Šæ”¾
+*	å½¢    å‚:  æ— 
+*	è¿” å›ž å€¼: æ— 
 *********************************************************************************************************
 */
 static void TOUCH_WaitRelease(void)
@@ -1053,10 +1053,10 @@ static void TOUCH_WaitRelease(void)
 
 /*
 *********************************************************************************************************
-*	º¯ Êý Ãû: TOUCH_Abs
-*	¹¦ÄÜËµÃ÷: ¼ÆËã¾ø¶ÔÖµ
-*	ÐÎ    ²Î: x : ÓÐ·ûºÏÕûÊý
-*	·µ »Ø Öµ: ÕýÕûÊý
+*	å‡½ æ•° å: TOUCH_Abs
+*	åŠŸèƒ½è¯´æ˜Ž: è®¡ç®—ç»å¯¹å€¼
+*	å½¢    å‚: x : æœ‰ç¬¦åˆæ•´æ•°
+*	è¿” å›ž å€¼: æ­£æ•´æ•°
 *********************************************************************************************************
 */
 int32_t TOUCH_Abs(int32_t x)
@@ -1073,10 +1073,10 @@ int32_t TOUCH_Abs(int32_t x)
 
 /*
 *********************************************************************************************************
-*	º¯ Êý Ãû: TOUCH_Calibration
-*	¹¦ÄÜËµÃ÷: ´¥ÃþÆÁÐ£×¼
-*	ÐÎ    ²Î:  ÎÞ
-*	·µ »Ø Öµ: ÎÞ
+*	å‡½ æ•° å: TOUCH_Calibration
+*	åŠŸèƒ½è¯´æ˜Ž: è§¦æ‘¸å±æ ¡å‡†
+*	å½¢    å‚:  æ— 
+*	è¿” å›ž å€¼: æ— 
 *********************************************************************************************************
 */
 void TOUCH_Calibration(void)
@@ -1087,13 +1087,13 @@ void TOUCH_Calibration(void)
 	uint8_t i;
 	uint32_t n;
 
-	TOUCH_CelarFIFO();		/* Çå³ýÎÞÐ§µÄ´¥ÃþÊÂ¼þ */
+	TOUCH_CelarFIFO();		/* æ¸…é™¤æ— æ•ˆçš„è§¦æ‘¸äº‹ä»¶ */
 
 	for (i = 0; i < CALIB_POINT_COUNT; i++)
 	{
-		TOUCH_DispPoint(i);		/* ÏÔÊ¾Ð£×¼µã */
+		TOUCH_DispPoint(i);		/* æ˜¾ç¤ºæ ¡å‡†ç‚¹ */
 
-		TOUCH_WaitRelease(); 	/* µÈ´ý´¥±ÊÊÍ·Å */
+		TOUCH_WaitRelease(); 	/* ç­‰å¾…è§¦ç¬”é‡Šæ”¾ */
 
 		usCount = 0;
 		for (n = 0; n < 500; n++)
@@ -1105,7 +1105,7 @@ void TOUCH_Calibration(void)
 			{
 				if (++usCount > 5)
 				{
-					/* °´Ñ¹ÓÐÐ§, ±£´æÐ£×¼µãADC²ÉÑùÖµ */
+					/* æŒ‰åŽ‹æœ‰æ•ˆ, ä¿å­˜æ ¡å‡†ç‚¹ADCé‡‡æ ·å€¼ */
 					if (i == 0)
 					{
 						g_tTP.usAdcX1 = usAdcX;
@@ -1141,10 +1141,10 @@ void TOUCH_Calibration(void)
 		}
 	}
 
-	TOUCH_WaitRelease(); 	/* µÈ´ý´¥±ÊÊÍ·Å */
+	TOUCH_WaitRelease(); 	/* ç­‰å¾…è§¦ç¬”é‡Šæ”¾ */
 
-	/* Ê¶±ð´¥ÃþµÄ X, Y ºÍ ÏÔÊ¾Ãæ°åµÄ X£¬Y ÊÇ·ñÐèÒª½»»» */
-	g_tTP.XYChange = 0;		/* 1±íÊ¾X YÐèÒª½»»» */
+	/* è¯†åˆ«è§¦æ‘¸çš„ X, Y å’Œ æ˜¾ç¤ºé¢æ¿çš„ Xï¼ŒY æ˜¯å¦éœ€è¦äº¤æ¢ */
+	g_tTP.XYChange = 0;		/* 1è¡¨ç¤ºX Yéœ€è¦äº¤æ¢ */
 	if (LCD_GetHeight() < LCD_GetWidth())
 	{
 		if (TOUCH_Abs(g_tTP.usAdcX1 - g_tTP.usAdcX2) < TOUCH_Abs(g_tTP.usAdcY1 - g_tTP.usAdcY2))
@@ -1169,16 +1169,16 @@ void TOUCH_Calibration(void)
 	g_tTP.usLcdX4 = TP_X3;
 	g_tTP.usLcdY4 = TP_Y3;
 
-	/* ÔÚ×îºóÒ»²½£¬¿ÉÒÔ½«Ð£×¼²ÎÊý±£´æÈëFlash »òÕßEEPROM */
+	/* åœ¨æœ€åŽä¸€æ­¥ï¼Œå¯ä»¥å°†æ ¡å‡†å‚æ•°ä¿å­˜å…¥Flash æˆ–è€…EEPROM */
 	TOUCH_SaveParam();
 }
 
 /*
 *********************************************************************************************************
-*	º¯ Êý Ãû: TOUCH_SaveParam
-*	¹¦ÄÜËµÃ÷: ±£´æÐ£×¼²ÎÊý	s_usAdcX1 s_usAdcX2 s_usAdcY1 s_usAdcX2
-*	ÐÎ    ²Î:  ÎÞ
-*	·µ »Ø Öµ: ÎÞ
+*	å‡½ æ•° å: TOUCH_SaveParam
+*	åŠŸèƒ½è¯´æ˜Ž: ä¿å­˜æ ¡å‡†å‚æ•°	s_usAdcX1 s_usAdcX2 s_usAdcY1 s_usAdcX2
+*	å½¢    å‚:  æ— 
+*	è¿” å›ž å€¼: æ— 
 *********************************************************************************************************
 */
 extern void SaveParam(void);
@@ -1205,25 +1205,25 @@ static void TOUCH_SaveParam(void)
 
 	g_tParam.XYChange = g_tTP.XYChange;
 
-	g_tParam.TouchDirection = g_LcdDirection;	/* 2014-09-11 Ìí¼ÓÆÁÄ»·½Ïò, ÓÃÓÚÆÁÄ»Ðý×ªÊ±ÎÞÐèÔÙ´ÎÐ£×¼ */
+	g_tParam.TouchDirection = g_LcdDirection;	/* 2014-09-11 æ·»åŠ å±å¹•æ–¹å‘, ç”¨äºŽå±å¹•æ—‹è½¬æ—¶æ— éœ€å†æ¬¡æ ¡å‡† */
 
-	SaveParam();	/* ½«²ÎÊýÐ´ÈëFlash */
+	SaveParam();	/* å°†å‚æ•°å†™å…¥Flash */
 #endif
 }
 
 /*
 *********************************************************************************************************
-*	º¯ Êý Ãû: TOUCH_LoadParam
-*	¹¦ÄÜËµÃ÷: ¶ÁÈ¡Ð£×¼²ÎÊý
-*	ÐÎ    ²Î:  ÎÞ
-*	·µ »Ø Öµ: ÎÞ
+*	å‡½ æ•° å: TOUCH_LoadParam
+*	åŠŸèƒ½è¯´æ˜Ž: è¯»å–æ ¡å‡†å‚æ•°
+*	å½¢    å‚:  æ— 
+*	è¿” å›ž å€¼: æ— 
 *********************************************************************************************************
 */
 extern void LoadParam(void);
 static void TOUCH_LoadParam(void)
 {
 #if 1
-	LoadParam();	/* ´ÓFlashÖÐ¶ÁÈ¡²ÎÊý */
+	LoadParam();	/* ä»ŽFlashä¸­è¯»å–å‚æ•° */
 
 	g_tTP.usAdcX1 = g_tParam.usAdcX1;
 	g_tTP.usAdcY1 = g_tParam.usAdcY1;
@@ -1248,4 +1248,4 @@ static void TOUCH_LoadParam(void)
 #endif
 }
 
-/***************************** °²¸»À³µç×Ó www.armfly.com (END OF FILE) *********************************/
+/***************************** å®‰å¯ŒèŽ±ç”µå­ www.armfly.com (END OF FILE) *********************************/

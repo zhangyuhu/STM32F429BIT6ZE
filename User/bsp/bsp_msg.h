@@ -1,12 +1,12 @@
 /*
 *********************************************************************************************************
 *
-*	Ä£¿éÃû³Æ : ÏûÏ¢´¦ÀíÄ£¿é
-*	ÎÄ¼şÃû³Æ : bsp_msg.h
-*	°æ    ±¾ : V1.0
-*	Ëµ    Ã÷ : Í·ÎÄ¼ş
+*	æ¨¡å—åç§° : æ¶ˆæ¯å¤„ç†æ¨¡å—
+*	æ–‡ä»¶åç§° : bsp_msg.h
+*	ç‰ˆ    æœ¬ : V1.0
+*	è¯´    æ˜ : å¤´æ–‡ä»¶
 *
-*	Copyright (C), 2013-2014, °²¸»À³µç×Ó www.armfly.com
+*	Copyright (C), 2013-2014, å®‰å¯Œè±ç”µå­ www.armfly.com
 *
 *********************************************************************************************************
 */
@@ -14,36 +14,36 @@
 #ifndef __BSP_MSG_H
 #define __BSP_MSG_H
 
-#define MSG_FIFO_SIZE    40	   		/* ÏûÏ¢¸öÊı */
+#define MSG_FIFO_SIZE    40	   		/* æ¶ˆæ¯ä¸ªæ•° */
 
 enum 
 {
 	MSG_NONE = 0,
 	
-	MSG_485_RX,		/* modbus Ä£¿é£¬½ÓÊÕµ½RS485Êı¾İ. form_rs485.c, bsp_modbus.c ÖĞÒıÓÃ */
+	MSG_485_RX,		/* modbus æ¨¡å—ï¼Œæ¥æ”¶åˆ°RS485æ•°æ®. form_rs485.c, bsp_modbus.c ä¸­å¼•ç”¨ */
 	
-	MSG_CAN_RX,		/* ÊÕµ½CANÊı¾İ°ü¡£can_netword.c ÖĞÒıÓÃ */
+	MSG_CAN_RX,		/* æ”¶åˆ°CANæ•°æ®åŒ…ã€‚can_netword.c ä¸­å¼•ç”¨ */
 	
-	MSG_WM8978_DMA_END,	/* DMA´«Êä½áÊø */
+	MSG_WM8978_DMA_END,	/* DMAä¼ è¾“ç»“æŸ */
 };
 
-/* °´¼üFIFOÓÃµ½±äÁ¿ */
+/* æŒ‰é”®FIFOç”¨åˆ°å˜é‡ */
 typedef struct
 {
-	uint16_t MsgCode;		/* ÏûÏ¢´úÂë */
-	uint32_t MsgParam;		/* ÏûÏ¢µÄÊı¾İÌå, Ò²¿ÉÒÔÊÇÖ¸Õë£¨Ç¿ÖÆ×ª»¯£© */
+	uint16_t MsgCode;		/* æ¶ˆæ¯ä»£ç  */
+	uint32_t MsgParam;		/* æ¶ˆæ¯çš„æ•°æ®ä½“, ä¹Ÿå¯ä»¥æ˜¯æŒ‡é’ˆï¼ˆå¼ºåˆ¶è½¬åŒ–ï¼‰ */
 }MSG_T;
 
-/* °´¼üFIFOÓÃµ½±äÁ¿ */
+/* æŒ‰é”®FIFOç”¨åˆ°å˜é‡ */
 typedef struct
 {
-	MSG_T Buf[MSG_FIFO_SIZE];	/* ÏûÏ¢»º³åÇø */
-	uint8_t Read;					/* »º³åÇø¶ÁÖ¸Õë1 */
-	uint8_t Write;					/* »º³åÇøĞ´Ö¸Õë */
-	uint8_t Read2;					/* »º³åÇø¶ÁÖ¸Õë2 */
+	MSG_T Buf[MSG_FIFO_SIZE];	/* æ¶ˆæ¯ç¼“å†²åŒº */
+	uint8_t Read;					/* ç¼“å†²åŒºè¯»æŒ‡é’ˆ1 */
+	uint8_t Write;					/* ç¼“å†²åŒºå†™æŒ‡é’ˆ */
+	uint8_t Read2;					/* ç¼“å†²åŒºè¯»æŒ‡é’ˆ2 */
 }MSG_FIFO_T;
 
-/* ¹©Íâ²¿µ÷ÓÃµÄº¯ÊıÉùÃ÷ */
+/* ä¾›å¤–éƒ¨è°ƒç”¨çš„å‡½æ•°å£°æ˜ */
 void bsp_InitMsg(void);
 void bsp_PutMsg(uint16_t _MsgCode, uint32_t _MsgParam);
 uint8_t bsp_GetMsg(MSG_T *_pMsg);
@@ -52,4 +52,4 @@ void bsp_ClearMsg(void);
 
 #endif
 
-/***************************** °²¸»À³µç×Ó www.armfly.com (END OF FILE) *********************************/
+/***************************** å®‰å¯Œè±ç”µå­ www.armfly.com (END OF FILE) *********************************/

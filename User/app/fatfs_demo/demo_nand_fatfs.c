@@ -1,31 +1,31 @@
 /*
 *********************************************************************************************************
 *
-*	Ä£¿éÃû³Æ : SD¿¨FatÎÄ¼şÏµÍ³ÑİÊ¾Ä£¿é¡£
-*	ÎÄ¼şÃû³Æ : demo_sdio_fatfs.c
-*	°æ    ±¾ : V1.0
-*	Ëµ    Ã÷ : ¸ÃÀı³ÌÒÆÖ²FatFSÎÄ¼şÏµÍ³£¨°æ±¾ R0.09b£©£¬ÑİÊ¾ÈçºÎ´´½¨ÎÄ¼ş¡¢¶ÁÈ¡ÎÄ¼ş¡¢´´½¨Ä¿Â¼ºÍÉ¾³ıÎÄ¼ş
-*			²¢²âÊÔÁËÎÄ¼ş¶ÁĞ´ËÙ¶È¡£
+*	æ¨¡å—åç§° : SDå¡Fatæ–‡ä»¶ç³»ç»Ÿæ¼”ç¤ºæ¨¡å—ã€‚
+*	æ–‡ä»¶åç§° : demo_sdio_fatfs.c
+*	ç‰ˆ    æœ¬ : V1.0
+*	è¯´    æ˜ : è¯¥ä¾‹ç¨‹ç§»æ¤FatFSæ–‡ä»¶ç³»ç»Ÿï¼ˆç‰ˆæœ¬ R0.09bï¼‰ï¼Œæ¼”ç¤ºå¦‚ä½•åˆ›å»ºæ–‡ä»¶ã€è¯»å–æ–‡ä»¶ã€åˆ›å»ºç›®å½•å’Œåˆ é™¤æ–‡ä»¶
+*			å¹¶æµ‹è¯•äº†æ–‡ä»¶è¯»å†™é€Ÿåº¦ã€‚
 *
-*	ĞŞ¸Ä¼ÇÂ¼ :
-*		°æ±¾ºÅ  ÈÕÆÚ        ×÷Õß     ËµÃ÷
-*		V1.0    2015-12-12 armfly  ÕıÊ½·¢²¼
+*	ä¿®æ”¹è®°å½• :
+*		ç‰ˆæœ¬å·  æ—¥æœŸ        ä½œè€…     è¯´æ˜
+*		V1.0    2015-12-12 armfly  æ­£å¼å‘å¸ƒ
 *
-*	Copyright (C), 2015-2020, °²¸»À³µç×Ó www.armfly.com
+*	Copyright (C), 2015-2020, å®‰å¯Œè±ç”µå­ www.armfly.com
 *
 *********************************************************************************************************
 */
 
 #include "bsp.h"
-#include "ff.h"			/* FatFSÎÄ¼şÏµÍ³Ä£¿é*/
+#include "ff.h"			/* FatFSæ–‡ä»¶ç³»ç»Ÿæ¨¡å—*/
 #include "demo_nand_fatfs.h"
 
-/* ÓÃÓÚ²âÊÔ¶ÁĞ´ËÙ¶È */
-#define TEST_FILE_LEN			(2*1024*1024)	/* ÓÃÓÚ²âÊÔµÄÎÄ¼ş³¤¶È */
-#define BUF_SIZE				(4*1024)		/* Ã¿´Î¶ÁĞ´SD¿¨µÄ×î´óÊı¾İ³¤¶È */
+/* ç”¨äºæµ‹è¯•è¯»å†™é€Ÿåº¦ */
+#define TEST_FILE_LEN			(2*1024*1024)	/* ç”¨äºæµ‹è¯•çš„æ–‡ä»¶é•¿åº¦ */
+#define BUF_SIZE				(4*1024)		/* æ¯æ¬¡è¯»å†™SDå¡çš„æœ€å¤§æ•°æ®é•¿åº¦ */
 uint8_t g_TestBuf[BUF_SIZE];
 
-/* ½öÔÊĞí±¾ÎÄ¼şÄÚµ÷ÓÃµÄº¯ÊıÉùÃ÷ */
+/* ä»…å…è®¸æœ¬æ–‡ä»¶å†…è°ƒç”¨çš„å‡½æ•°å£°æ˜ */
 static void DispMenu(void);
 static void ViewRootDir(void);
 static void CreateNewFile(void);
@@ -36,56 +36,56 @@ static void WriteFileTest(void);
 
 /*
 *********************************************************************************************************
-*	º¯ Êı Ãû: DemoFatFS
-*	¹¦ÄÜËµÃ÷: FatFSÎÄ¼şÏµÍ³ÑİÊ¾Ö÷³ÌĞò
-*	ĞÎ    ²Î£ºÎŞ
-*	·µ »Ø Öµ: ÎŞ
+*	å‡½ æ•° å: DemoFatFS
+*	åŠŸèƒ½è¯´æ˜: FatFSæ–‡ä»¶ç³»ç»Ÿæ¼”ç¤ºä¸»ç¨‹åº
+*	å½¢    å‚ï¼šæ— 
+*	è¿” å› å€¼: æ— 
 *********************************************************************************************************
 */
 void DemoFatFS(void)
 {
 	uint8_t cmd;
 
-	/* ´òÓ¡ÃüÁîÁĞ±í£¬ÓÃ»§¿ÉÒÔÍ¨¹ı´®¿Ú²Ù×÷Ö¸Áî */
+	/* æ‰“å°å‘½ä»¤åˆ—è¡¨ï¼Œç”¨æˆ·å¯ä»¥é€šè¿‡ä¸²å£æ“ä½œæŒ‡ä»¤ */
 	DispMenu();
 	while(1)
 	{
-		bsp_Idle();		/* Õâ¸öº¯ÊıÔÚbsp.cÎÄ¼ş¡£ÓÃ»§¿ÉÒÔĞŞ¸ÄÕâ¸öº¯ÊıÊµÏÖCPUĞİÃßºÍÎ¹¹· */
+		bsp_Idle();		/* è¿™ä¸ªå‡½æ•°åœ¨bsp.cæ–‡ä»¶ã€‚ç”¨æˆ·å¯ä»¥ä¿®æ”¹è¿™ä¸ªå‡½æ•°å®ç°CPUä¼‘çœ å’Œå–‚ç‹— */
 		
-		//cmd = getchar();	/* ´Ó´®¿Ú¶ÁÈëÒ»¸ö×Ö·û (×èÈû·½Ê½) */
-		if (comGetChar(COM1, &cmd))	/* ´Ó´®¿Ú¶ÁÈëÒ»¸ö×Ö·û(·Ç×èÈû·½Ê½) */
+		//cmd = getchar();	/* ä»ä¸²å£è¯»å…¥ä¸€ä¸ªå­—ç¬¦ (é˜»å¡æ–¹å¼) */
+		if (comGetChar(COM1, &cmd))	/* ä»ä¸²å£è¯»å…¥ä¸€ä¸ªå­—ç¬¦(éé˜»å¡æ–¹å¼) */
 		{
 			printf("\r\n------------------------------------------------\r\n");
 			switch (cmd)
 			{
 				case '1':
-					printf("¡¾1 - ViewRootDir¡¿\r\n");
-					ViewRootDir();		/* ÏÔÊ¾¸ùÄ¿Â¼ÏÂµÄÎÄ¼şÃû */
+					printf("ã€1 - ViewRootDirã€‘\r\n");
+					ViewRootDir();		/* æ˜¾ç¤ºæ ¹ç›®å½•ä¸‹çš„æ–‡ä»¶å */
 					break;
 
 				case '2':
-					printf("¡¾2 - CreateNewFile¡¿\r\n");
-					CreateNewFile();		/* ´´½¨Ò»¸öĞÂÎÄ¼ş,Ğ´ÈëÒ»¸ö×Ö·û´® */
+					printf("ã€2 - CreateNewFileã€‘\r\n");
+					CreateNewFile();		/* åˆ›å»ºä¸€ä¸ªæ–°æ–‡ä»¶,å†™å…¥ä¸€ä¸ªå­—ç¬¦ä¸² */
 					break;
 
 				case '3':
-					printf("¡¾3 - ReadFileData¡¿\r\n");
-					ReadFileData();		/* ¶ÁÈ¡¸ùÄ¿Â¼ÏÂarmfly.txtµÄÄÚÈİ */
+					printf("ã€3 - ReadFileDataã€‘\r\n");
+					ReadFileData();		/* è¯»å–æ ¹ç›®å½•ä¸‹armfly.txtçš„å†…å®¹ */
 					break;
 
 				case '4':
-					printf("¡¾4 - CreateDir¡¿\r\n");
-					CreateDir();		/* ´´½¨Ä¿Â¼ */
+					printf("ã€4 - CreateDirã€‘\r\n");
+					CreateDir();		/* åˆ›å»ºç›®å½• */
 					break;
 
 				case '5':
-					printf("¡¾5 - DeleteDirFile¡¿\r\n");
-					DeleteDirFile();	/* É¾³ıÄ¿Â¼ºÍÎÄ¼ş */
+					printf("ã€5 - DeleteDirFileã€‘\r\n");
+					DeleteDirFile();	/* åˆ é™¤ç›®å½•å’Œæ–‡ä»¶ */
 					break;
 
 				case '6':
-					printf("¡¾6 - TestSpeed¡¿\r\n");
-					WriteFileTest();	/* ËÙ¶È²âÊÔ */
+					printf("ã€6 - TestSpeedã€‘\r\n");
+					WriteFileTest();	/* é€Ÿåº¦æµ‹è¯• */
 					break;
 
 				case '0':
@@ -104,36 +104,36 @@ void DemoFatFS(void)
 
 /*
 *********************************************************************************************************
-*	º¯ Êı Ãû: DispMenu
-*	¹¦ÄÜËµÃ÷: ÏÔÊ¾²Ù×÷ÌáÊ¾²Ëµ¥
-*	ĞÎ    ²Î£ºÎŞ
-*	·µ »Ø Öµ: ÎŞ
+*	å‡½ æ•° å: DispMenu
+*	åŠŸèƒ½è¯´æ˜: æ˜¾ç¤ºæ“ä½œæç¤ºèœå•
+*	å½¢    å‚ï¼šæ— 
+*	è¿” å› å€¼: æ— 
 *********************************************************************************************************
 */
 static void DispMenu(void)
 {
 	printf("\r\n------------------------------------------------\r\n");
-	printf("ÇëÑ¡Ôñ²Ù×÷ÃüÁî:\r\n");
-	printf("1 - ÏÔÊ¾¸ùÄ¿Â¼ÏÂµÄÎÄ¼şÁĞ±í\r\n");
-	printf("2 - ´´½¨Ò»¸öĞÂÎÄ¼şarmfly.txt\r\n");
-	printf("3 - ¶Áarmfly.txtÎÄ¼şµÄÄÚÈİ\r\n");
-	printf("4 - ´´½¨Ä¿Â¼\r\n");
-	printf("5 - É¾³ıÎÄ¼şºÍÄ¿Â¼\r\n");
-	printf("6 - ¶ÁĞ´ÎÄ¼şËÙ¶È²âÊÔ\r\n");
-	printf("0 - NAND Flash µÍ¼¶¸ñÊ½»¯\r\n");
+	printf("è¯·é€‰æ‹©æ“ä½œå‘½ä»¤:\r\n");
+	printf("1 - æ˜¾ç¤ºæ ¹ç›®å½•ä¸‹çš„æ–‡ä»¶åˆ—è¡¨\r\n");
+	printf("2 - åˆ›å»ºä¸€ä¸ªæ–°æ–‡ä»¶armfly.txt\r\n");
+	printf("3 - è¯»armfly.txtæ–‡ä»¶çš„å†…å®¹\r\n");
+	printf("4 - åˆ›å»ºç›®å½•\r\n");
+	printf("5 - åˆ é™¤æ–‡ä»¶å’Œç›®å½•\r\n");
+	printf("6 - è¯»å†™æ–‡ä»¶é€Ÿåº¦æµ‹è¯•\r\n");
+	printf("0 - NAND Flash ä½çº§æ ¼å¼åŒ–\r\n");
 }
 
 /*
 *********************************************************************************************************
-*	º¯ Êı Ãû: ViewRootDir
-*	¹¦ÄÜËµÃ÷: ÏÔÊ¾SD¿¨¸ùÄ¿Â¼ÏÂµÄÎÄ¼şÃû
-*	ĞÎ    ²Î£ºÎŞ
-*	·µ »Ø Öµ: ÎŞ
+*	å‡½ æ•° å: ViewRootDir
+*	åŠŸèƒ½è¯´æ˜: æ˜¾ç¤ºSDå¡æ ¹ç›®å½•ä¸‹çš„æ–‡ä»¶å
+*	å½¢    å‚ï¼šæ— 
+*	è¿” å› å€¼: æ— 
 *********************************************************************************************************
 */
 static void ViewRootDir(void)
 {
-	/* ±¾º¯ÊıÊ¹ÓÃµÄ¾Ö²¿±äÁ¿Õ¼ÓÃ½Ï¶à£¬ÇëĞŞ¸ÄÆô¶¯ÎÄ¼ş£¬±£Ö¤¶ÑÕ»¿Õ¼ä¹»ÓÃ */
+	/* æœ¬å‡½æ•°ä½¿ç”¨çš„å±€éƒ¨å˜é‡å ç”¨è¾ƒå¤šï¼Œè¯·ä¿®æ”¹å¯åŠ¨æ–‡ä»¶ï¼Œä¿è¯å †æ ˆç©ºé—´å¤Ÿç”¨ */
 	FRESULT result;
 	FATFS fs;
 	DIR DirInf;
@@ -141,29 +141,29 @@ static void ViewRootDir(void)
 	uint32_t cnt = 0;
 	char lfname[256];
 
- 	/* ¹ÒÔØÎÄ¼şÏµÍ³ */
+ 	/* æŒ‚è½½æ–‡ä»¶ç³»ç»Ÿ */
 	result = f_mount(&fs, FS_VOLUME_NAND, 0);	/* Mount a logical drive */
 	if (result != FR_OK)
 	{
-		printf("¹ÒÔØÎÄ¼şÏµÍ³Ê§°Ü (%d)\r\n", result);
+		printf("æŒ‚è½½æ–‡ä»¶ç³»ç»Ÿå¤±è´¥ (%d)\r\n", result);
 	}
 
-	/* ´ò¿ª¸ùÎÄ¼ş¼Ğ */
-	result = f_opendir(&DirInf, "1:/"); /* 1: ±íÊ¾ÅÌ·û */
+	/* æ‰“å¼€æ ¹æ–‡ä»¶å¤¹ */
+	result = f_opendir(&DirInf, "1:/"); /* 1: è¡¨ç¤ºç›˜ç¬¦ */
 	if (result != FR_OK)
 	{
-		printf("´ò¿ª¸ùÄ¿Â¼Ê§°Ü (%d)\r\n", result);
+		printf("æ‰“å¼€æ ¹ç›®å½•å¤±è´¥ (%d)\r\n", result);
 		return;
 	}
 
-	/* ¶ÁÈ¡µ±Ç°ÎÄ¼ş¼ĞÏÂµÄÎÄ¼şºÍÄ¿Â¼ */
+	/* è¯»å–å½“å‰æ–‡ä»¶å¤¹ä¸‹çš„æ–‡ä»¶å’Œç›®å½• */
 	FileInf.lfname = lfname;
 	FileInf.lfsize = 256;
 
-	printf("ÊôĞÔ        |  ÎÄ¼ş´óĞ¡ | ¶ÌÎÄ¼şÃû | ³¤ÎÄ¼şÃû\r\n");
+	printf("å±æ€§        |  æ–‡ä»¶å¤§å° | çŸ­æ–‡ä»¶å | é•¿æ–‡ä»¶å\r\n");
 	for (cnt = 0; ;cnt++)
 	{
-		result = f_readdir(&DirInf,&FileInf); 		/* ¶ÁÈ¡Ä¿Â¼Ïî£¬Ë÷Òı»á×Ô¶¯ÏÂÒÆ */
+		result = f_readdir(&DirInf,&FileInf); 		/* è¯»å–ç›®å½•é¡¹ï¼Œç´¢å¼•ä¼šè‡ªåŠ¨ä¸‹ç§» */
 		if (result != FR_OK || FileInf.fname[0] == 0)
 		{
 			break;
@@ -174,92 +174,92 @@ static void ViewRootDir(void)
 			continue;
 		}
 
-		/* ÅĞ¶ÏÊÇÎÄ¼ş»¹ÊÇ×ÓÄ¿Â¼ */
+		/* åˆ¤æ–­æ˜¯æ–‡ä»¶è¿˜æ˜¯å­ç›®å½• */
 		if (FileInf.fattrib & AM_DIR)
 		{
-			printf("(0x%02d)Ä¿Â¼  ", FileInf.fattrib);
+			printf("(0x%02d)ç›®å½•  ", FileInf.fattrib);
 		}
 		else
 		{
-			printf("(0x%02d)ÎÄ¼ş  ", FileInf.fattrib);
+			printf("(0x%02d)æ–‡ä»¶  ", FileInf.fattrib);
 		}
 
-		/* ´òÓ¡ÎÄ¼ş´óĞ¡, ×î´ó4G */
+		/* æ‰“å°æ–‡ä»¶å¤§å°, æœ€å¤§4G */
 		printf(" %10d", FileInf.fsize);
 
-		printf("  %s |", FileInf.fname);	/* ¶ÌÎÄ¼şÃû */
+		printf("  %s |", FileInf.fname);	/* çŸ­æ–‡ä»¶å */
 
-		printf("  %s\r\n", (char *)FileInf.lfname);	/* ³¤ÎÄ¼şÃû */
+		printf("  %s\r\n", (char *)FileInf.lfname);	/* é•¿æ–‡ä»¶å */
 	}
 
-	/* Ğ¶ÔØÎÄ¼şÏµÍ³ */
+	/* å¸è½½æ–‡ä»¶ç³»ç»Ÿ */
 	f_mount(NULL, FS_VOLUME_NAND, 0);
 }
 
 /*
 *********************************************************************************************************
-*	º¯ Êı Ãû: CreateNewFile
-*	¹¦ÄÜËµÃ÷: ÔÚSD¿¨´´½¨Ò»¸öĞÂÎÄ¼ş£¬ÎÄ¼şÄÚÈİÌîĞ´¡°www.armfly.com¡±
-*	ĞÎ    ²Î£ºÎŞ
-*	·µ »Ø Öµ: ÎŞ
+*	å‡½ æ•° å: CreateNewFile
+*	åŠŸèƒ½è¯´æ˜: åœ¨SDå¡åˆ›å»ºä¸€ä¸ªæ–°æ–‡ä»¶ï¼Œæ–‡ä»¶å†…å®¹å¡«å†™â€œwww.armfly.comâ€
+*	å½¢    å‚ï¼šæ— 
+*	è¿” å› å€¼: æ— 
 *********************************************************************************************************
 */
 static void CreateNewFile(void)
 {
-	/* ±¾º¯ÊıÊ¹ÓÃµÄ¾Ö²¿±äÁ¿Õ¼ÓÃ½Ï¶à£¬ÇëĞŞ¸ÄÆô¶¯ÎÄ¼ş£¬±£Ö¤¶ÑÕ»¿Õ¼ä¹»ÓÃ */
+	/* æœ¬å‡½æ•°ä½¿ç”¨çš„å±€éƒ¨å˜é‡å ç”¨è¾ƒå¤šï¼Œè¯·ä¿®æ”¹å¯åŠ¨æ–‡ä»¶ï¼Œä¿è¯å †æ ˆç©ºé—´å¤Ÿç”¨ */
 	FRESULT result;
 	FATFS fs;
 	FIL file;
 	DIR DirInf;
 	uint32_t bw;
 
- 	/* ¹ÒÔØÎÄ¼şÏµÍ³ */
+ 	/* æŒ‚è½½æ–‡ä»¶ç³»ç»Ÿ */
 	result = f_mount(&fs, FS_VOLUME_NAND, 0);			/* Mount a logical drive */
 	if (result != FR_OK)
 	{
-		printf("¹ÒÔØÎÄ¼şÏµÍ³Ê§°Ü (%d)\r\n", result);
+		printf("æŒ‚è½½æ–‡ä»¶ç³»ç»Ÿå¤±è´¥ (%d)\r\n", result);
 	}
 
-	/* ´ò¿ª¸ùÎÄ¼ş¼Ğ */
-	result = f_opendir(&DirInf, "1:/"); /* 1: ±íÊ¾ÅÌ·û */
+	/* æ‰“å¼€æ ¹æ–‡ä»¶å¤¹ */
+	result = f_opendir(&DirInf, "1:/"); /* 1: è¡¨ç¤ºç›˜ç¬¦ */
 	if (result != FR_OK)
 	{
-		printf("´ò¿ª¸ùÄ¿Â¼Ê§°Ü (%d)\r\n", result);
+		printf("æ‰“å¼€æ ¹ç›®å½•å¤±è´¥ (%d)\r\n", result);
 		return;
 	}
 
-	/* ´ò¿ªÎÄ¼ş */
+	/* æ‰“å¼€æ–‡ä»¶ */
 	result = f_open(&file, "1:/armfly.txt", FA_CREATE_ALWAYS | FA_WRITE);
 
-	/* Ğ´Ò»´®Êı¾İ */
+	/* å†™ä¸€ä¸²æ•°æ® */
 	result = f_write(&file, "FatFS Write Demo \r\n www.armfly.com \r\n", 34, &bw);
 	if (result == FR_OK)
 	{
-		printf("armfly.txt ÎÄ¼şĞ´Èë³É¹¦\r\n");
+		printf("armfly.txt æ–‡ä»¶å†™å…¥æˆåŠŸ\r\n");
 	}
 	else
 	{
-		printf("armfly.txt ÎÄ¼şĞ´ÈëÊ§°Ü\r\n");
+		printf("armfly.txt æ–‡ä»¶å†™å…¥å¤±è´¥\r\n");
 	}
 
-	/* ¹Ø±ÕÎÄ¼ş*/
+	/* å…³é—­æ–‡ä»¶*/
 	f_close(&file);
 
-	/* Ğ¶ÔØÎÄ¼şÏµÍ³ */
+	/* å¸è½½æ–‡ä»¶ç³»ç»Ÿ */
 	f_mount(NULL, FS_VOLUME_NAND, 0);
 }
 
 /*
 *********************************************************************************************************
-*	º¯ Êı Ãû: ReadFileData
-*	¹¦ÄÜËµÃ÷: ¶ÁÈ¡ÎÄ¼şarmfly.txtÇ°128¸ö×Ö·û£¬²¢´òÓ¡µ½´®¿Ú
-*	ĞÎ    ²Î£ºÎŞ
-*	·µ »Ø Öµ: ÎŞ
+*	å‡½ æ•° å: ReadFileData
+*	åŠŸèƒ½è¯´æ˜: è¯»å–æ–‡ä»¶armfly.txtå‰128ä¸ªå­—ç¬¦ï¼Œå¹¶æ‰“å°åˆ°ä¸²å£
+*	å½¢    å‚ï¼šæ— 
+*	è¿” å› å€¼: æ— 
 *********************************************************************************************************
 */
 static void ReadFileData(void)
 {
-	/* ±¾º¯ÊıÊ¹ÓÃµÄ¾Ö²¿±äÁ¿Õ¼ÓÃ½Ï¶à£¬ÇëĞŞ¸ÄÆô¶¯ÎÄ¼ş£¬±£Ö¤¶ÑÕ»¿Õ¼ä¹»ÓÃ */
+	/* æœ¬å‡½æ•°ä½¿ç”¨çš„å±€éƒ¨å˜é‡å ç”¨è¾ƒå¤šï¼Œè¯·ä¿®æ”¹å¯åŠ¨æ–‡ä»¶ï¼Œä¿è¯å †æ ˆç©ºé—´å¤Ÿç”¨ */
 	FRESULT result;
 	FATFS fs;
 	FIL file;
@@ -267,22 +267,22 @@ static void ReadFileData(void)
 	uint32_t bw;
 	char buf[128];
 
- 	/* ¹ÒÔØÎÄ¼şÏµÍ³ */
+ 	/* æŒ‚è½½æ–‡ä»¶ç³»ç»Ÿ */
 	result = f_mount(&fs, FS_VOLUME_NAND, 0);			/* Mount a logical drive */
 	if (result != FR_OK)
 	{
-		printf("¹ÒÔØÎÄ¼şÏµÍ³Ê§°Ü(%d)\r\n", result);
+		printf("æŒ‚è½½æ–‡ä»¶ç³»ç»Ÿå¤±è´¥(%d)\r\n", result);
 	}
 
-	/* ´ò¿ª¸ùÎÄ¼ş¼Ğ */
-	result = f_opendir(&DirInf, "1:/"); /* 1: ±íÊ¾ÅÌ·û */
+	/* æ‰“å¼€æ ¹æ–‡ä»¶å¤¹ */
+	result = f_opendir(&DirInf, "1:/"); /* 1: è¡¨ç¤ºç›˜ç¬¦ */
 	if (result != FR_OK)
 	{
-		printf("´ò¿ª¸ùÄ¿Â¼Ê§°Ü(%d)\r\n", result);
+		printf("æ‰“å¼€æ ¹ç›®å½•å¤±è´¥(%d)\r\n", result);
 		return;
 	}
 
-	/* ´ò¿ªÎÄ¼ş */
+	/* æ‰“å¼€æ–‡ä»¶ */
 	result = f_open(&file, "1:/armfly.txt", FA_OPEN_EXISTING | FA_READ);
 	if (result !=  FR_OK)
 	{
@@ -290,47 +290,47 @@ static void ReadFileData(void)
 		return;
 	}
 
-	/* ¶ÁÈ¡ÎÄ¼ş */
+	/* è¯»å–æ–‡ä»¶ */
 	result = f_read(&file, &buf, sizeof(buf) - 1, &bw);
 	if (bw > 0)
 	{
 		buf[bw] = 0;
-		printf("\r\narmfly.txt ÎÄ¼şÄÚÈİ : \r\n%s\r\n", buf);
+		printf("\r\narmfly.txt æ–‡ä»¶å†…å®¹ : \r\n%s\r\n", buf);
 	}
 	else
 	{
-		printf("\r\narmfly.txt ÎÄ¼şÄÚÈİ : \r\n");
+		printf("\r\narmfly.txt æ–‡ä»¶å†…å®¹ : \r\n");
 	}
 
-	/* ¹Ø±ÕÎÄ¼ş*/
+	/* å…³é—­æ–‡ä»¶*/
 	f_close(&file);
 
-	/* Ğ¶ÔØÎÄ¼şÏµÍ³ */
+	/* å¸è½½æ–‡ä»¶ç³»ç»Ÿ */
 	f_mount(NULL, FS_VOLUME_NAND, 0);
 }
 
 /*
 *********************************************************************************************************
-*	º¯ Êı Ãû: CreateDir
-*	¹¦ÄÜËµÃ÷: ÔÚSD¿¨¸ùÄ¿Â¼´´½¨Dir1ºÍDir2Ä¿Â¼£¬ÔÚDir1Ä¿Â¼ÏÂ´´½¨×ÓÄ¿Â¼Dir1_1
-*	ĞÎ    ²Î£ºÎŞ
-*	·µ »Ø Öµ: ÎŞ
+*	å‡½ æ•° å: CreateDir
+*	åŠŸèƒ½è¯´æ˜: åœ¨SDå¡æ ¹ç›®å½•åˆ›å»ºDir1å’ŒDir2ç›®å½•ï¼Œåœ¨Dir1ç›®å½•ä¸‹åˆ›å»ºå­ç›®å½•Dir1_1
+*	å½¢    å‚ï¼šæ— 
+*	è¿” å› å€¼: æ— 
 *********************************************************************************************************
 */
 static void CreateDir(void)
 {
-	/* ±¾º¯ÊıÊ¹ÓÃµÄ¾Ö²¿±äÁ¿Õ¼ÓÃ½Ï¶à£¬ÇëĞŞ¸ÄÆô¶¯ÎÄ¼ş£¬±£Ö¤¶ÑÕ»¿Õ¼ä¹»ÓÃ */
+	/* æœ¬å‡½æ•°ä½¿ç”¨çš„å±€éƒ¨å˜é‡å ç”¨è¾ƒå¤šï¼Œè¯·ä¿®æ”¹å¯åŠ¨æ–‡ä»¶ï¼Œä¿è¯å †æ ˆç©ºé—´å¤Ÿç”¨ */
 	FRESULT result;
 	FATFS fs;
 
- 	/* ¹ÒÔØÎÄ¼şÏµÍ³ */
+ 	/* æŒ‚è½½æ–‡ä»¶ç³»ç»Ÿ */
 	result = f_mount(&fs, FS_VOLUME_NAND, 0);			/* Mount a logical drive */
 	if (result != FR_OK)
 	{
-		printf("¹ÒÔØÎÄ¼şÏµÍ³Ê§°Ü (%d)\r\n", result);
+		printf("æŒ‚è½½æ–‡ä»¶ç³»ç»Ÿå¤±è´¥ (%d)\r\n", result);
 	}
 
-	/* ´´½¨Ä¿Â¼/Dir1 */
+	/* åˆ›å»ºç›®å½•/Dir1 */
 	result = f_mkdir("1:/Dir1");
 	if (result == FR_OK)
 	{
@@ -338,15 +338,15 @@ static void CreateDir(void)
 	}
 	else if (result == FR_EXIST)
 	{
-		printf("Dir1 Ä¿Â¼ÒÑ¾­´æÔÚ(%d)\r\n", result);
+		printf("Dir1 ç›®å½•å·²ç»å­˜åœ¨(%d)\r\n", result);
 	}
 	else
 	{
-		printf("f_mkdir Dir1 Ê§°Ü (%d)\r\n", result);
+		printf("f_mkdir Dir1 å¤±è´¥ (%d)\r\n", result);
 		return;
 	}
 
-	/* ´´½¨Ä¿Â¼/Dir2 */
+	/* åˆ›å»ºç›®å½•/Dir2 */
 	result = f_mkdir("1:/Dir2");
 	if (result == FR_OK)
 	{
@@ -354,176 +354,176 @@ static void CreateDir(void)
 	}
 	else if (result == FR_EXIST)
 	{
-		printf("Dir2 Ä¿Â¼ÒÑ¾­´æÔÚ(%d)\r\n", result);
+		printf("Dir2 ç›®å½•å·²ç»å­˜åœ¨(%d)\r\n", result);
 	}
 	else
 	{
-		printf("f_mkdir Dir2 Ê§°Ü (%d)\r\n", result);
+		printf("f_mkdir Dir2 å¤±è´¥ (%d)\r\n", result);
 		return;
 	}
 
-	/* ´´½¨×ÓÄ¿Â¼ /Dir1/Dir1_1	   ×¢Òâ£º´´½¨×ÓÄ¿Â¼Dir1_1Ê±£¬±ØĞëÏÈ´´½¨ºÃDir1 */
+	/* åˆ›å»ºå­ç›®å½• /Dir1/Dir1_1	   æ³¨æ„ï¼šåˆ›å»ºå­ç›®å½•Dir1_1æ—¶ï¼Œå¿…é¡»å…ˆåˆ›å»ºå¥½Dir1 */
 	result = f_mkdir("1:/Dir1/Dir1_1"); /* */
 	if (result == FR_OK)
 	{
-		printf("f_mkdir Dir1_1 ³É¹¦\r\n");
+		printf("f_mkdir Dir1_1 æˆåŠŸ\r\n");
 	}
 	else if (result == FR_EXIST)
 	{
-		printf("Dir1_1 Ä¿Â¼ÒÑ¾­´æÔÚ (%d)\r\n", result);
+		printf("Dir1_1 ç›®å½•å·²ç»å­˜åœ¨ (%d)\r\n", result);
 	}
 	else
 	{
-		printf("f_mkdir Dir1_1 Ê§°Ü (%d)\r\n", result);
+		printf("f_mkdir Dir1_1 å¤±è´¥ (%d)\r\n", result);
 		return;
 	}
 
-	/* Ğ¶ÔØÎÄ¼şÏµÍ³ */
+	/* å¸è½½æ–‡ä»¶ç³»ç»Ÿ */
 	f_mount(NULL, FS_VOLUME_NAND, 0);
 }
 
 /*
 *********************************************************************************************************
-*	º¯ Êı Ãû: DeleteDirFile
-*	¹¦ÄÜËµÃ÷: É¾³ıSD¿¨¸ùÄ¿Â¼ÏÂµÄ armfly.txt ÎÄ¼şºÍ Dir1£¬Dir2 Ä¿Â¼
-*	ĞÎ    ²Î£ºÎŞ
-*	·µ »Ø Öµ: ÎŞ
+*	å‡½ æ•° å: DeleteDirFile
+*	åŠŸèƒ½è¯´æ˜: åˆ é™¤SDå¡æ ¹ç›®å½•ä¸‹çš„ armfly.txt æ–‡ä»¶å’Œ Dir1ï¼ŒDir2 ç›®å½•
+*	å½¢    å‚ï¼šæ— 
+*	è¿” å› å€¼: æ— 
 *********************************************************************************************************
 */
 static void DeleteDirFile(void)
 {
-	/* ±¾º¯ÊıÊ¹ÓÃµÄ¾Ö²¿±äÁ¿Õ¼ÓÃ½Ï¶à£¬ÇëĞŞ¸ÄÆô¶¯ÎÄ¼ş£¬±£Ö¤¶ÑÕ»¿Õ¼ä¹»ÓÃ */
+	/* æœ¬å‡½æ•°ä½¿ç”¨çš„å±€éƒ¨å˜é‡å ç”¨è¾ƒå¤šï¼Œè¯·ä¿®æ”¹å¯åŠ¨æ–‡ä»¶ï¼Œä¿è¯å †æ ˆç©ºé—´å¤Ÿç”¨ */
 	FRESULT result;
 	FATFS fs;
 	char FileName[13];
 	uint8_t i;
 
- 	/* ¹ÒÔØÎÄ¼şÏµÍ³ */
+ 	/* æŒ‚è½½æ–‡ä»¶ç³»ç»Ÿ */
 	result = f_mount(&fs, FS_VOLUME_NAND, 0);			/* Mount a logical drive */
 	if (result != FR_OK)
 	{
-		printf("¹ÒÔØÎÄ¼şÏµÍ³Ê§°Ü (%d)\r\n", result);
+		printf("æŒ‚è½½æ–‡ä»¶ç³»ç»Ÿå¤±è´¥ (%d)\r\n", result);
 	}
 
 	#if 0
-	/* ´ò¿ª¸ùÎÄ¼ş¼Ğ */
-	result = f_opendir(&DirInf, "1:/"); /* Èç¹û²»´ø²ÎÊı£¬Ôò´Óµ±Ç°Ä¿Â¼¿ªÊ¼ */
+	/* æ‰“å¼€æ ¹æ–‡ä»¶å¤¹ */
+	result = f_opendir(&DirInf, "1:/"); /* å¦‚æœä¸å¸¦å‚æ•°ï¼Œåˆ™ä»å½“å‰ç›®å½•å¼€å§‹ */
 	if (result != FR_OK)
 	{
-		printf("´ò¿ª¸ùÄ¿Â¼Ê§°Ü(%d)\r\n", result);
+		printf("æ‰“å¼€æ ¹ç›®å½•å¤±è´¥(%d)\r\n", result);
 		return;
 	}
 	#endif
 
-	/* É¾³ıÄ¿Â¼/Dir1 ¡¾ÒòÎª»¹´æÔÚÄ¿Â¼·Ç¿Õ£¨´æÔÚ×ÓÄ¿Â¼)£¬ËùÒÔÕâ´ÎÉ¾³ı»áÊ§°Ü¡¿*/
+	/* åˆ é™¤ç›®å½•/Dir1 ã€å› ä¸ºè¿˜å­˜åœ¨ç›®å½•éç©ºï¼ˆå­˜åœ¨å­ç›®å½•)ï¼Œæ‰€ä»¥è¿™æ¬¡åˆ é™¤ä¼šå¤±è´¥ã€‘*/
 	result = f_unlink("1:/Dir1");
 	if (result == FR_OK)
 	{
-		printf("É¾³ıÄ¿Â¼Dir1³É¹¦\r\n");
+		printf("åˆ é™¤ç›®å½•Dir1æˆåŠŸ\r\n");
 	}
 	else if (result == FR_NO_FILE)
 	{
-		printf("Ã»ÓĞ·¢ÏÖÎÄ¼ş»òÄ¿Â¼ :%s\r\n", "/Dir1");
+		printf("æ²¡æœ‰å‘ç°æ–‡ä»¶æˆ–ç›®å½• :%s\r\n", "/Dir1");
 	}
 	else
 	{
-		printf("É¾³ıDir1Ê§°Ü(´íÎó´úÂë = %d) ÎÄ¼şÖ»¶Á»òÄ¿Â¼·Ç¿Õ\r\n", result);
+		printf("åˆ é™¤Dir1å¤±è´¥(é”™è¯¯ä»£ç  = %d) æ–‡ä»¶åªè¯»æˆ–ç›®å½•éç©º\r\n", result);
 	}
 
-	/* ÏÈÉ¾³ıÄ¿Â¼/Dir1/Dir1_1 */
+	/* å…ˆåˆ é™¤ç›®å½•/Dir1/Dir1_1 */
 	result = f_unlink("1:/Dir1/Dir1_1");
 	if (result == FR_OK)
 	{
-		printf("É¾³ı×ÓÄ¿Â¼/Dir1/Dir1_1³É¹¦\r\n");
+		printf("åˆ é™¤å­ç›®å½•/Dir1/Dir1_1æˆåŠŸ\r\n");
 	}
 	else if ((result == FR_NO_FILE) || (result == FR_NO_PATH))
 	{
-		printf("Ã»ÓĞ·¢ÏÖÎÄ¼ş»òÄ¿Â¼ :%s\r\n", "/Dir1/Dir1_1");
+		printf("æ²¡æœ‰å‘ç°æ–‡ä»¶æˆ–ç›®å½• :%s\r\n", "/Dir1/Dir1_1");
 	}
 	else
 	{
-		printf("É¾³ı×ÓÄ¿Â¼/Dir1/Dir1_1Ê§°Ü(´íÎó´úÂë = %d) ÎÄ¼şÖ»¶Á»òÄ¿Â¼·Ç¿Õ\r\n", result);
+		printf("åˆ é™¤å­ç›®å½•/Dir1/Dir1_1å¤±è´¥(é”™è¯¯ä»£ç  = %d) æ–‡ä»¶åªè¯»æˆ–ç›®å½•éç©º\r\n", result);
 	}
 
-	/* ÏÈÉ¾³ıÄ¿Â¼/Dir1 */
+	/* å…ˆåˆ é™¤ç›®å½•/Dir1 */
 	result = f_unlink("1:/Dir1");
 	if (result == FR_OK)
 	{
-		printf("É¾³ıÄ¿Â¼Dir1³É¹¦\r\n");
+		printf("åˆ é™¤ç›®å½•Dir1æˆåŠŸ\r\n");
 	}
 	else if (result == FR_NO_FILE)
 	{
-		printf("Ã»ÓĞ·¢ÏÖÎÄ¼ş»òÄ¿Â¼ :%s\r\n", "/Dir1");
+		printf("æ²¡æœ‰å‘ç°æ–‡ä»¶æˆ–ç›®å½• :%s\r\n", "/Dir1");
 	}
 	else
 	{
-		printf("É¾³ıDir1Ê§°Ü(´íÎó´úÂë = %d) ÎÄ¼şÖ»¶Á»òÄ¿Â¼·Ç¿Õ\r\n", result);
+		printf("åˆ é™¤Dir1å¤±è´¥(é”™è¯¯ä»£ç  = %d) æ–‡ä»¶åªè¯»æˆ–ç›®å½•éç©º\r\n", result);
 	}
 
-	/* É¾³ıÄ¿Â¼/Dir2 */
+	/* åˆ é™¤ç›®å½•/Dir2 */
 	result = f_unlink("1:/Dir2");
 	if (result == FR_OK)
 	{
-		printf("É¾³ıÄ¿Â¼ Dir2 ³É¹¦\r\n");
+		printf("åˆ é™¤ç›®å½• Dir2 æˆåŠŸ\r\n");
 	}
 	else if (result == FR_NO_FILE)
 	{
-		printf("Ã»ÓĞ·¢ÏÖÎÄ¼ş»òÄ¿Â¼ :%s\r\n", "/Dir2");
+		printf("æ²¡æœ‰å‘ç°æ–‡ä»¶æˆ–ç›®å½• :%s\r\n", "/Dir2");
 	}
 	else
 	{
-		printf("É¾³ıDir2 Ê§°Ü(´íÎó´úÂë = %d) ÎÄ¼şÖ»¶Á»òÄ¿Â¼·Ç¿Õ\r\n", result);
+		printf("åˆ é™¤Dir2 å¤±è´¥(é”™è¯¯ä»£ç  = %d) æ–‡ä»¶åªè¯»æˆ–ç›®å½•éç©º\r\n", result);
 	}
 
-	/* É¾³ıÎÄ¼ş armfly.txt */
+	/* åˆ é™¤æ–‡ä»¶ armfly.txt */
 	result = f_unlink("1:/armfly.txt");
 	if (result == FR_OK)
 	{
-		printf("É¾³ıÎÄ¼ş armfly.txt ³É¹¦\r\n");
+		printf("åˆ é™¤æ–‡ä»¶ armfly.txt æˆåŠŸ\r\n");
 	}
 	else if (result == FR_NO_FILE)
 	{
-		printf("Ã»ÓĞ·¢ÏÖÎÄ¼ş»òÄ¿Â¼ :%s\r\n", "armfly.txt");
+		printf("æ²¡æœ‰å‘ç°æ–‡ä»¶æˆ–ç›®å½• :%s\r\n", "armfly.txt");
 	}
 	else
 	{
-		printf("É¾³ıarmfly.txtÊ§°Ü(´íÎó´úÂë = %d) ÎÄ¼şÖ»¶Á»òÄ¿Â¼·Ç¿Õ\r\n", result);
+		printf("åˆ é™¤armfly.txtå¤±è´¥(é”™è¯¯ä»£ç  = %d) æ–‡ä»¶åªè¯»æˆ–ç›®å½•éç©º\r\n", result);
 	}
 
-	/* É¾³ıÎÄ¼ş speed1.txt */
+	/* åˆ é™¤æ–‡ä»¶ speed1.txt */
 	for (i = 0; i < 20; i++)
 	{
-		sprintf(FileName, "1:/Speed%02d.txt", i);		/* Ã¿Ğ´1´Î£¬ĞòºÅµİÔö */
+		sprintf(FileName, "1:/Speed%02d.txt", i);		/* æ¯å†™1æ¬¡ï¼Œåºå·é€’å¢ */
 		result = f_unlink(FileName);
 		if (result == FR_OK)
 		{
-			printf("É¾³ıÎÄ¼ş%s³É¹¦\r\n", FileName);
+			printf("åˆ é™¤æ–‡ä»¶%sæˆåŠŸ\r\n", FileName);
 		}
 		else if (result == FR_NO_FILE)
 		{
-			printf("Ã»ÓĞ·¢ÏÖÎÄ¼ş:%s\r\n", FileName);
+			printf("æ²¡æœ‰å‘ç°æ–‡ä»¶:%s\r\n", FileName);
 		}
 		else
 		{
-			printf("É¾³ı%sÎÄ¼şÊ§°Ü(´íÎó´úÂë = %d) ÎÄ¼şÖ»¶Á»òÄ¿Â¼·Ç¿Õ\r\n", FileName, result);
+			printf("åˆ é™¤%sæ–‡ä»¶å¤±è´¥(é”™è¯¯ä»£ç  = %d) æ–‡ä»¶åªè¯»æˆ–ç›®å½•éç©º\r\n", FileName, result);
 		}
 	}
 
-	/* Ğ¶ÔØÎÄ¼şÏµÍ³ */
+	/* å¸è½½æ–‡ä»¶ç³»ç»Ÿ */
 	f_mount(NULL, FS_VOLUME_NAND, 0);
 }
 
 /*
 *********************************************************************************************************
-*	º¯ Êı Ãû: WriteFileTest
-*	¹¦ÄÜËµÃ÷: ²âÊÔÎÄ¼ş¶ÁĞ´ËÙ¶È
-*	ĞÎ    ²Î£ºÎŞ
-*	·µ »Ø Öµ: ÎŞ
+*	å‡½ æ•° å: WriteFileTest
+*	åŠŸèƒ½è¯´æ˜: æµ‹è¯•æ–‡ä»¶è¯»å†™é€Ÿåº¦
+*	å½¢    å‚ï¼šæ— 
+*	è¿” å› å€¼: æ— 
 *********************************************************************************************************
 */
 static void WriteFileTest(void)
 {
-	/* ±¾º¯ÊıÊ¹ÓÃµÄ¾Ö²¿±äÁ¿Õ¼ÓÃ½Ï¶à£¬ÇëĞŞ¸ÄÆô¶¯ÎÄ¼ş£¬±£Ö¤¶ÑÕ»¿Õ¼ä¹»ÓÃ */
+	/* æœ¬å‡½æ•°ä½¿ç”¨çš„å±€éƒ¨å˜é‡å ç”¨è¾ƒå¤šï¼Œè¯·ä¿®æ”¹å¯åŠ¨æ–‡ä»¶ï¼Œä¿è¯å †æ ˆç©ºé—´å¤Ÿç”¨ */
 	FRESULT result;
 	FATFS fs;
 	FIL file;
@@ -540,28 +540,28 @@ static void WriteFileTest(void)
 		g_TestBuf[i] = (i / 512) + '0';
 	}
 
-  	/* ¹ÒÔØÎÄ¼şÏµÍ³ */
+  	/* æŒ‚è½½æ–‡ä»¶ç³»ç»Ÿ */
 	result = f_mount(&fs, FS_VOLUME_NAND, 0);			/* Mount a logical drive */
 	if (result != FR_OK)
 	{
-		printf("¹ÒÔØÎÄ¼şÏµÍ³Ê§°Ü (%d)\r\n", result);
+		printf("æŒ‚è½½æ–‡ä»¶ç³»ç»Ÿå¤±è´¥ (%d)\r\n", result);
 	}
 
-	/* ´ò¿ª¸ùÎÄ¼ş¼Ğ */
-	result = f_opendir(&DirInf, "1:/"); /* Èç¹û²»´ø²ÎÊı£¬Ôò´Óµ±Ç°Ä¿Â¼¿ªÊ¼ */
+	/* æ‰“å¼€æ ¹æ–‡ä»¶å¤¹ */
+	result = f_opendir(&DirInf, "1:/"); /* å¦‚æœä¸å¸¦å‚æ•°ï¼Œåˆ™ä»å½“å‰ç›®å½•å¼€å§‹ */
 	if (result != FR_OK)
 	{
-		printf("´ò¿ª¸ùÄ¿Â¼Ê§°Ü (%d)\r\n", result);
+		printf("æ‰“å¼€æ ¹ç›®å½•å¤±è´¥ (%d)\r\n", result);
 		return;
 	}
 
-	/* ´ò¿ªÎÄ¼ş */
-	sprintf(TestFileName, "1:/Speed%02d.txt", s_ucTestSn++);		/* Ã¿Ğ´1´Î£¬ĞòºÅµİÔö */
+	/* æ‰“å¼€æ–‡ä»¶ */
+	sprintf(TestFileName, "1:/Speed%02d.txt", s_ucTestSn++);		/* æ¯å†™1æ¬¡ï¼Œåºå·é€’å¢ */
 	result = f_open(&file, TestFileName, FA_CREATE_ALWAYS | FA_WRITE);
 
-	/* Ğ´Ò»´®Êı¾İ */
-	printf("¿ªÊ¼Ğ´ÎÄ¼ş%s %dKB ...\r\n", TestFileName, TEST_FILE_LEN / 1024);
-	runtime1 = bsp_GetRunTime();	/* ¶ÁÈ¡ÏµÍ³ÔËĞĞÊ±¼ä */
+	/* å†™ä¸€ä¸²æ•°æ® */
+	printf("å¼€å§‹å†™æ–‡ä»¶%s %dKB ...\r\n", TestFileName, TEST_FILE_LEN / 1024);
+	runtime1 = bsp_GetRunTime();	/* è¯»å–ç³»ç»Ÿè¿è¡Œæ—¶é—´ */
 	for (i = 0; i < TEST_FILE_LEN / BUF_SIZE; i++)
 	{
 		result = f_write(&file, g_TestBuf, sizeof(g_TestBuf), &bw);
@@ -575,34 +575,34 @@ static void WriteFileTest(void)
 		else
 		{
 			err = 1;
-			printf("%sÎÄ¼şĞ´Ê§°Ü\r\n", TestFileName);
+			printf("%sæ–‡ä»¶å†™å¤±è´¥\r\n", TestFileName);
 			break;
 		}
 	}
-	runtime2 = bsp_GetRunTime();	/* ¶ÁÈ¡ÏµÍ³ÔËĞĞÊ±¼ä */
+	runtime2 = bsp_GetRunTime();	/* è¯»å–ç³»ç»Ÿè¿è¡Œæ—¶é—´ */
 
 	if (err == 0)
 	{
 		timelen = (runtime2 - runtime1);
-		printf("\r\n  Ğ´ºÄÊ± : %dms   Æ½¾ùĞ´ËÙ¶È : %dB/S (%dKB/S)\r\n",
+		printf("\r\n  å†™è€—æ—¶ : %dms   å¹³å‡å†™é€Ÿåº¦ : %dB/S (%dKB/S)\r\n",
 			timelen,
 			(TEST_FILE_LEN * 1000) / timelen,
 			((TEST_FILE_LEN / 1024) * 1000) / timelen);
 	}
 
-	f_close(&file);		/* ¹Ø±ÕÎÄ¼ş*/
+	f_close(&file);		/* å…³é—­æ–‡ä»¶*/
 
 
-	/* ¿ªÊ¼¶ÁÎÄ¼ş²âÊÔ */
+	/* å¼€å§‹è¯»æ–‡ä»¶æµ‹è¯• */
 	result = f_open(&file, TestFileName, FA_OPEN_EXISTING | FA_READ);
 	if (result !=  FR_OK)
 	{
-		printf("Ã»ÓĞÕÒµ½ÎÄ¼ş: %s\r\n", TestFileName);
+		printf("æ²¡æœ‰æ‰¾åˆ°æ–‡ä»¶: %s\r\n", TestFileName);
 		return;
 	}
 
-	printf("¿ªÊ¼¶ÁÎÄ¼ş %dKB ...\r\n", TEST_FILE_LEN / 1024);
-	runtime1 = bsp_GetRunTime();	/* ¶ÁÈ¡ÏµÍ³ÔËĞĞÊ±¼ä */
+	printf("å¼€å§‹è¯»æ–‡ä»¶ %dKB ...\r\n", TEST_FILE_LEN / 1024);
+	runtime1 = bsp_GetRunTime();	/* è¯»å–ç³»ç»Ÿè¿è¡Œæ—¶é—´ */
 	for (i = 0; i < TEST_FILE_LEN / BUF_SIZE; i++)
 	{
 		result = f_read(&file, g_TestBuf, sizeof(g_TestBuf), &bw);
@@ -613,13 +613,13 @@ static void WriteFileTest(void)
 				printf(".");
 			}
 
-			/* ±È½ÏĞ´ÈëµÄÊı¾İÊÇ·ñÕıÈ·£¬´ËÓï¾ä»áµ¼ÖÂ¶Á¿¨ËÙ¶È½á¹û½µµÍµ½ 3.5MBytes/S */
+			/* æ¯”è¾ƒå†™å…¥çš„æ•°æ®æ˜¯å¦æ­£ç¡®ï¼Œæ­¤è¯­å¥ä¼šå¯¼è‡´è¯»å¡é€Ÿåº¦ç»“æœé™ä½åˆ° 3.5MBytes/S */
 			for (k = 0; k < sizeof(g_TestBuf); k++)
 			{
 				if (g_TestBuf[k] != (k / 512) + '0')
 				{
 				  	err = 1;
-					printf("Speed1.txt ÎÄ¼ş¶Á³É¹¦£¬µ«ÊÇÊı¾İ³ö´í\r\n");
+					printf("Speed1.txt æ–‡ä»¶è¯»æˆåŠŸï¼Œä½†æ˜¯æ•°æ®å‡ºé”™\r\n");
 					break;
 				}
 			}
@@ -631,24 +631,24 @@ static void WriteFileTest(void)
 		else
 		{
 			err = 1;
-			printf("Speed1.txt ÎÄ¼ş¶ÁÊ§°Ü\r\n");
+			printf("Speed1.txt æ–‡ä»¶è¯»å¤±è´¥\r\n");
 			break;
 		}
 	}
-	runtime2 = bsp_GetRunTime();	/* ¶ÁÈ¡ÏµÍ³ÔËĞĞÊ±¼ä */
+	runtime2 = bsp_GetRunTime();	/* è¯»å–ç³»ç»Ÿè¿è¡Œæ—¶é—´ */
 
 	if (err == 0)
 	{
 		timelen = (runtime2 - runtime1);
-		printf("\r\n  ¶ÁºÄÊ± : %dms   Æ½¾ù¶ÁËÙ¶È : %dB/S (%dKB/S)\r\n", timelen,
+		printf("\r\n  è¯»è€—æ—¶ : %dms   å¹³å‡è¯»é€Ÿåº¦ : %dB/S (%dKB/S)\r\n", timelen,
 			(TEST_FILE_LEN * 1000) / timelen, ((TEST_FILE_LEN / 1024) * 1000) / timelen);
 	}
 
-	/* ¹Ø±ÕÎÄ¼ş*/
+	/* å…³é—­æ–‡ä»¶*/
 	f_close(&file);
 
-	/* Ğ¶ÔØÎÄ¼şÏµÍ³ */
+	/* å¸è½½æ–‡ä»¶ç³»ç»Ÿ */
 	f_mount(NULL, FS_VOLUME_NAND, 0);
 }
 
-/***************************** °²¸»À³µç×Ó www.armfly.com (END OF FILE) *********************************/
+/***************************** å®‰å¯Œè±ç”µå­ www.armfly.com (END OF FILE) *********************************/

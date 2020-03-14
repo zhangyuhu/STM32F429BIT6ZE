@@ -1,27 +1,27 @@
 /*
 *********************************************************************************************************
 *
-*	Ä£¿éÃû³Æ : ft5x06µçÈİ´¥ÃşĞ¾Æ¬Çı¶¯³ÌĞò
-*	ÎÄ¼şÃû³Æ : bsp_ts_ft5x06.h
-*	Ëµ    Ã÷ : Í·ÎÄ¼ş
-*	°æ    ±¾ : V1.0
+*	æ¨¡å—åç§° : ft5x06ç”µå®¹è§¦æ‘¸èŠ¯ç‰‡é©±åŠ¨ç¨‹åº
+*	æ–‡ä»¶åç§° : bsp_ts_ft5x06.h
+*	è¯´    æ˜ : å¤´æ–‡ä»¶
+*	ç‰ˆ    æœ¬ : V1.0
 *
-*	Copyright (C), 2015-2020, °²¸»À³µç×Ó www.armfly.com
+*	Copyright (C), 2015-2020, å®‰å¯Œè±ç”µå­ www.armfly.com
 *********************************************************************************************************
 */
 
 #ifndef _BSP_TS_FT5X06_H
 #define _BSP_TS_FT5X06_H
 
-/* I2C×ÜÏß£¬Æ÷¼şID */
+/* I2Cæ€»çº¿ï¼Œå™¨ä»¶ID */
 #define FT5X06_I2C_ADDR       0x70
 
-#define FT5X06_TOUCH_POINTS   5		/* Ö§³ÖµÄ´¥ÃşµãÊı */
+#define FT5X06_TOUCH_POINTS   5		/* æ”¯æŒçš„è§¦æ‘¸ç‚¹æ•° */
 
-/* ¼Ä´æÆ÷µØÖ· */
-#define FT5X06_REG_FW_VER     0xA6		/* ¹Ì¼ş°æ±¾ */
-#define FT5X06_REG_POINT_RATE 0x88		/* ËÙÂÊ */
-#define FT5X06_REG_THGROUP    0x80		/* ÃÅ¼÷ */
+/* å¯„å­˜å™¨åœ°å€ */
+#define FT5X06_REG_FW_VER     0xA6		/* å›ºä»¶ç‰ˆæœ¬ */
+#define FT5X06_REG_POINT_RATE 0x88		/* é€Ÿç‡ */
+#define FT5X06_REG_THGROUP    0x80		/* é—¨æ§› */
 
 /*Chip Device Type*/
 #define IC_FT5X06       0	/* x=2,3,4 */
@@ -54,9 +54,9 @@
 #define FTS_REG_VENDOR_ID     0xA8	/* TP vendor ID */
 #define FTS_REG_POINT_RATE    0x88	/* report rate */
 
-#define CFG_POINT_READ_BUF  (3 + 6 * (FT5X06_TOUCH_POINTS))    // 33×Ö½Ú
+#define CFG_POINT_READ_BUF  (3 + 6 * (FT5X06_TOUCH_POINTS))    // 33å­—èŠ‚
 
-#if 0  /* ÒÔÎªÄÚÈİÕª³­×Ô LinuxÇı¶¯ */
+#if 0  /* ä»¥ä¸ºå†…å®¹æ‘˜æŠ„è‡ª Linuxé©±åŠ¨ */
 struct Upgrade_Info 
 {
 	uint8_t CHIP_ID;
@@ -99,7 +99,7 @@ typedef struct
 	uint8_t Enable;
 	uint8_t TimerCount;
 	
-	uint8_t Count;			/* ¼¸¸öµã°´ÏÂ */
+	uint8_t Count;			/* å‡ ä¸ªç‚¹æŒ‰ä¸‹ */
 	
 	uint16_t X[FT5X06_TOUCH_POINTS];
 	uint16_t Y[FT5X06_TOUCH_POINTS];	
@@ -119,4 +119,4 @@ extern FT5X06_T g_tFT5X06;
 
 #endif
 
-/***************************** °²¸»À³µç×Ó www.armfly.com (END OF FILE) *********************************/
+/***************************** å®‰å¯Œè±ç”µå­ www.armfly.com (END OF FILE) *********************************/

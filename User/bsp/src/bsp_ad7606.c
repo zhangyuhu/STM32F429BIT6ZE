@@ -1,34 +1,34 @@
 /*
 *********************************************************************************************************
 *
-*	Ä£¿éÃû³Æ : AD7606Êý¾Ý²É¼¯Ä£¿é
-*	ÎÄ¼þÃû³Æ : bsp_ad7606.c
-*	°æ    ±¾ : V1.0
-*	Ëµ    Ã÷ : AD7606¹ÒÔÚSTM32µÄFMC×ÜÏßÉÏ¡£
+*	æ¨¡å—åç§° : AD7606æ•°æ®é‡‡é›†æ¨¡å—
+*	æ–‡ä»¶åç§° : bsp_ad7606.c
+*	ç‰ˆ    æœ¬ : V1.0
+*	è¯´    æ˜Ž : AD7606æŒ‚åœ¨STM32çš„FMCæ€»çº¿ä¸Šã€‚
 *
-*			±¾Àý×ÓÊ¹ÓÃÁË TIM3 ×÷ÎªÓ²¼þ¶¨Ê±Æ÷£¬¶¨Ê±Æô¶¯ADC×ª»»
+*			æœ¬ä¾‹å­ä½¿ç”¨äº† TIM3 ä½œä¸ºç¡¬ä»¶å®šæ—¶å™¨ï¼Œå®šæ—¶å¯åŠ¨ADCè½¬æ¢
 *
-*	ÐÞ¸Ä¼ÇÂ¼ :
-*		°æ±¾ºÅ  ÈÕÆÚ        ×÷Õß     ËµÃ÷
-*		V1.0    2015-10-11 armfly  ÕýÊ½·¢²¼
+*	ä¿®æ”¹è®°å½• :
+*		ç‰ˆæœ¬å·  æ—¥æœŸ        ä½œè€…     è¯´æ˜Ž
+*		V1.0    2015-10-11 armfly  æ­£å¼å‘å¸ƒ
 *
-*	Copyright (C), 2015-2020, °²¸»À³µç×Ó www.armfly.com
+*	Copyright (C), 2015-2020, å®‰å¯ŒèŽ±ç”µå­ www.armfly.com
 *
 *********************************************************************************************************
 */
 
 /*
-	STM32-V6¿ª·¢°å + AD7606Ä£¿é£¬ ¿ØÖÆ²É¼¯µÄIO:
+	STM32-V6å¼€å‘æ¿ + AD7606æ¨¡å—ï¼Œ æŽ§åˆ¶é‡‡é›†çš„IO:
 	
-	PC6/TIM3_CH1/TIM8_CH1     ----> AD7606_CONVST  (ºÍÉãÏñÍ·¸´ÓÃ),  Êä³öPWM·½²¨£¬×÷ÎªADCÆô¶¯ÐÅºÅ
-	PE5/DCMI_D6/AD7606_BUSY   <---- AD7606_BUSY    , CPUÔÚBUSYÖÐ¶Ï·þÎñ³ÌÐòÖÐ¶ÁÈ¡²É¼¯½á¹û
+	PC6/TIM3_CH1/TIM8_CH1     ----> AD7606_CONVST  (å’Œæ‘„åƒå¤´å¤ç”¨),  è¾“å‡ºPWMæ–¹æ³¢ï¼Œä½œä¸ºADCå¯åŠ¨ä¿¡å·
+	PE5/DCMI_D6/AD7606_BUSY   <---- AD7606_BUSY    , CPUåœ¨BUSYä¸­æ–­æœåŠ¡ç¨‹åºä¸­è¯»å–é‡‡é›†ç»“æžœ
 	
-	Õâ¸öÁ½¸öIOºÍSTM32-V5¿ª·¢°åÊÇ²»Í¬µÄ
+	è¿™ä¸ªä¸¤ä¸ªIOå’ŒSTM32-V5å¼€å‘æ¿æ˜¯ä¸åŒçš„
 */
 
 #include "bsp.h"
 
-/* ÉèÖÃ¹ý²ÉÑùµÄIO, ÔÚÀ©Õ¹µÄ74HC574ÉÏ */
+/* è®¾ç½®è¿‡é‡‡æ ·çš„IO, åœ¨æ‰©å±•çš„74HC574ä¸Š */
 #define OS0_1()		HC574_SetPin(AD7606_OS0, 1)
 #define OS0_0()		HC574_SetPin(AD7606_OS0, 0)
 #define OS1_1()		HC574_SetPin(AD7606_OS1, 1)
@@ -36,33 +36,33 @@
 #define OS2_1()		HC574_SetPin(AD7606_OS2, 1)
 #define OS2_0()		HC574_SetPin(AD7606_OS2, 0)
 
-/* Æô¶¯AD×ª»»µÄGPIO : PC6 */
+/* å¯åŠ¨ADè½¬æ¢çš„GPIO : PC6 */
 #define CONVST_1()	GPIOC->BSRRL = GPIO_Pin_6
 #define CONVST_0()	GPIOC->BSRRH = GPIO_Pin_6
 
-/* ÉèÖÃÊäÈëÁ¿³ÌµÄGPIO, ÔÚÀ©Õ¹µÄ74HC574ÉÏ */
+/* è®¾ç½®è¾“å…¥é‡ç¨‹çš„GPIO, åœ¨æ‰©å±•çš„74HC574ä¸Š */
 #define RANGE_1()	HC574_SetPin(AD7606_RANGE, 1)
 #define RANGE_0()	HC574_SetPin(AD7606_RANGE, 0)
 
-/* AD7606¸´Î»¿ÚÏß, ÔÚÀ©Õ¹µÄ74HC574ÉÏ */
+/* AD7606å¤ä½å£çº¿, åœ¨æ‰©å±•çš„74HC574ä¸Š */
 #define RESET_1()	HC574_SetPin(AD7606_RESET, 1)
 #define RESET_0()	HC574_SetPin(AD7606_RESET, 0)
 
-/* AD7606 FSMC×ÜÏßµØÖ·£¬Ö»ÄÜ¶Á£¬ÎÞÐèÐ´ */
+/* AD7606 FSMCæ€»çº¿åœ°å€ï¼Œåªèƒ½è¯»ï¼Œæ— éœ€å†™ */
 #define AD7606_RESULT()	*(__IO uint16_t *)0x64003000
 
-AD7606_VAR_T g_tAD7606;		/* ¶¨Òå1¸öÈ«¾Ö±äÁ¿£¬±£´æÒ»Ð©²ÎÊý */
-AD7606_FIFO_T g_tAdcFifo;	/* ¶¨ÒåFIFO½á¹¹Ìå±äÁ¿ */
+AD7606_VAR_T g_tAD7606;		/* å®šä¹‰1ä¸ªå…¨å±€å˜é‡ï¼Œä¿å­˜ä¸€äº›å‚æ•° */
+AD7606_FIFO_T g_tAdcFifo;	/* å®šä¹‰FIFOç»“æž„ä½“å˜é‡ */
 
 static void AD7606_CtrlLinesConfig(void);
 static void AD7606_FSMCConfig(void);
 
 /*
 *********************************************************************************************************
-*	º¯ Êý Ãû: bsp_InitAD7606
-*	¹¦ÄÜËµÃ÷: ÅäÖÃÁ¬½ÓÍâ²¿SRAMµÄGPIOºÍFSMC
-*	ÐÎ    ²Î:  ÎÞ
-*	·µ »Ø Öµ: ÎÞ
+*	å‡½ æ•° å: bsp_InitAD7606
+*	åŠŸèƒ½è¯´æ˜Ž: é…ç½®è¿žæŽ¥å¤–éƒ¨SRAMçš„GPIOå’ŒFSMC
+*	å½¢    å‚:  æ— 
+*	è¿” å›ž å€¼: æ— 
 *********************************************************************************************************
 */
 void bsp_InitAD7606(void)
@@ -70,28 +70,28 @@ void bsp_InitAD7606(void)
 	AD7606_CtrlLinesConfig();
 	AD7606_FSMCConfig();
 
-	AD7606_SetOS(AD_OS_NO);		/* ÎÞ¹ý²ÉÑù */
-	AD7606_SetInputRange(0);	/* 0±íÊ¾ÊäÈëÁ¿³ÌÎªÕý¸º5V, 1±íÊ¾Õý¸º10V */
+	AD7606_SetOS(AD_OS_NO);		/* æ— è¿‡é‡‡æ · */
+	AD7606_SetInputRange(0);	/* 0è¡¨ç¤ºè¾“å…¥é‡ç¨‹ä¸ºæ­£è´Ÿ5V, 1è¡¨ç¤ºæ­£è´Ÿ10V */
 
 	AD7606_Reset();
 
-	CONVST_1();					/* Æô¶¯×ª»»µÄGPIOÆ½Ê±ÉèÖÃÎª¸ß */
+	CONVST_1();					/* å¯åŠ¨è½¬æ¢çš„GPIOå¹³æ—¶è®¾ç½®ä¸ºé«˜ */
 }
 
 /*
 *********************************************************************************************************
-*	º¯ Êý Ãû: AD7606_CtrlLinesConfig
-*	¹¦ÄÜËµÃ÷: ÅäÖÃGPIO¿ÚÏß£¬FMC¹Ü½ÅÉèÖÃÎª¸´ÓÃ¹¦ÄÜ
-*	ÐÎ    ²Î:  ÎÞ
-*	·µ »Ø Öµ: ÎÞ
+*	å‡½ æ•° å: AD7606_CtrlLinesConfig
+*	åŠŸèƒ½è¯´æ˜Ž: é…ç½®GPIOå£çº¿ï¼ŒFMCç®¡è„šè®¾ç½®ä¸ºå¤ç”¨åŠŸèƒ½
+*	å½¢    å‚:  æ— 
+*	è¿” å›ž å€¼: æ— 
 *********************************************************************************************************
 */
 /*
-	°²¸»À³STM32-V6¿ª·¢°å½ÓÏß·½·¨£º
+	å®‰å¯ŒèŽ±STM32-V6å¼€å‘æ¿æŽ¥çº¿æ–¹æ³•ï¼š
 	PD0/FMC_D2
 	PD1/FMC_D3
-	PD4/FMC_NOE		---- ¶Á¿ØÖÆÐÅºÅ£¬OE = Output Enable £¬ N ±íÊ¾µÍÓÐÐ§
-	PD5/FMC_NWE		-XX- Ð´¿ØÖÆÐÅºÅ£¬AD7606 Ö»ÓÐ¶Á£¬ÎÞÐ´ÐÅºÅ
+	PD4/FMC_NOE		---- è¯»æŽ§åˆ¶ä¿¡å·ï¼ŒOE = Output Enable ï¼Œ N è¡¨ç¤ºä½Žæœ‰æ•ˆ
+	PD5/FMC_NWE		-XX- å†™æŽ§åˆ¶ä¿¡å·ï¼ŒAD7606 åªæœ‰è¯»ï¼Œæ— å†™ä¿¡å·
 	PD8/FMC_D13
 	PD9/FMC_D14
 	PD10/FMC_D15
@@ -108,13 +108,13 @@ void bsp_InitAD7606(void)
 	PE14/FMC_D11
 	PE15/FMC_D12
 	
-	PG0/FMC_A10		--- ºÍÖ÷Æ¬Ñ¡FMC_NE2Ò»ÆðÒëÂë
-	PG1/FMC_A11		--- ºÍÖ÷Æ¬Ñ¡FMC_NE2Ò»ÆðÒëÂë
-	PG9/FMC_NE2		--- Ö÷Æ¬Ñ¡£¨TFT, OLED ºÍ AD7606£©	
+	PG0/FMC_A10		--- å’Œä¸»ç‰‡é€‰FMC_NE2ä¸€èµ·è¯‘ç 
+	PG1/FMC_A11		--- å’Œä¸»ç‰‡é€‰FMC_NE2ä¸€èµ·è¯‘ç 
+	PG9/FMC_NE2		--- ä¸»ç‰‡é€‰ï¼ˆTFT, OLED å’Œ AD7606ï¼‰	
 */
 
 /* 
-	¿ØÖÆAD7606²ÎÊýµÄÆäËûIO·ÖÅäÔÚÀ©Õ¹µÄ74HC574ÉÏ
+	æŽ§åˆ¶AD7606å‚æ•°çš„å…¶ä»–IOåˆ†é…åœ¨æ‰©å±•çš„74HC574ä¸Š
 	D13 - AD7606_OS0
 	D14 - AD7606_OS1
 	D15 - AD7606_OS2
@@ -125,13 +125,13 @@ static void AD7606_CtrlLinesConfig(void)
 {
 	GPIO_InitTypeDef GPIO_InitStructure;
 
-	/* Ê¹ÄÜFMCÊ±ÖÓ */
+	/* ä½¿èƒ½FMCæ—¶é’Ÿ */
 	RCC_AHB3PeriphClockCmd(RCC_AHB3Periph_FMC, ENABLE);
 
-	/* Ê¹ÄÜ GPIOÊ±ÖÓ */
+	/* ä½¿èƒ½ GPIOæ—¶é’Ÿ */
 	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOD | RCC_AHB1Periph_GPIOE | RCC_AHB1Periph_GPIOG, ENABLE);
 
-	/* ÉèÖÃ GPIOD Ïà¹ØµÄIOÎª¸´ÓÃÍÆÍìÊä³ö */
+	/* è®¾ç½® GPIOD ç›¸å…³çš„IOä¸ºå¤ç”¨æŽ¨æŒ½è¾“å‡º */
 	GPIO_PinAFConfig(GPIOD, GPIO_PinSource0, GPIO_AF_FMC);
 	GPIO_PinAFConfig(GPIOD, GPIO_PinSource1, GPIO_AF_FMC);
 	GPIO_PinAFConfig(GPIOD, GPIO_PinSource4, GPIO_AF_FMC);
@@ -152,7 +152,7 @@ static void AD7606_CtrlLinesConfig(void)
 	                            GPIO_Pin_15;
 	GPIO_Init(GPIOD, &GPIO_InitStructure);
 
-	/* ÉèÖÃ GPIOE Ïà¹ØµÄIOÎª¸´ÓÃÍÆÍìÊä³ö */
+	/* è®¾ç½® GPIOE ç›¸å…³çš„IOä¸ºå¤ç”¨æŽ¨æŒ½è¾“å‡º */
 	GPIO_PinAFConfig(GPIOE, GPIO_PinSource7 , GPIO_AF_FMC);
 	GPIO_PinAFConfig(GPIOE, GPIO_PinSource8 , GPIO_AF_FMC);
 	GPIO_PinAFConfig(GPIOE, GPIO_PinSource9 , GPIO_AF_FMC);
@@ -168,7 +168,7 @@ static void AD7606_CtrlLinesConfig(void)
 	                            GPIO_Pin_15;
 	GPIO_Init(GPIOE, &GPIO_InitStructure);
 
-	/* ÉèÖÃ GPIOG Ïà¹ØµÄIOÎª¸´ÓÃÍÆÍìÊä³ö */
+	/* è®¾ç½® GPIOG ç›¸å…³çš„IOä¸ºå¤ç”¨æŽ¨æŒ½è¾“å‡º */
 	GPIO_PinAFConfig(GPIOG, GPIO_PinSource0, GPIO_AF_FMC);
 	GPIO_PinAFConfig(GPIOG, GPIO_PinSource1, GPIO_AF_FMC);
 	GPIO_PinAFConfig(GPIOG, GPIO_PinSource9, GPIO_AF_FMC);
@@ -176,15 +176,15 @@ static void AD7606_CtrlLinesConfig(void)
 	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0 | GPIO_Pin_1 | GPIO_Pin_9;
 	GPIO_Init(GPIOG, &GPIO_InitStructure);
 
-	/* ÔÚbpsÖÐÐèÒªÅäÖÃ 74HC574Êä³ö×´Ì¬ */
+	/* åœ¨bpsä¸­éœ€è¦é…ç½® 74HC574è¾“å‡ºçŠ¶æ€ */
 }
 
 /*
 *********************************************************************************************************
-*	º¯ Êý Ãû: AD7606_FSMCConfig
-*	¹¦ÄÜËµÃ÷: ÅäÖÃFSMC²¢¿Ú·ÃÎÊÊ±Ðò
-*	ÐÎ    ²Î:  ÎÞ
-*	·µ »Ø Öµ: ÎÞ
+*	å‡½ æ•° å: AD7606_FSMCConfig
+*	åŠŸèƒ½è¯´æ˜Ž: é…ç½®FSMCå¹¶å£è®¿é—®æ—¶åº
+*	å½¢    å‚:  æ— 
+*	è¿” å›ž å€¼: æ— 
 *********************************************************************************************************
 */
 static void AD7606_FSMCConfig(void)
@@ -193,11 +193,11 @@ static void AD7606_FSMCConfig(void)
 	FMC_NORSRAMTimingInitTypeDef  timing;
 
 	/*
-		AD7606¹æ¸ñÊéÒªÇó(3.3VÊ±)£ºRD¶ÁÐÅºÅµÍµçÆ½Âö³å¿í¶È×î¶Ì21ns£¬¸ßµçÆ½Âö³å×î¶Ì¿í¶È15ns¡£
+		AD7606è§„æ ¼ä¹¦è¦æ±‚(3.3Væ—¶)ï¼šRDè¯»ä¿¡å·ä½Žç”µå¹³è„‰å†²å®½åº¦æœ€çŸ­21nsï¼Œé«˜ç”µå¹³è„‰å†²æœ€çŸ­å®½åº¦15nsã€‚
 
-		°´ÕÕÈçÏÂÅäÖÃ ¶ÁÊý¾ùÕý³£¡£ÎªÁËºÍÍ¬BANKµÄLCDÅäÖÃÏàÍ¬£¬Ñ¡Ôñ3-0-6-1-0-0
-		3-0-5-1-0-0  : RD¸ß³ÖÐø75ns£¬ µÍµçÆ½³ÖÐø50ns.  1usÒÔÄÚ¿É¶ÁÈ¡8Â·Ñù±¾Êý¾Ýµ½ÄÚ´æ¡£
-		1-0-1-1-0-0  : RD¸ß75ns£¬µÍµçÆ½Ö´ÐÐ12ns×óÓÒ£¬ÏÂ½µÑØ²î²»¶àÒ²12ns.  Êý¾Ý¶ÁÈ¡ÕýÈ·¡£
+		æŒ‰ç…§å¦‚ä¸‹é…ç½® è¯»æ•°å‡æ­£å¸¸ã€‚ä¸ºäº†å’ŒåŒBANKçš„LCDé…ç½®ç›¸åŒï¼Œé€‰æ‹©3-0-6-1-0-0
+		3-0-5-1-0-0  : RDé«˜æŒç»­75nsï¼Œ ä½Žç”µå¹³æŒç»­50ns.  1usä»¥å†…å¯è¯»å–8è·¯æ ·æœ¬æ•°æ®åˆ°å†…å­˜ã€‚
+		1-0-1-1-0-0  : RDé«˜75nsï¼Œä½Žç”µå¹³æ‰§è¡Œ12nså·¦å³ï¼Œä¸‹é™æ²¿å·®ä¸å¤šä¹Ÿ12ns.  æ•°æ®è¯»å–æ­£ç¡®ã€‚
 	*/
 	/* FMC_Bank1_NORSRAM4 configuration */
 	timing.FMC_AddressSetupTime = 3;
@@ -231,7 +231,7 @@ static void AD7606_FSMCConfig(void)
 	init.FMC_ExtendedMode = FMC_ExtendedMode_Disable;
 	init.FMC_AsynchronousWait = FMC_AsynchronousWait_Disable;	
 	init.FMC_WriteBurst = FMC_WriteBurst_Disable;
-	init.FMC_ContinousClock = FMC_CClock_SyncOnly;	/* 429±È407¶àµÄÒ»¸ö²ÎÊý */
+	init.FMC_ContinousClock = FMC_CClock_SyncOnly;	/* 429æ¯”407å¤šçš„ä¸€ä¸ªå‚æ•° */
 
 	init.FMC_ReadWriteTimingStruct = &timing;
 	init.FMC_WriteTimingStruct = &timing;
@@ -244,19 +244,19 @@ static void AD7606_FSMCConfig(void)
 
 /*
 *********************************************************************************************************
-*	º¯ Êý Ãû: AD7606_SetOS
-*	¹¦ÄÜËµÃ÷: ÅäÖÃAD7606Êý×ÖÂË²¨Æ÷£¬Ò²¾ÍÉèÖÃ¹ý²ÉÑù±¶ÂÊ¡£
-*			 Í¨¹ýÉèÖÃ AD7606_OS0¡¢OS1¡¢OS2¿ÚÏßµÄµçÆ½×éºÏ×´Ì¬¾ö¶¨¹ý²ÉÑù±¶ÂÊ¡£
-*			 Æô¶¯AD×ª»»Ö®ºó£¬AD7606ÄÚ²¿×Ô¶¯ÊµÏÖÊ£ÓàÑù±¾µÄ²É¼¯£¬È»ºóÇóÆ½¾ùÖµÊä³ö¡£
+*	å‡½ æ•° å: AD7606_SetOS
+*	åŠŸèƒ½è¯´æ˜Ž: é…ç½®AD7606æ•°å­—æ»¤æ³¢å™¨ï¼Œä¹Ÿå°±è®¾ç½®è¿‡é‡‡æ ·å€çŽ‡ã€‚
+*			 é€šè¿‡è®¾ç½® AD7606_OS0ã€OS1ã€OS2å£çº¿çš„ç”µå¹³ç»„åˆçŠ¶æ€å†³å®šè¿‡é‡‡æ ·å€çŽ‡ã€‚
+*			 å¯åŠ¨ADè½¬æ¢ä¹‹åŽï¼ŒAD7606å†…éƒ¨è‡ªåŠ¨å®žçŽ°å‰©ä½™æ ·æœ¬çš„é‡‡é›†ï¼Œç„¶åŽæ±‚å¹³å‡å€¼è¾“å‡ºã€‚
 *
-*			 ¹ý²ÉÑù±¶ÂÊÔ½¸ß£¬×ª»»Ê±¼äÔ½³¤¡£
-*			 ÎÞ¹ý²ÉÑùÊ±£¬AD×ª»»Ê±¼ä 4us;
-*				2±¶¹ý²ÉÑùÊ± = 8.7us;
-*				4±¶¹ý²ÉÑùÊ± = 16us
-*			 	64±¶¹ý²ÉÑùÊ± = 286us
+*			 è¿‡é‡‡æ ·å€çŽ‡è¶Šé«˜ï¼Œè½¬æ¢æ—¶é—´è¶Šé•¿ã€‚
+*			 æ— è¿‡é‡‡æ ·æ—¶ï¼ŒADè½¬æ¢æ—¶é—´ 4us;
+*				2å€è¿‡é‡‡æ ·æ—¶ = 8.7us;
+*				4å€è¿‡é‡‡æ ·æ—¶ = 16us
+*			 	64å€è¿‡é‡‡æ ·æ—¶ = 286us
 *
-*	ÐÎ    ²Î: _ucOS : ¹ý²ÉÑù±¶ÂÊ, 0 - 6
-*	·µ »Ø Öµ: ÎÞ
+*	å½¢    å‚: _ucOS : è¿‡é‡‡æ ·å€çŽ‡, 0 - 6
+*	è¿” å›ž å€¼: æ— 
 *********************************************************************************************************
 */
 void AD7606_SetOS(uint8_t _ucOS)
@@ -312,10 +312,10 @@ void AD7606_SetOS(uint8_t _ucOS)
 
 /*
 *********************************************************************************************************
-*	º¯ Êý Ãû: AD7606_SetInputRange
-*	¹¦ÄÜËµÃ÷: ÅäÖÃAD7606Ä£ÄâÐÅºÅÊäÈëÁ¿³Ì¡£
-*	ÐÎ    ²Î: _ucRange : 0 ±íÊ¾Õý¸º5V   1±íÊ¾Õý¸º10V
-*	·µ »Ø Öµ: ÎÞ
+*	å‡½ æ•° å: AD7606_SetInputRange
+*	åŠŸèƒ½è¯´æ˜Ž: é…ç½®AD7606æ¨¡æ‹Ÿä¿¡å·è¾“å…¥é‡ç¨‹ã€‚
+*	å½¢    å‚: _ucRange : 0 è¡¨ç¤ºæ­£è´Ÿ5V   1è¡¨ç¤ºæ­£è´Ÿ10V
+*	è¿” å›ž å€¼: æ— 
 *********************************************************************************************************
 */
 void AD7606_SetInputRange(uint8_t _ucRange)
@@ -323,47 +323,47 @@ void AD7606_SetInputRange(uint8_t _ucRange)
 	if (_ucRange == 0)
 	{
 		g_tAD7606.ucRange = 0;
-		RANGE_0();	/* ÉèÖÃÎªÕý¸º5V */
+		RANGE_0();	/* è®¾ç½®ä¸ºæ­£è´Ÿ5V */
 	}
 	else
 	{
 		g_tAD7606.ucRange = 1;
-		RANGE_1();	/* ÉèÖÃÎªÕý¸º10V */
+		RANGE_1();	/* è®¾ç½®ä¸ºæ­£è´Ÿ10V */
 	}
 }
 
 /*
 *********************************************************************************************************
-*	º¯ Êý Ãû: AD7606_Reset
-*	¹¦ÄÜËµÃ÷: Ó²¼þ¸´Î»AD7606¡£¸´Î»Ö®ºó»Ö¸´µ½Õý³£¹¤×÷×´Ì¬¡£
-*	ÐÎ    ²Î: ÎÞ
-*	·µ »Ø Öµ: ÎÞ
+*	å‡½ æ•° å: AD7606_Reset
+*	åŠŸèƒ½è¯´æ˜Ž: ç¡¬ä»¶å¤ä½AD7606ã€‚å¤ä½ä¹‹åŽæ¢å¤åˆ°æ­£å¸¸å·¥ä½œçŠ¶æ€ã€‚
+*	å½¢    å‚: æ— 
+*	è¿” å›ž å€¼: æ— 
 *********************************************************************************************************
 */
 void AD7606_Reset(void)
 {
-	RESET_0();	/* ÍË³ö¸´Î»×´Ì¬ */
+	RESET_0();	/* é€€å‡ºå¤ä½çŠ¶æ€ */
 
-	RESET_1();	/* ½øÈë¸´Î»×´Ì¬ */
-	RESET_1();	/* ½öÓÃÓÚÑÓ³Ù¡£ RESET¸´Î»¸ßµçÆ½Âö³å¿í¶È×îÐ¡50ns¡£ */
+	RESET_1();	/* è¿›å…¥å¤ä½çŠ¶æ€ */
+	RESET_1();	/* ä»…ç”¨äºŽå»¶è¿Ÿã€‚ RESETå¤ä½é«˜ç”µå¹³è„‰å†²å®½åº¦æœ€å°50nsã€‚ */
 	RESET_1();
 	RESET_1();
 
-	RESET_0();	/* ÍË³ö¸´Î»×´Ì¬ */
+	RESET_0();	/* é€€å‡ºå¤ä½çŠ¶æ€ */
 }
 
 /*
 *********************************************************************************************************
-*	º¯ Êý Ãû: AD7606_StartConvst
-*	¹¦ÄÜËµÃ÷: Æô¶¯1´ÎADC×ª»»
-*	ÐÎ    ²Î: ÎÞ
-*	·µ »Ø Öµ: ÎÞ
+*	å‡½ æ•° å: AD7606_StartConvst
+*	åŠŸèƒ½è¯´æ˜Ž: å¯åŠ¨1æ¬¡ADCè½¬æ¢
+*	å½¢    å‚: æ— 
+*	è¿” å›ž å€¼: æ— 
 *********************************************************************************************************
 */
 void AD7606_StartConvst(void)
 {
-	/* page 7£º  CONVST ¸ßµçÆ½Âö³å¿í¶ÈºÍµÍµçÆ½Âö³å¿í¶È×î¶Ì 25ns */
-	/* CONVSTÆ½Ê±Îª¸ß */
+	/* page 7ï¼š  CONVST é«˜ç”µå¹³è„‰å†²å®½åº¦å’Œä½Žç”µå¹³è„‰å†²å®½åº¦æœ€çŸ­ 25ns */
+	/* CONVSTå¹³æ—¶ä¸ºé«˜ */
 	CONVST_0();
 	CONVST_0();
 	CONVST_0();
@@ -373,27 +373,27 @@ void AD7606_StartConvst(void)
 
 /*
 *********************************************************************************************************
-*	º¯ Êý Ãû: AD7606_ReadNowAdc
-*	¹¦ÄÜËµÃ÷: ¶ÁÈ¡8Â·²ÉÑù½á¹û¡£½á¹û´æ´¢ÔÚÈ«¾Ö±äÁ¿ g_tAD7606
-*	ÐÎ    ²Î: ÎÞ
-*	·µ »Ø Öµ: ÎÞ
+*	å‡½ æ•° å: AD7606_ReadNowAdc
+*	åŠŸèƒ½è¯´æ˜Ž: è¯»å–8è·¯é‡‡æ ·ç»“æžœã€‚ç»“æžœå­˜å‚¨åœ¨å…¨å±€å˜é‡ g_tAD7606
+*	å½¢    å‚: æ— 
+*	è¿” å›ž å€¼: æ— 
 *********************************************************************************************************
 */
 void AD7606_ReadNowAdc(void)
 {
-	g_tAD7606.sNowAdc[0] = AD7606_RESULT();	/* ¶ÁµÚ1Â·Ñù±¾ */
-	g_tAD7606.sNowAdc[1] = AD7606_RESULT();	/* ¶ÁµÚ2Â·Ñù±¾ */
-	g_tAD7606.sNowAdc[2] = AD7606_RESULT();	/* ¶ÁµÚ3Â·Ñù±¾ */
-	g_tAD7606.sNowAdc[3] = AD7606_RESULT();	/* ¶ÁµÚ4Â·Ñù±¾ */
-	g_tAD7606.sNowAdc[4] = AD7606_RESULT();	/* ¶ÁµÚ5Â·Ñù±¾ */
-	g_tAD7606.sNowAdc[5] = AD7606_RESULT();	/* ¶ÁµÚ6Â·Ñù±¾ */
-	g_tAD7606.sNowAdc[6] = AD7606_RESULT();	/* ¶ÁµÚ7Â·Ñù±¾ */
-	g_tAD7606.sNowAdc[7] = AD7606_RESULT();	/* ¶ÁµÚ8Â·Ñù±¾ */
+	g_tAD7606.sNowAdc[0] = AD7606_RESULT();	/* è¯»ç¬¬1è·¯æ ·æœ¬ */
+	g_tAD7606.sNowAdc[1] = AD7606_RESULT();	/* è¯»ç¬¬2è·¯æ ·æœ¬ */
+	g_tAD7606.sNowAdc[2] = AD7606_RESULT();	/* è¯»ç¬¬3è·¯æ ·æœ¬ */
+	g_tAD7606.sNowAdc[3] = AD7606_RESULT();	/* è¯»ç¬¬4è·¯æ ·æœ¬ */
+	g_tAD7606.sNowAdc[4] = AD7606_RESULT();	/* è¯»ç¬¬5è·¯æ ·æœ¬ */
+	g_tAD7606.sNowAdc[5] = AD7606_RESULT();	/* è¯»ç¬¬6è·¯æ ·æœ¬ */
+	g_tAD7606.sNowAdc[6] = AD7606_RESULT();	/* è¯»ç¬¬7è·¯æ ·æœ¬ */
+	g_tAD7606.sNowAdc[7] = AD7606_RESULT();	/* è¯»ç¬¬8è·¯æ ·æœ¬ */
 }
 
 /*
 *********************************************************************************************************
-*		ÏÂÃæµÄº¯ÊýÓÃÓÚ¶¨Ê±²É¼¯Ä£Ê½¡£ TIM5Ó²¼þ¶¨Ê±ÖÐ¶ÏÖÐ¶ÁÈ¡ADC½á¹û£¬´æÔÚÈ«¾ÖFIFO
+*		ä¸‹é¢çš„å‡½æ•°ç”¨äºŽå®šæ—¶é‡‡é›†æ¨¡å¼ã€‚ TIM5ç¡¬ä»¶å®šæ—¶ä¸­æ–­ä¸­è¯»å–ADCç»“æžœï¼Œå­˜åœ¨å…¨å±€FIFO
 *
 *
 *********************************************************************************************************
@@ -401,19 +401,19 @@ void AD7606_ReadNowAdc(void)
 
 /*
 *********************************************************************************************************
-*	º¯ Êý Ãû: AD7606_EnterAutoMode
-*	¹¦ÄÜËµÃ÷: ÅäÖÃÓ²¼þ¹¤×÷ÔÚ×Ô¶¯²É¼¯Ä£Ê½£¬½á¹û´æ´¢ÔÚFIFO»º³åÇø¡£
-*	ÐÎ    ²Î:  _ulFreq : ²ÉÑùÆµÂÊ£¬µ¥Î»Hz£¬	1k£¬2k£¬5k£¬10k£¬20K£¬50k£¬100k£¬200k
-*	·µ »Ø Öµ: ÎÞ
+*	å‡½ æ•° å: AD7606_EnterAutoMode
+*	åŠŸèƒ½è¯´æ˜Ž: é…ç½®ç¡¬ä»¶å·¥ä½œåœ¨è‡ªåŠ¨é‡‡é›†æ¨¡å¼ï¼Œç»“æžœå­˜å‚¨åœ¨FIFOç¼“å†²åŒºã€‚
+*	å½¢    å‚:  _ulFreq : é‡‡æ ·é¢‘çŽ‡ï¼Œå•ä½Hzï¼Œ	1kï¼Œ2kï¼Œ5kï¼Œ10kï¼Œ20Kï¼Œ50kï¼Œ100kï¼Œ200k
+*	è¿” å›ž å€¼: æ— 
 *********************************************************************************************************
 */
 void AD7606_EnterAutoMode(uint32_t _ulFreq)
 {
 #if 1
-	/* ÅäÖÃPC6ÎªTIM1_CH1¹¦ÄÜ£¬Êä³öÕ¼¿Õ±È50%µÄ·½²¨ */
+	/* é…ç½®PC6ä¸ºTIM1_CH1åŠŸèƒ½ï¼Œè¾“å‡ºå ç©ºæ¯”50%çš„æ–¹æ³¢ */
 	bsp_SetTIMOutPWM(GPIOC, GPIO_Pin_6, TIM8, 1, _ulFreq, 5000);
 #else	
-	/* ÅäÖÃPC6Îª¸´ÓÃ¹¦ÄÜ£¬TIM3_CH1 . Ö´ÐÐºóbsp_InitAD7606()¶ÔPC6¿ÚÏßµÄÅäÖÃ½«Ê§Ð§ */
+	/* é…ç½®PC6ä¸ºå¤ç”¨åŠŸèƒ½ï¼ŒTIM3_CH1 . æ‰§è¡ŒåŽbsp_InitAD7606()å¯¹PC6å£çº¿çš„é…ç½®å°†å¤±æ•ˆ */
 	{
 		GPIO_InitTypeDef GPIO_InitStructure;
 
@@ -442,33 +442,33 @@ void AD7606_EnterAutoMode(uint32_t _ulFreq)
 		uint16_t usPrescaler;
 		uint16_t usPeriod;
 
-		//TIM_DeInit(TIM3);	/* ¸´Î»TIM¶¨Ê±Æ÷ */
+		//TIM_DeInit(TIM3);	/* å¤ä½TIMå®šæ—¶å™¨ */
 
 	    /*-----------------------------------------------------------------------
-			system_stm32f4xx.c ÎÄ¼þÖÐ void SetSysClock(void) º¯Êý¶ÔÊ±ÖÓµÄÅäÖÃÈçÏÂ£º
+			system_stm32f4xx.c æ–‡ä»¶ä¸­ void SetSysClock(void) å‡½æ•°å¯¹æ—¶é’Ÿçš„é…ç½®å¦‚ä¸‹ï¼š
 
 			HCLK = SYSCLK / 1     (AHB1Periph)
 			PCLK2 = HCLK / 2      (APB2Periph)
 			PCLK1 = HCLK / 4      (APB1Periph)
 
-			ÒòÎªAPB1 prescaler != 1, ËùÒÔ APB1ÉÏµÄTIMxCLK = PCLK1 x 2 = SystemCoreClock / 2;
-			ÒòÎªAPB2 prescaler != 1, ËùÒÔ APB2ÉÏµÄTIMxCLK = PCLK2 x 2 = SystemCoreClock;
+			å› ä¸ºAPB1 prescaler != 1, æ‰€ä»¥ APB1ä¸Šçš„TIMxCLK = PCLK1 x 2 = SystemCoreClock / 2;
+			å› ä¸ºAPB2 prescaler != 1, æ‰€ä»¥ APB2ä¸Šçš„TIMxCLK = PCLK2 x 2 = SystemCoreClock;
 
-			APB1 ¶¨Ê±Æ÷ÓÐ TIM2, TIM3 ,TIM4, TIM5, TIM6, TIM6, TIM12, TIM13,TIM14
-			APB2 ¶¨Ê±Æ÷ÓÐ TIM1, TIM8 ,TIM9, TIM10, TIM11
+			APB1 å®šæ—¶å™¨æœ‰ TIM2, TIM3 ,TIM4, TIM5, TIM6, TIM6, TIM12, TIM13,TIM14
+			APB2 å®šæ—¶å™¨æœ‰ TIM1, TIM8 ,TIM9, TIM10, TIM11
 		*/
 
 		uiTIMxCLK = SystemCoreClock / 2;
 
 		if (_ulFreq < 3000)
 		{
-			usPrescaler = 100 - 1;					/* ·ÖÆµ±È = 10 */
-			usPeriod =  (uiTIMxCLK / 100) / _ulFreq  - 1;		/* ×Ô¶¯ÖØ×°µÄÖµ */
+			usPrescaler = 100 - 1;					/* åˆ†é¢‘æ¯” = 10 */
+			usPeriod =  (uiTIMxCLK / 100) / _ulFreq  - 1;		/* è‡ªåŠ¨é‡è£…çš„å€¼ */
 		}
-		else	/* ´óÓÚ4KµÄÆµÂÊ£¬ÎÞÐè·ÖÆµ */
+		else	/* å¤§äºŽ4Kçš„é¢‘çŽ‡ï¼Œæ— éœ€åˆ†é¢‘ */
 		{
-			usPrescaler = 0;					/* ·ÖÆµ±È = 1 */
-			usPeriod = uiTIMxCLK / _ulFreq - 1;	/* ×Ô¶¯ÖØ×°µÄÖµ */
+			usPrescaler = 0;					/* åˆ†é¢‘æ¯” = 1 */
+			usPeriod = uiTIMxCLK / _ulFreq - 1;	/* è‡ªåŠ¨é‡è£…çš„å€¼ */
 		}
 
 		/* Time base configuration */
@@ -496,7 +496,7 @@ void AD7606_EnterAutoMode(uint32_t _ulFreq)
 #endif
 	
 
-	/* ÅäÖÃPE5, BUSY ×÷ÎªÖÐ¶ÏÊäÈë¿Ú£¬ÏÂ½µÑØ´¥·¢ */
+	/* é…ç½®PE5, BUSY ä½œä¸ºä¸­æ–­è¾“å…¥å£ï¼Œä¸‹é™æ²¿è§¦å‘ */
 	{
 		EXTI_InitTypeDef   EXTI_InitStructure;
 		GPIO_InitTypeDef   GPIO_InitStructure;
@@ -536,10 +536,10 @@ void AD7606_EnterAutoMode(uint32_t _ulFreq)
 
 /*
 *********************************************************************************************************
-*	º¯ Êý Ãû: AD7606_HasNewData
-*	¹¦ÄÜËµÃ÷: ÅÐ¶ÏFIFOÖÐÊÇ·ñÓÐÐÂÊý¾Ý
-*	ÐÎ    ²Î:  _usReadAdc : ´æ·ÅADC½á¹ûµÄ±äÁ¿Ö¸Õë
-*	·µ »Ø Öµ: 1 ±íÊ¾ÓÐ£¬0±íÊ¾ÔÝÎÞÊý¾Ý
+*	å‡½ æ•° å: AD7606_HasNewData
+*	åŠŸèƒ½è¯´æ˜Ž: åˆ¤æ–­FIFOä¸­æ˜¯å¦æœ‰æ–°æ•°æ®
+*	å½¢    å‚:  _usReadAdc : å­˜æ”¾ADCç»“æžœçš„å˜é‡æŒ‡é’ˆ
+*	è¿” å›ž å€¼: 1 è¡¨ç¤ºæœ‰ï¼Œ0è¡¨ç¤ºæš‚æ— æ•°æ®
 *********************************************************************************************************
 */
 uint8_t AD7606_HasNewData(void)
@@ -553,10 +553,10 @@ uint8_t AD7606_HasNewData(void)
 
 /*
 *********************************************************************************************************
-*	º¯ Êý Ãû: AD7606_FifoFull
-*	¹¦ÄÜËµÃ÷: ÅÐ¶ÏFIFOÊÇ·ñÂú
-*	ÐÎ    ²Î:  _usReadAdc : ´æ·ÅADC½á¹ûµÄ±äÁ¿Ö¸Õë
-*	·µ »Ø Öµ: 1 ±íÊ¾Âú£¬0±íÊ¾Î´Âú
+*	å‡½ æ•° å: AD7606_FifoFull
+*	åŠŸèƒ½è¯´æ˜Ž: åˆ¤æ–­FIFOæ˜¯å¦æ»¡
+*	å½¢    å‚:  _usReadAdc : å­˜æ”¾ADCç»“æžœçš„å˜é‡æŒ‡é’ˆ
+*	è¿” å›ž å€¼: 1 è¡¨ç¤ºæ»¡ï¼Œ0è¡¨ç¤ºæœªæ»¡
 *********************************************************************************************************
 */
 uint8_t AD7606_FifoFull(void)
@@ -566,10 +566,10 @@ uint8_t AD7606_FifoFull(void)
 
 /*
 *********************************************************************************************************
-*	º¯ Êý Ãû: AD7606_ReadFifo
-*	¹¦ÄÜËµÃ÷: ´ÓFIFOÖÐ¶ÁÈ¡Ò»¸öADCÖµ
-*	ÐÎ    ²Î:  _usReadAdc : ´æ·ÅADC½á¹ûµÄ±äÁ¿Ö¸Õë
-*	·µ »Ø Öµ: 1 ±íÊ¾OK£¬0±íÊ¾ÔÝÎÞÊý¾Ý
+*	å‡½ æ•° å: AD7606_ReadFifo
+*	åŠŸèƒ½è¯´æ˜Ž: ä»ŽFIFOä¸­è¯»å–ä¸€ä¸ªADCå€¼
+*	å½¢    å‚:  _usReadAdc : å­˜æ”¾ADCç»“æžœçš„å˜é‡æŒ‡é’ˆ
+*	è¿” å›ž å€¼: 1 è¡¨ç¤ºOKï¼Œ0è¡¨ç¤ºæš‚æ— æ•°æ®
 *********************************************************************************************************
 */
 uint8_t AD7606_ReadFifo(uint16_t *_usReadAdc)
@@ -595,20 +595,20 @@ uint8_t AD7606_ReadFifo(uint16_t *_usReadAdc)
 
 /*
 *********************************************************************************************************
-*	º¯ Êý Ãû: AD7606_StartRecord
-*	¹¦ÄÜËµÃ÷: ¿ªÊ¼²É¼¯
-*	ÐÎ    ²Î:  ÎÞ
-*	·µ »Ø Öµ: ÎÞ
+*	å‡½ æ•° å: AD7606_StartRecord
+*	åŠŸèƒ½è¯´æ˜Ž: å¼€å§‹é‡‡é›†
+*	å½¢    å‚:  æ— 
+*	è¿” å›ž å€¼: æ— 
 *********************************************************************************************************
 */
 void AD7606_StartRecord(uint32_t _ulFreq)
 {
 	AD7606_StopRecord();
 
-	AD7606_Reset();					/* ¸´Î»Ó²¼þ */
-	AD7606_StartConvst();			/* Æô¶¯²ÉÑù£¬±ÜÃâµÚ1×éÊý¾ÝÈ«0µÄÎÊÌâ */
+	AD7606_Reset();					/* å¤ä½ç¡¬ä»¶ */
+	AD7606_StartConvst();			/* å¯åŠ¨é‡‡æ ·ï¼Œé¿å…ç¬¬1ç»„æ•°æ®å…¨0çš„é—®é¢˜ */
 
-	g_tAdcFifo.usRead = 0;			/* ±ØÐëÔÚ¿ªÆôTIM2Ö®Ç°Çå0 */
+	g_tAdcFifo.usRead = 0;			/* å¿…é¡»åœ¨å¼€å¯TIM2ä¹‹å‰æ¸…0 */
 	g_tAdcFifo.usWrite = 0;
 	g_tAdcFifo.usCount = 0;
 	g_tAdcFifo.ucFull = 0;
@@ -618,21 +618,21 @@ void AD7606_StartRecord(uint32_t _ulFreq)
 
 /*
 *********************************************************************************************************
-*	º¯ Êý Ãû: AD7606_StopRecord
-*	¹¦ÄÜËµÃ÷: Í£Ö¹²É¼¯¶¨Ê±Æ÷
-*	ÐÎ    ²Î:  ÎÞ
-*	·µ »Ø Öµ: ÎÞ
+*	å‡½ æ•° å: AD7606_StopRecord
+*	åŠŸèƒ½è¯´æ˜Ž: åœæ­¢é‡‡é›†å®šæ—¶å™¨
+*	å½¢    å‚:  æ— 
+*	è¿” å›ž å€¼: æ— 
 *********************************************************************************************************
 */
 void AD7606_StopRecord(void)
 {
 	TIM_Cmd(TIM5, DISABLE);
 
-	/* ½«PE5 ÖØÐÂÅäÖÃÎªÆÕÍ¨Êä³ö¿Ú */
+	/* å°†PE5 é‡æ–°é…ç½®ä¸ºæ™®é€šè¾“å‡ºå£ */
 	{
 		GPIO_InitTypeDef GPIO_InitStructure;
 
-		/* Ê¹ÄÜ GPIOÊ±ÖÓ */
+		/* ä½¿èƒ½ GPIOæ—¶é’Ÿ */
 		RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOE, ENABLE);
 
 		GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
@@ -644,7 +644,7 @@ void AD7606_StopRecord(void)
 		GPIO_Init(GPIOE, &GPIO_InitStructure);
 	}
 
-	/* ÅäÖÃPE5, ½ûÖ¹ BUSY ×÷ÎªÖÐ¶ÏÊäÈë¿Ú */
+	/* é…ç½®PE5, ç¦æ­¢ BUSY ä½œä¸ºä¸­æ–­è¾“å…¥å£ */
 	{
 		EXTI_InitTypeDef   EXTI_InitStructure;
 
@@ -655,16 +655,16 @@ void AD7606_StopRecord(void)
 		EXTI_InitStructure.EXTI_LineCmd = DISABLE;
 		EXTI_Init(&EXTI_InitStructure);
 	}
-	CONVST_1();					/* Æô¶¯×ª»»µÄGPIOÆ½Ê±ÉèÖÃÎª¸ß */
+	CONVST_1();					/* å¯åŠ¨è½¬æ¢çš„GPIOå¹³æ—¶è®¾ç½®ä¸ºé«˜ */
 
 }
 
 /*
 *********************************************************************************************************
-*	º¯ Êý Ãû: AD7606_ISR
-*	¹¦ÄÜËµÃ÷: ¶¨Ê±²É¼¯ÖÐ¶Ï·þÎñ³ÌÐò
-*	ÐÎ    ²Î:  ÎÞ
-*	·µ »Ø Öµ: ÎÞ
+*	å‡½ æ•° å: AD7606_ISR
+*	åŠŸèƒ½è¯´æ˜Ž: å®šæ—¶é‡‡é›†ä¸­æ–­æœåŠ¡ç¨‹åº
+*	å½¢    å‚:  æ— 
+*	è¿” å›ž å€¼: æ— 
 *********************************************************************************************************
 */
 void AD7606_ISR(void)
@@ -686,20 +686,20 @@ void AD7606_ISR(void)
 		}
 		else
 		{
-			g_tAdcFifo.ucFull = 1;		/* FIFO Âú£¬Ö÷³ÌÐòÀ´²»¼°´¦ÀíÊý¾Ý */
+			g_tAdcFifo.ucFull = 1;		/* FIFO æ»¡ï¼Œä¸»ç¨‹åºæ¥ä¸åŠå¤„ç†æ•°æ® */
 		}
 	}
 }
 
 /*
 *********************************************************************************************************
-*	º¯ Êý Ãû: EXTI9_5_IRQHandler
-*	¹¦ÄÜËµÃ÷: Íâ²¿ÖÐ¶Ï·þÎñ³ÌÐòÈë¿Ú¡£PI6 / AD7606_BUSY ÏÂ½µÑØÖÐ¶Ï´¥·¢
-*	ÐÎ    ²Î: ÎÞ
-*	·µ »Ø Öµ: ÎÞ
+*	å‡½ æ•° å: EXTI9_5_IRQHandler
+*	åŠŸèƒ½è¯´æ˜Ž: å¤–éƒ¨ä¸­æ–­æœåŠ¡ç¨‹åºå…¥å£ã€‚PI6 / AD7606_BUSY ä¸‹é™æ²¿ä¸­æ–­è§¦å‘
+*	å½¢    å‚: æ— 
+*	è¿” å›ž å€¼: æ— 
 *********************************************************************************************************
 */
-#ifndef EXTI9_5_ISR_MOVE_OUT		/* bsp.h ÖÐ¶¨Òå´ËÐÐ£¬±íÊ¾±¾º¯ÊýÒÆµ½ stam32f4xx_it.c¡£ ±ÜÃâÖØ¸´¶¨Òå */
+#ifndef EXTI9_5_ISR_MOVE_OUT		/* bsp.h ä¸­å®šä¹‰æ­¤è¡Œï¼Œè¡¨ç¤ºæœ¬å‡½æ•°ç§»åˆ° stam32f4xx_it.cã€‚ é¿å…é‡å¤å®šä¹‰ */
 void EXTI9_5_IRQHandler(void)
 {
 	if (EXTI_GetITStatus(EXTI_Line5) != RESET)
@@ -712,4 +712,4 @@ void EXTI9_5_IRQHandler(void)
 }
 #endif
 
-/***************************** °²¸»À³µç×Ó www.armfly.com (END OF FILE) *********************************/
+/***************************** å®‰å¯ŒèŽ±ç”µå­ www.armfly.com (END OF FILE) *********************************/

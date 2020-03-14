@@ -1,16 +1,16 @@
 /*
 *********************************************************************************************************
 *
-*	Ä£¿éÃû³Æ : »ªÎªGPRSÄ£¿éMG323Çý¶¯³ÌÐò
-*	ÎÄ¼þÃû³Æ : bsp_mg323.c
-*	°æ    ±¾ : V1.0
-*	Ëµ    Ã÷ : ·â×°MG323Ä£¿éÏà¹ØµÄATÃüÁî
+*	æ¨¡å—åç§° : åŽä¸ºGPRSæ¨¡å—MG323é©±åŠ¨ç¨‹åº
+*	æ–‡ä»¶åç§° : bsp_mg323.c
+*	ç‰ˆ    æœ¬ : V1.0
+*	è¯´    æ˜Ž : å°è£…MG323æ¨¡å—ç›¸å…³çš„ATå‘½ä»¤
 *
-*	ÐÞ¸Ä¼ÇÂ¼ :
-*		°æ±¾ºÅ  ÈÕÆÚ        ×÷Õß     ËµÃ÷
-*		V1.0    2013-02-01 armfly  ÕýÊ½·¢²¼
+*	ä¿®æ”¹è®°å½• :
+*		ç‰ˆæœ¬å·  æ—¥æœŸ        ä½œè€…     è¯´æ˜Ž
+*		V1.0    2013-02-01 armfly  æ­£å¼å‘å¸ƒ
 *
-*	Copyright (C), 2013-2014, °²¸»À³µç×Ó www.armfly.com
+*	Copyright (C), 2013-2014, å®‰å¯ŒèŽ±ç”µå­ www.armfly.com
 *
 *********************************************************************************************************
 */
@@ -18,29 +18,29 @@
 #include "bsp.h"
 
 /*
-	°²¸»À³STM32-V5 ¿ª·¢°å¿ÚÏß·ÖÅä£º
-	GPRS_TERM_ON   £º PB15
+	å®‰å¯ŒèŽ±STM32-V5 å¼€å‘æ¿å£çº¿åˆ†é…ï¼š
+	GPRS_TERM_ON   ï¼š PB15
 */
 
 /*
-	AT+CIND=<mode>[,<mode>[,<mode>...]] ÉèÖÃÖ¸Ê¾ÊÂ¼þÊÇ·ñÉÏ±¨
+	AT+CIND=<mode>[,<mode>[,<mode>...]] è®¾ç½®æŒ‡ç¤ºäº‹ä»¶æ˜¯å¦ä¸ŠæŠ¥
 		+CIND: 5,99,1,0,1,0,0,0,4
 
-	AT+CREG?  ²éÑ¯µ±Ç°ÍøÂç×´Ì¬
+	AT+CREG?  æŸ¥è¯¢å½“å‰ç½‘ç»œçŠ¶æ€
 
-	AT+CSQ ²éÑ¯ÐÅºÅÖÊÁ¿ÃüÁî
+	AT+CSQ æŸ¥è¯¢ä¿¡å·è´¨é‡å‘½ä»¤
 
-	AT+CIMI ²éÑ¯SIM ¿¨µÄIMSI ºÅ¡£
+	AT+CIMI æŸ¥è¯¢SIM å¡çš„IMSI å·ã€‚
 
-	AT+CIND? ¶ÁÈ¡µ±Ç°µÄÖ¸Ê¾×´Ì¬
+	AT+CIND? è¯»å–å½“å‰çš„æŒ‡ç¤ºçŠ¶æ€
 
-	ATA ½ÓÌýÃüÁî
-	ATH ¹Ò¶ÏÁ¬½ÓÃüÁî
+	ATA æŽ¥å¬å‘½ä»¤
+	ATH æŒ‚æ–­è¿žæŽ¥å‘½ä»¤
 
-	AT^SWSPATH=<n>  ÇÐ»»ÒôÆµÍ¨µÀ
+	AT^SWSPATH=<n>  åˆ‡æ¢éŸ³é¢‘é€šé“
 */
 
-/* °´¼ü¿Ú¶ÔÓ¦µÄRCCÊ±ÖÓ */
+/* æŒ‰é”®å£å¯¹åº”çš„RCCæ—¶é’Ÿ */
 #define RCC_TERM_ON 	RCC_AHB1Periph_GPIOI
 #define PORT_TERM_ON	GPIOI
 #define PIN_TERM_ON		GPIO_Pin_0
@@ -49,33 +49,33 @@
 #define PORT_RESET		GPIOB
 #define PIN_RESET		GPIO_Pin_7
 
-/* STM32ºÍMG323µÄTERM_ONÒý½Å¼äÓÐ1¸öNPNÈý¼«¹Ü£¬Òò´ËÐèÒª·´Ïà */
+/* STM32å’ŒMG323çš„TERM_ONå¼•è„šé—´æœ‰1ä¸ªNPNä¸‰æžç®¡ï¼Œå› æ­¤éœ€è¦åç›¸ */
 #define TERM_ON_1()		GPIO_ResetBits(PORT_TERM_ON, PIN_TERM_ON);
 #define TERM_ON_0()		GPIO_SetBits(PORT_TERM_ON, PIN_TERM_ON);
 
-/* STM32ºÍMG323µÄRESETÒý½Å¼äÓÐ1¸öNPNÈý¼«¹Ü£¬Òò´ËÐèÒª·´Ïà. MG323µÄRESET½ÅÊÇµÍÂö³å¸´Î» */
+/* STM32å’ŒMG323çš„RESETå¼•è„šé—´æœ‰1ä¸ªNPNä¸‰æžç®¡ï¼Œå› æ­¤éœ€è¦åç›¸. MG323çš„RESETè„šæ˜¯ä½Žè„‰å†²å¤ä½ */
 #define MG_RESET_1()	GPIO_ResetBits(PORT_RESET, PIN_RESET);
 #define MG_RESET_0()	GPIO_SetBits(PORT_RESET, PIN_RESET);
 
 /*
 *********************************************************************************************************
-*	º¯ Êý Ãû: bsp_InitMG323
-*	¹¦ÄÜËµÃ÷: ÅäÖÃÎÞÏßÄ£¿éÏà¹ØµÄGPIO,  ¸Ãº¯Êý±» bsp_Init() µ÷ÓÃ¡£
-*	ÐÎ    ²Î:  ÎÞ
-*	·µ »Ø Öµ: ÎÞ
+*	å‡½ æ•° å: bsp_InitMG323
+*	åŠŸèƒ½è¯´æ˜Ž: é…ç½®æ— çº¿æ¨¡å—ç›¸å…³çš„GPIO,  è¯¥å‡½æ•°è¢« bsp_Init() è°ƒç”¨ã€‚
+*	å½¢    å‚:  æ— 
+*	è¿” å›ž å€¼: æ— 
 *********************************************************************************************************
 */
 void bsp_InitMG323(void)
 {
 	GPIO_InitTypeDef GPIO_InitStructure;
 
-	/* ´ò¿ªGPIOÊ±ÖÓ */
+	/* æ‰“å¼€GPIOæ—¶é’Ÿ */
 	RCC_AHB1PeriphClockCmd(RCC_TERM_ON | RCC_RESET, ENABLE);
 
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;		/* ÉèÎªÊä³ö¿Ú */
-	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;		/* ÉèÎªÍÆÍìÄ£Ê½ */
-	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;	/* ÉÏÏÂÀ­µç×è²»Ê¹ÄÜ */
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;	/* IO¿Ú×î´óËÙ¶È */
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;		/* è®¾ä¸ºè¾“å‡ºå£ */
+	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;		/* è®¾ä¸ºæŽ¨æŒ½æ¨¡å¼ */
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;	/* ä¸Šä¸‹æ‹‰ç”µé˜»ä¸ä½¿èƒ½ */
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;	/* IOå£æœ€å¤§é€Ÿåº¦ */
 
 	GPIO_InitStructure.GPIO_Pin = PIN_TERM_ON;
 	GPIO_Init(PORT_TERM_ON, &GPIO_InitStructure);
@@ -83,7 +83,7 @@ void bsp_InitMG323(void)
 	GPIO_InitStructure.GPIO_Pin = PIN_RESET;
 	GPIO_Init(PORT_RESET, &GPIO_InitStructure);
 
-	/* CPUµÄ´®¿ÚÅäÖÃÒÑ¾­ÓÉ bsp_uart_fifo.c ÖÐµÄ bsp_InitUart() ×öÁË */
+	/* CPUçš„ä¸²å£é…ç½®å·²ç»ç”± bsp_uart_fifo.c ä¸­çš„ bsp_InitUart() åšäº† */
 	
 	TERM_ON_0();
 	MG_RESET_1();
@@ -91,35 +91,35 @@ void bsp_InitMG323(void)
 
 /*
 *********************************************************************************************************
-*	º¯ Êý Ãû: MG323_PrintRxData
-*	¹¦ÄÜËµÃ÷: ´òÓ¡STM32´ÓMG323ÊÕµ½µÄÊý¾Ýµ½COM1´®¿Ú£¬Ö÷ÒªÓÃÓÚ¸ú×Ùµ÷ÊÔ
-*	ÐÎ    ²Î: _ch : ÊÕµ½µÄÊý¾Ý
-*	·µ »Ø Öµ: ÎÞ
+*	å‡½ æ•° å: MG323_PrintRxData
+*	åŠŸèƒ½è¯´æ˜Ž: æ‰“å°STM32ä»ŽMG323æ”¶åˆ°çš„æ•°æ®åˆ°COM1ä¸²å£ï¼Œä¸»è¦ç”¨äºŽè·Ÿè¸ªè°ƒè¯•
+*	å½¢    å‚: _ch : æ”¶åˆ°çš„æ•°æ®
+*	è¿” å›ž å€¼: æ— 
 *********************************************************************************************************
 */
 void MG323_PrintRxData(uint8_t _ch)
 {
 	#ifdef MG323_TO_COM1_EN
-		comSendChar(COM1, _ch);		/* ½«½ÓÊÕµ½Êý¾Ý´òÓ¡µ½µ÷ÊÔ´®¿Ú1 */
+		comSendChar(COM1, _ch);		/* å°†æŽ¥æ”¶åˆ°æ•°æ®æ‰“å°åˆ°è°ƒè¯•ä¸²å£1 */
 	#endif
 }
 
 /*
 *********************************************************************************************************
-*	º¯ Êý Ãû: MG323_PowerOn
-*	¹¦ÄÜËµÃ÷: ¸øMG323Ä£¿éÉÏµç
-*	ÐÎ    ²Î: ÎÞ
-*	·µ »Ø Öµ: ÎÞ
+*	å‡½ æ•° å: MG323_PowerOn
+*	åŠŸèƒ½è¯´æ˜Ž: ç»™MG323æ¨¡å—ä¸Šç”µ
+*	å½¢    å‚: æ— 
+*	è¿” å›ž å€¼: æ— 
 *********************************************************************************************************
 */
 void MG323_PowerOn(void)
 {
-	comClearRxFifo(COM_MG323);	/* ÇåÁã´®¿Ú½ÓÊÕ»º³åÇø */
+	comClearRxFifo(COM_MG323);	/* æ¸…é›¶ä¸²å£æŽ¥æ”¶ç¼“å†²åŒº */
 	
 	MG323_Reset();
 
 	/*
-		¸ù¾ÝMG323ÊÖ²á£¬Ä£¿éÉÏµçºóÑÓ³Ù250ms£¬È»ºóÇý¶¯ TERM_ON¿ÚÏßÎªµÍµçÆ½ 750ms Ö®ºóÇý¶¯Îª¸ß£¬Íê³É¿ª»úÊ±Ðò
+		æ ¹æ®MG323æ‰‹å†Œï¼Œæ¨¡å—ä¸Šç”µåŽå»¶è¿Ÿ250msï¼Œç„¶åŽé©±åŠ¨ TERM_ONå£çº¿ä¸ºä½Žç”µå¹³ 750ms ä¹‹åŽé©±åŠ¨ä¸ºé«˜ï¼Œå®Œæˆå¼€æœºæ—¶åº
 	*/
 	TERM_ON_1();
 	bsp_DelayMS(250);
@@ -128,24 +128,24 @@ void MG323_PowerOn(void)
 	bsp_DelayMS(750);
 	TERM_ON_1();	
 
-	/* µÈ´ýÄ£¿éÍê³ÉÉÏµç£¬ÅÐ¶ÏÊÇ·ñ½ÓÊÕµ½ ^SYSSTART */
+	/* ç­‰å¾…æ¨¡å—å®Œæˆä¸Šç”µï¼Œåˆ¤æ–­æ˜¯å¦æŽ¥æ”¶åˆ° ^SYSSTART */
 	MG323_WaitResponse("^SYSSTART", 5000);
 }
 
 /*
 *********************************************************************************************************
-*	º¯ Êý Ãû: MG323_PowerOn
-*	¹¦ÄÜËµÃ÷: ¸øMG323Ä£¿éÉÏµç
-*	ÐÎ    ²Î: ÎÞ
-*	·µ »Ø Öµ: ÎÞ
+*	å‡½ æ•° å: MG323_PowerOn
+*	åŠŸèƒ½è¯´æ˜Ž: ç»™MG323æ¨¡å—ä¸Šç”µ
+*	å½¢    å‚: æ— 
+*	è¿” å›ž å€¼: æ— 
 *********************************************************************************************************
 */
 void MG323_Reset(void)
 {
 	/*
-		¸ù¾ÝMG323ÊÖ²á£¬
-		RESET ¹Ü½ÅÓÃÓÚÊµÏÖÄ£¿éÓ²¼þ¸´Î»¡£µ±Ä£¿é³öÏÖÈí¼þËÀ»úµÄÇé¿öÊ±£¬Í¨¹ýÀ­µÍ
-		RESET ¹Ü½Å ¡Ý 10 ms ºó£¬Ä£¿é½øÐÐÓ²¼þ¸´Î»¡£
+		æ ¹æ®MG323æ‰‹å†Œï¼Œ
+		RESET ç®¡è„šç”¨äºŽå®žçŽ°æ¨¡å—ç¡¬ä»¶å¤ä½ã€‚å½“æ¨¡å—å‡ºçŽ°è½¯ä»¶æ­»æœºçš„æƒ…å†µæ—¶ï¼Œé€šè¿‡æ‹‰ä½Ž
+		RESET ç®¡è„š â‰¥ 10 ms åŽï¼Œæ¨¡å—è¿›è¡Œç¡¬ä»¶å¤ä½ã€‚
 	*/
 	MG_RESET_0();
 	bsp_DelayMS(20);
@@ -157,28 +157,28 @@ void MG323_Reset(void)
 
 /*
 *********************************************************************************************************
-*	º¯ Êý Ãû: MG323_PowerOff
-*	¹¦ÄÜËµÃ÷: ¿ØÖÆMG323Ä£¿é¹Ø»ú
-*	ÐÎ    ²Î: ÎÞ
-*	·µ »Ø Öµ: ÎÞ
+*	å‡½ æ•° å: MG323_PowerOff
+*	åŠŸèƒ½è¯´æ˜Ž: æŽ§åˆ¶MG323æ¨¡å—å…³æœº
+*	å½¢    å‚: æ— 
+*	è¿” å›ž å€¼: æ— 
 *********************************************************************************************************
 */
 void MG323_PowerOff(void)
 {
-	/* Ó²¼þ¹Ø»ú */
+	/* ç¡¬ä»¶å…³æœº */
 	TERM_ON_0();
 
-	/* Ò²¿ÉÒÔÈí¼þ¹Ø»ú */
+	/* ä¹Ÿå¯ä»¥è½¯ä»¶å…³æœº */
 	//MG323_SendAT("AT^SMSO");
 }
 
 /*
 *********************************************************************************************************
-*	º¯ Êý Ãû: MG323_WaitResponse
-*	¹¦ÄÜËµÃ÷: µÈ´ýMG323·µ»ØÖ¸¶¨µÄÓ¦´ð×Ö·û´®. ±ÈÈçµÈ´ý OK
-*	ÐÎ    ²Î: _pAckStr : Ó¦´ðµÄ×Ö·û´®£¬ ³¤¶È²»µÃ³¬¹ý255
-*			 _usTimeOut : ÃüÁîÖ´ÐÐ³¬Ê±£¬0±íÊ¾Ò»Ö±µÈ´ý. >£°±íÊ¾³¬Ê±Ê±¼ä£¬µ¥Î»1ms
-*	·µ »Ø Öµ: 1 ±íÊ¾³É¹¦  0 ±íÊ¾Ê§°Ü
+*	å‡½ æ•° å: MG323_WaitResponse
+*	åŠŸèƒ½è¯´æ˜Ž: ç­‰å¾…MG323è¿”å›žæŒ‡å®šçš„åº”ç­”å­—ç¬¦ä¸². æ¯”å¦‚ç­‰å¾… OK
+*	å½¢    å‚: _pAckStr : åº”ç­”çš„å­—ç¬¦ä¸²ï¼Œ é•¿åº¦ä¸å¾—è¶…è¿‡255
+*			 _usTimeOut : å‘½ä»¤æ‰§è¡Œè¶…æ—¶ï¼Œ0è¡¨ç¤ºä¸€ç›´ç­‰å¾…. >ï¼è¡¨ç¤ºè¶…æ—¶æ—¶é—´ï¼Œå•ä½1ms
+*	è¿” å›ž å€¼: 1 è¡¨ç¤ºæˆåŠŸ  0 è¡¨ç¤ºå¤±è´¥
 *********************************************************************************************************
 */
 uint8_t MG323_WaitResponse(char *_pAckStr, uint16_t _usTimeOut)
@@ -195,35 +195,35 @@ uint8_t MG323_WaitResponse(char *_pAckStr, uint16_t _usTimeOut)
 		return 0;
 	}
 
-	/* _usTimeOut == 0 ±íÊ¾ÎÞÏÞµÈ´ý */
+	/* _usTimeOut == 0 è¡¨ç¤ºæ— é™ç­‰å¾… */
 	if (_usTimeOut > 0)
 	{
-		bsp_StartTimer(MG323_TMR_ID, _usTimeOut);		/* Ê¹ÓÃÈí¼þ¶¨Ê±Æ÷3£¬×÷Îª³¬Ê±¿ØÖÆ */
+		bsp_StartTimer(MG323_TMR_ID, _usTimeOut);		/* ä½¿ç”¨è½¯ä»¶å®šæ—¶å™¨3ï¼Œä½œä¸ºè¶…æ—¶æŽ§åˆ¶ */
 	}
 	while (1)
 	{
-		bsp_Idle();				/* CPU¿ÕÏÐÖ´ÐÐµÄ²Ù×÷£¬ ¼û bsp.c ºÍ bsp.h ÎÄ¼þ */
+		bsp_Idle();				/* CPUç©ºé—²æ‰§è¡Œçš„æ“ä½œï¼Œ è§ bsp.c å’Œ bsp.h æ–‡ä»¶ */
 
 		if (_usTimeOut > 0)
 		{
 			if (bsp_CheckTimer(MG323_TMR_ID))
 			{
-				ret = 0;	/* ³¬Ê± */
+				ret = 0;	/* è¶…æ—¶ */
 				break;
 			}
 		}
 
 		if (comGetChar(COM_MG323, &ucData))
 		{
-			MG323_PrintRxData(ucData);		/* ½«½ÓÊÕµ½Êý¾Ý´òÓ¡µ½µ÷ÊÔ´®¿Ú1 */
+			MG323_PrintRxData(ucData);		/* å°†æŽ¥æ”¶åˆ°æ•°æ®æ‰“å°åˆ°è°ƒè¯•ä¸²å£1 */
 
 			if (ucData == '\n')
 			{
-				if (pos > 0)	/* µÚ2´ÎÊÕµ½»Ø³µ»»ÐÐ */
+				if (pos > 0)	/* ç¬¬2æ¬¡æ”¶åˆ°å›žè½¦æ¢è¡Œ */
 				{
 					if (memcmp(ucRxBuf, _pAckStr,  len) == 0)
 					{
-						ret = 1;	/* ÊÕµ½Ö¸¶¨µÄÓ¦´ðÊý¾Ý£¬·µ»Ø³É¹¦ */
+						ret = 1;	/* æ”¶åˆ°æŒ‡å®šçš„åº”ç­”æ•°æ®ï¼Œè¿”å›žæˆåŠŸ */
 						break;
 					}
 					else
@@ -240,7 +240,7 @@ uint8_t MG323_WaitResponse(char *_pAckStr, uint16_t _usTimeOut)
 			{
 				if (pos < sizeof(ucRxBuf))
 				{
-					/* Ö»±£´æ¿É¼û×Ö·û */
+					/* åªä¿å­˜å¯è§å­—ç¬¦ */
 					if (ucData >= ' ')
 					{
 						ucRxBuf[pos++] = ucData;
@@ -254,12 +254,12 @@ uint8_t MG323_WaitResponse(char *_pAckStr, uint16_t _usTimeOut)
 
 /*
 *********************************************************************************************************
-*	º¯ Êý Ãû: MG323_ReadResponse
-*	¹¦ÄÜËµÃ÷: ¶ÁÈ¡MG323·µ»ØÓ¦´ð×Ö·û´®¡£¸Ãº¯Êý¸ù¾Ý×Ö·û¼ä³¬Ê±ÅÐ¶Ï½áÊø¡£ ±¾º¯ÊýÐèÒª½ô¸úATÃüÁî·¢ËÍº¯Êý¡£
-*	ÐÎ    ²Î: _pBuf : ´æ·ÅÄ£¿é·µ»ØµÄÍêÕû×Ö·û´®
-*			  _usBufSize : »º³åÇø×î´ó³¤¶È
-*			 _usTimeOut : ÃüÁîÖ´ÐÐ³¬Ê±£¬0±íÊ¾Ò»Ö±µÈ´ý. >0 ±íÊ¾³¬Ê±Ê±¼ä£¬µ¥Î»1ms
-*	·µ »Ø Öµ: 0 ±íÊ¾´íÎó£¨³¬Ê±£©  > 0 ±íÊ¾Ó¦´ðµÄÊý¾Ý³¤¶È
+*	å‡½ æ•° å: MG323_ReadResponse
+*	åŠŸèƒ½è¯´æ˜Ž: è¯»å–MG323è¿”å›žåº”ç­”å­—ç¬¦ä¸²ã€‚è¯¥å‡½æ•°æ ¹æ®å­—ç¬¦é—´è¶…æ—¶åˆ¤æ–­ç»“æŸã€‚ æœ¬å‡½æ•°éœ€è¦ç´§è·ŸATå‘½ä»¤å‘é€å‡½æ•°ã€‚
+*	å½¢    å‚: _pBuf : å­˜æ”¾æ¨¡å—è¿”å›žçš„å®Œæ•´å­—ç¬¦ä¸²
+*			  _usBufSize : ç¼“å†²åŒºæœ€å¤§é•¿åº¦
+*			 _usTimeOut : å‘½ä»¤æ‰§è¡Œè¶…æ—¶ï¼Œ0è¡¨ç¤ºä¸€ç›´ç­‰å¾…. >0 è¡¨ç¤ºè¶…æ—¶æ—¶é—´ï¼Œå•ä½1ms
+*	è¿” å›ž å€¼: 0 è¡¨ç¤ºé”™è¯¯ï¼ˆè¶…æ—¶ï¼‰  > 0 è¡¨ç¤ºåº”ç­”çš„æ•°æ®é•¿åº¦
 *********************************************************************************************************
 */
 uint16_t MG323_ReadResponse(char *_pBuf, uint16_t _usBufSize, uint16_t _usTimeOut)
@@ -267,23 +267,23 @@ uint16_t MG323_ReadResponse(char *_pBuf, uint16_t _usBufSize, uint16_t _usTimeOu
 	uint8_t ucData;
 	uint16_t pos = 0;
 	uint8_t ret;
-	uint8_t status = 0;		/* ½ÓÊÕ×´Ì¬ */
+	uint8_t status = 0;		/* æŽ¥æ”¶çŠ¶æ€ */
 
-	/* _usTimeOut == 0 ±íÊ¾ÎÞÏÞµÈ´ý */
+	/* _usTimeOut == 0 è¡¨ç¤ºæ— é™ç­‰å¾… */
 	if (_usTimeOut > 0)
 	{
-		bsp_StartTimer(MG323_TMR_ID, _usTimeOut);		/* Ê¹ÓÃÈí¼þ¶¨Ê±Æ÷×÷Îª³¬Ê±¿ØÖÆ */
+		bsp_StartTimer(MG323_TMR_ID, _usTimeOut);		/* ä½¿ç”¨è½¯ä»¶å®šæ—¶å™¨ä½œä¸ºè¶…æ—¶æŽ§åˆ¶ */
 	}
 	while (1)
 	{
-		bsp_Idle();				/* CPU¿ÕÏÐÖ´ÐÐµÄ²Ù×÷£¬ ¼û bsp.c ºÍ bsp.h ÎÄ¼þ */
+		bsp_Idle();				/* CPUç©ºé—²æ‰§è¡Œçš„æ“ä½œï¼Œ è§ bsp.c å’Œ bsp.h æ–‡ä»¶ */
 
-		if (status == 2)		/* ÕýÔÚ½ÓÊÕÓÐÐ§Ó¦´ð½×¶Î£¬Í¨¹ý×Ö·û¼ä³¬Ê±ÅÐ¶ÏÊý¾Ý½ÓÊÕÍê±Ï */
+		if (status == 2)		/* æ­£åœ¨æŽ¥æ”¶æœ‰æ•ˆåº”ç­”é˜¶æ®µï¼Œé€šè¿‡å­—ç¬¦é—´è¶…æ—¶åˆ¤æ–­æ•°æ®æŽ¥æ”¶å®Œæ¯• */
 		{
 			if (bsp_CheckTimer(MG323_TMR_ID))
 			{
-				_pBuf[pos]	 = 0;	/* ½áÎ²¼Ó0£¬ ±ãÓÚº¯Êýµ÷ÓÃÕßÊ¶±ð×Ö·û´®½áÊø */
-				ret = pos;		/* ³É¹¦¡£ ·µ»ØÊý¾Ý³¤¶È */
+				_pBuf[pos]	 = 0;	/* ç»“å°¾åŠ 0ï¼Œ ä¾¿äºŽå‡½æ•°è°ƒç”¨è€…è¯†åˆ«å­—ç¬¦ä¸²ç»“æŸ */
+				ret = pos;		/* æˆåŠŸã€‚ è¿”å›žæ•°æ®é•¿åº¦ */
 				break;
 			}
 		}
@@ -293,7 +293,7 @@ uint16_t MG323_ReadResponse(char *_pBuf, uint16_t _usBufSize, uint16_t _usTimeOu
 			{
 				if (bsp_CheckTimer(MG323_TMR_ID))
 				{
-					ret = 0;	/* ³¬Ê± */
+					ret = 0;	/* è¶…æ—¶ */
 					break;
 				}
 			}
@@ -301,35 +301,35 @@ uint16_t MG323_ReadResponse(char *_pBuf, uint16_t _usBufSize, uint16_t _usTimeOu
 		
 		if (comGetChar(COM_MG323, &ucData))
 		{			
-			MG323_PrintRxData(ucData);		/* ½«½ÓÊÕµ½Êý¾Ý´òÓ¡µ½µ÷ÊÔ´®¿Ú1 */
+			MG323_PrintRxData(ucData);		/* å°†æŽ¥æ”¶åˆ°æ•°æ®æ‰“å°åˆ°è°ƒè¯•ä¸²å£1 */
 
 			switch (status)
 			{
-				case 0:			/* Ê××Ö·û */
-					if (ucData == AT_CR)		/* Èç¹ûÊ××Ö·ûÊÇ»Ø³µ£¬±íÊ¾ ATÃüÁî²»»áÏÔ */
+				case 0:			/* é¦–å­—ç¬¦ */
+					if (ucData == AT_CR)		/* å¦‚æžœé¦–å­—ç¬¦æ˜¯å›žè½¦ï¼Œè¡¨ç¤º ATå‘½ä»¤ä¸ä¼šæ˜¾ */
 					{
-						_pBuf[pos++] = ucData;		/* ±£´æ½ÓÊÕµ½µÄÊý¾Ý */
-						status = 2;	 /* ÈÏÎªÊÕµ½Ä£¿éÓ¦´ð½á¹û */
+						_pBuf[pos++] = ucData;		/* ä¿å­˜æŽ¥æ”¶åˆ°çš„æ•°æ® */
+						status = 2;	 /* è®¤ä¸ºæ”¶åˆ°æ¨¡å—åº”ç­”ç»“æžœ */
 					}
-					else	/* Ê××Ö·ûÊÇ A ±íÊ¾ ATÃüÁî»ØÏÔ */
+					else	/* é¦–å­—ç¬¦æ˜¯ A è¡¨ç¤º ATå‘½ä»¤å›žæ˜¾ */
 					{
-						status = 1;	 /* ÕâÊÇÖ÷»ú·¢ËÍµÄATÃüÁî×Ö·û´®£¬²»±£´æÓ¦´ðÊý¾Ý£¬Ö±µ½Óöµ½ CR×Ö·û */
+						status = 1;	 /* è¿™æ˜¯ä¸»æœºå‘é€çš„ATå‘½ä»¤å­—ç¬¦ä¸²ï¼Œä¸ä¿å­˜åº”ç­”æ•°æ®ï¼Œç›´åˆ°é‡åˆ° CRå­—ç¬¦ */
 					}
 					break;
 					
-				case 1:			/* ATÃüÁî»ØÏÔ½×¶Î, ²»±£´æÊý¾Ý. ¼ÌÐøµÈ´ý */
+				case 1:			/* ATå‘½ä»¤å›žæ˜¾é˜¶æ®µ, ä¸ä¿å­˜æ•°æ®. ç»§ç»­ç­‰å¾… */
 					if (ucData == AT_CR)
 					{
 						status = 2;
 					}
 					break;
 					
-				case 2:			/* ¿ªÊ¼½ÓÊÕÄ£¿éÓ¦´ð½á¹û */
-					/* Ö»ÒªÊÕµ½Ä£¿éµÄÓ¦´ð×Ö·û£¬Ôò²ÉÓÃ×Ö·û¼ä³¬Ê±ÅÐ¶Ï½áÊø£¬´ËÊ±ÃüÁî×Ü³¬Ê±²»Æð×÷ÓÃ */
+				case 2:			/* å¼€å§‹æŽ¥æ”¶æ¨¡å—åº”ç­”ç»“æžœ */
+					/* åªè¦æ”¶åˆ°æ¨¡å—çš„åº”ç­”å­—ç¬¦ï¼Œåˆ™é‡‡ç”¨å­—ç¬¦é—´è¶…æ—¶åˆ¤æ–­ç»“æŸï¼Œæ­¤æ—¶å‘½ä»¤æ€»è¶…æ—¶ä¸èµ·ä½œç”¨ */
 					bsp_StartTimer(MG323_TMR_ID, 5);
 					if (pos < _usBufSize - 1)
 					{
-						_pBuf[pos++] = ucData;		/* ±£´æ½ÓÊÕµ½µÄÊý¾Ý */
+						_pBuf[pos++] = ucData;		/* ä¿å­˜æŽ¥æ”¶åˆ°çš„æ•°æ® */
 					}
 					break;
 			}
@@ -340,10 +340,10 @@ uint16_t MG323_ReadResponse(char *_pBuf, uint16_t _usBufSize, uint16_t _usTimeOu
 
 /*
 *********************************************************************************************************
-*	º¯ Êý Ãû: MG323_SendAT
-*	¹¦ÄÜËµÃ÷: ÏòGSMÄ£¿é·¢ËÍATÃüÁî¡£ ±¾º¯Êý×Ô¶¯ÔÚAT×Ö·û´®¿ÚÔö¼Ó<CR>×Ö·û
-*	ÐÎ    ²Î: _Str : ATÃüÁî×Ö·û´®£¬²»°üÀ¨Ä©Î²µÄ»Ø³µ<CR>. ÒÔ×Ö·û0½áÊø
-*	·µ »Ø Öµ: ÎÞ
+*	å‡½ æ•° å: MG323_SendAT
+*	åŠŸèƒ½è¯´æ˜Ž: å‘GSMæ¨¡å—å‘é€ATå‘½ä»¤ã€‚ æœ¬å‡½æ•°è‡ªåŠ¨åœ¨ATå­—ç¬¦ä¸²å£å¢žåŠ <CR>å­—ç¬¦
+*	å½¢    å‚: _Str : ATå‘½ä»¤å­—ç¬¦ä¸²ï¼Œä¸åŒ…æ‹¬æœ«å°¾çš„å›žè½¦<CR>. ä»¥å­—ç¬¦0ç»“æŸ
+*	è¿” å›ž å€¼: æ— 
 *********************************************************************************************************
 */
 void MG323_SendAT(char *_Cmd)
@@ -354,10 +354,10 @@ void MG323_SendAT(char *_Cmd)
 
 /*
 *********************************************************************************************************
-*	º¯ Êý Ãû: MG323_SetAutoReport
-*	¹¦ÄÜËµÃ÷: ÉèÖÃÊÂ¼þ×Ô¶¯ÉÏ±¨
-*	ÐÎ    ²Î: ÎÞ
-*	·µ »Ø Öµ: ÎÞ
+*	å‡½ æ•° å: MG323_SetAutoReport
+*	åŠŸèƒ½è¯´æ˜Ž: è®¾ç½®äº‹ä»¶è‡ªåŠ¨ä¸ŠæŠ¥
+*	å½¢    å‚: æ— 
+*	è¿” å›ž å€¼: æ— 
 *********************************************************************************************************
 */
 void MG323_SetAutoReport(void)
@@ -367,10 +367,10 @@ void MG323_SetAutoReport(void)
 
 /*
 *********************************************************************************************************
-*	º¯ Êý Ãû: MG323_SwitchPath
-*	¹¦ÄÜËµÃ÷: ÇÐ»»ÒôÆµÍ¨µÀ
-*	ÐÎ    ²Î: ch £º 0±íÊ¾µÚ1Â·ÒôÆµ£¨INTMIC, INTEAR)  1±íÊ¾µÚ2Â·ÒôÆµ£¨EXTMIC,EXTEAR)
-*	·µ »Ø Öµ: ÎÞ
+*	å‡½ æ•° å: MG323_SwitchPath
+*	åŠŸèƒ½è¯´æ˜Ž: åˆ‡æ¢éŸ³é¢‘é€šé“
+*	å½¢    å‚: ch ï¼š 0è¡¨ç¤ºç¬¬1è·¯éŸ³é¢‘ï¼ˆINTMIC, INTEAR)  1è¡¨ç¤ºç¬¬2è·¯éŸ³é¢‘ï¼ˆEXTMIC,EXTEAR)
+*	è¿” å›ž å€¼: æ— 
 *********************************************************************************************************
 */
 void MG323_SwitchPath(uint8_t ch)
@@ -387,10 +387,10 @@ void MG323_SwitchPath(uint8_t ch)
 
 /*
 *********************************************************************************************************
-*	º¯ Êý Ãû: MG323_SetEarVolume
-*	¹¦ÄÜËµÃ÷: ÉèÖÃ¶ú»úÒôÁ¿
-*	ÐÎ    ²Î: _ucVolume : ÒôÁ¿¡£ 0 ±íÊ¾¾²Òô£¬1-5 ±íÊ¾ÒôÁ¿´óÐ¡¡£5×î´ó¡£4ÊÇÈ±Ê¡¡£
-*	·µ »Ø Öµ: ÎÞ
+*	å‡½ æ•° å: MG323_SetEarVolume
+*	åŠŸèƒ½è¯´æ˜Ž: è®¾ç½®è€³æœºéŸ³é‡
+*	å½¢    å‚: _ucVolume : éŸ³é‡ã€‚ 0 è¡¨ç¤ºé™éŸ³ï¼Œ1-5 è¡¨ç¤ºéŸ³é‡å¤§å°ã€‚5æœ€å¤§ã€‚4æ˜¯ç¼ºçœã€‚
+*	è¿” å›ž å€¼: æ— 
 *********************************************************************************************************
 */
 void MG323_SetEarVolume(uint8_t _ucVolume)
@@ -403,10 +403,10 @@ void MG323_SetEarVolume(uint8_t _ucVolume)
 
 /*
 *********************************************************************************************************
-*	º¯ Êý Ãû: MG323_SetMicGain
-*	¹¦ÄÜËµÃ÷: ÉèÖÃMIC ÔöÒæ .    ÉèÖÃºó¶ÔÁ½Â·Í¨µÀ¶¼Æð×÷ÓÃ£¬µ«Ö»ÄÜÔÚÓÐ¼¤»îµç»°Ç°Ê¹ÓÃ¡£
-*	ÐÎ    ²Î: _iGain : ÔöÒæ¡£ -12 ×îÐ¡£¬12×î´ó£¬13±íÊ¾¾²Òô
-*	·µ »Ø Öµ: ÎÞ
+*	å‡½ æ•° å: MG323_SetMicGain
+*	åŠŸèƒ½è¯´æ˜Ž: è®¾ç½®MIC å¢žç›Š .    è®¾ç½®åŽå¯¹ä¸¤è·¯é€šé“éƒ½èµ·ä½œç”¨ï¼Œä½†åªèƒ½åœ¨æœ‰æ¿€æ´»ç”µè¯å‰ä½¿ç”¨ã€‚
+*	å½¢    å‚: _iGain : å¢žç›Šã€‚ -12 æœ€å°ï¼Œ12æœ€å¤§ï¼Œ13è¡¨ç¤ºé™éŸ³
+*	è¿” å›ž å€¼: æ— 
 *********************************************************************************************************
 */
 void MG323_SetMicGain(int16_t _iGain)
@@ -420,10 +420,10 @@ void MG323_SetMicGain(int16_t _iGain)
 
 /*
 *********************************************************************************************************
-*	º¯ Êý Ãû: MG323_DialTel
-*	¹¦ÄÜËµÃ÷: ²¦´òµç»°
-*	ÐÎ    ²Î: _pTel µç»°ºÅÂë×Ö·û´®
-*	·µ »Ø Öµ: ÎÞ
+*	å‡½ æ•° å: MG323_DialTel
+*	åŠŸèƒ½è¯´æ˜Ž: æ‹¨æ‰“ç”µè¯
+*	å½¢    å‚: _pTel ç”µè¯å·ç å­—ç¬¦ä¸²
+*	è¿” å›ž å€¼: æ— 
 *********************************************************************************************************
 */
 void MG323_DialTel(char *_pTel)
@@ -436,10 +436,10 @@ void MG323_DialTel(char *_pTel)
 
 /*
 *********************************************************************************************************
-*	º¯ Êý Ãû: MG323_Hangup
-*	¹¦ÄÜËµÃ÷: ¹Ò¶Ïµç»°
-*	ÐÎ    ²Î: _pTel µç»°ºÅÂë×Ö·û´®
-*	·µ »Ø Öµ: ÎÞ
+*	å‡½ æ•° å: MG323_Hangup
+*	åŠŸèƒ½è¯´æ˜Ž: æŒ‚æ–­ç”µè¯
+*	å½¢    å‚: _pTel ç”µè¯å·ç å­—ç¬¦ä¸²
+*	è¿” å›ž å€¼: æ— 
 *********************************************************************************************************
 */
 void MG323_Hangup(void)
@@ -449,10 +449,10 @@ void MG323_Hangup(void)
 
 /*
 *********************************************************************************************************
-*	º¯ Êý Ãû: MG323_GetHardInfo
-*	¹¦ÄÜËµÃ÷: ¶ÁÈ¡Ä£¿éµÄÓ²¼þÐÅÏ¢. ·ÖÎö ATI ÃüÁîÓ¦´ð½á¹û¡£
-*	ÐÎ    ²Î: ´æ·Å½á¹ûµÄ½á¹¹ÌåÖ¸Õë
-*	·µ »Ø Öµ: 1 ±íÊ¾³É¹¦£¬ 0 ±íÊ¾Ê§°Ü
+*	å‡½ æ•° å: MG323_GetHardInfo
+*	åŠŸèƒ½è¯´æ˜Ž: è¯»å–æ¨¡å—çš„ç¡¬ä»¶ä¿¡æ¯. åˆ†æž ATI å‘½ä»¤åº”ç­”ç»“æžœã€‚
+*	å½¢    å‚: å­˜æ”¾ç»“æžœçš„ç»“æž„ä½“æŒ‡é’ˆ
+*	è¿” å›ž å€¼: 1 è¡¨ç¤ºæˆåŠŸï¼Œ 0 è¡¨ç¤ºå¤±è´¥
 *********************************************************************************************************
 */
 uint8_t MG323_GetHardInfo(MG_HARD_INFO_T *_pInfo)
@@ -471,11 +471,11 @@ uint8_t MG323_GetHardInfo(MG_HARD_INFO_T *_pInfo)
 	uint16_t len, i, begin = 0, num;
 	uint8_t status = 0;	
 	
-	comClearRxFifo(COM_MG323);	/* ÇåÁã´®¿Ú½ÓÊÕ»º³åÇø */	
+	comClearRxFifo(COM_MG323);	/* æ¸…é›¶ä¸²å£æŽ¥æ”¶ç¼“å†²åŒº */	
 	
-	MG323_SendAT("ATI");		/* ·¢ËÍ ATI ÃüÁî */
+	MG323_SendAT("ATI");		/* å‘é€ ATI å‘½ä»¤ */
 	
-	len = MG323_ReadResponse(buf, sizeof(buf), 300);	/* ³¬Ê± 300ms */
+	len = MG323_ReadResponse(buf, sizeof(buf), 300);	/* è¶…æ—¶ 300ms */
 	if (len == 0)
 	{
 		return 0;		
@@ -542,10 +542,10 @@ uint8_t MG323_GetHardInfo(MG_HARD_INFO_T *_pInfo)
 
 /*
 *********************************************************************************************************
-*	º¯ Êý Ãû: MG323_GetNetStatus
-*	¹¦ÄÜËµÃ÷: ²éÑ¯µ±Ç°ÍøÂç×´Ì¬
-*	ÐÎ    ²Î: ÎÞ
-*	·µ »Ø Öµ: ÍøÂç×´Ì¬, CREG_NO_REG, CREG_LOCAL_OK µÈ¡£
+*	å‡½ æ•° å: MG323_GetNetStatus
+*	åŠŸèƒ½è¯´æ˜Ž: æŸ¥è¯¢å½“å‰ç½‘ç»œçŠ¶æ€
+*	å½¢    å‚: æ— 
+*	è¿” å›ž å€¼: ç½‘ç»œçŠ¶æ€, CREG_NO_REG, CREG_LOCAL_OK ç­‰ã€‚
 *********************************************************************************************************
 */
 uint8_t MG323_GetNetStatus(void)
@@ -560,11 +560,11 @@ uint8_t MG323_GetNetStatus(void)
 	uint16_t len, i;
 	uint8_t status = 0;
 	
-	comClearRxFifo(COM_MG323);	/* ÇåÁã´®¿Ú½ÓÊÕ»º³åÇø */	
+	comClearRxFifo(COM_MG323);	/* æ¸…é›¶ä¸²å£æŽ¥æ”¶ç¼“å†²åŒº */	
 	
-	MG323_SendAT("AT+CREG?");	/* ·¢ËÍ AT ÃüÁî */
+	MG323_SendAT("AT+CREG?");	/* å‘é€ AT å‘½ä»¤ */
 	
-	len = MG323_ReadResponse(buf, sizeof(buf), 200);	/* ³¬Ê± 200ms */
+	len = MG323_ReadResponse(buf, sizeof(buf), 200);	/* è¶…æ—¶ 200ms */
 	if (len == 0)
 	{
 		return 0;		
@@ -583,4 +583,4 @@ uint8_t MG323_GetNetStatus(void)
 }
 
 
-/***************************** °²¸»À³µç×Ó www.armfly.com (END OF FILE) *********************************/
+/***************************** å®‰å¯ŒèŽ±ç”µå­ www.armfly.com (END OF FILE) *********************************/

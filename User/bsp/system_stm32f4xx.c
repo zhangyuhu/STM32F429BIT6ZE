@@ -1,41 +1,41 @@
 /*
 *********************************************************************************************************
 *
-*	ģ������ : ϵͳʱ������ģ��
-*	�ļ����� : system_stm32f4xx.c
-*	��    �� : V1.6.1
-*	˵    �� : ���е� SystemInit() ��������ϵͳʱ�ӡ���������������ļ�������ļ������ã����main()����
-*			   �����ظ����á�
+*	Ä£¿éÃû³Æ : ÏµÍ³Ê±ÖÓÅäÖÃÄ£¿é
+*	ÎÄ¼þÃû³Æ : system_stm32f4xx.c
+*	°æ    ±¾ : V1.6.1
+*	Ëµ    Ã÷ : ÆäÖÐµÄ SystemInit() º¯ÊýÅäÖÃÏµÍ³Ê±ÖÓ¡£Õâ¸öº¯Êý±»Æô¶¯ÎÄ¼þ£¨»ã±àÎÄ¼þ£©µ÷ÓÃ£¬Òò´Ëmain()º¯Êý
+*			   ²»±ØÖØ¸´µ÷ÓÃ¡£
 *
-*			  ���ǹ̼������ṩ���ļ������ǽ��޸������е� SystemInit_ExtMemCtl() ������
+*			  ÕâÊÇ¹Ì¼þ¿âÖÐÌá¹©µÄÎÄ¼þ£¬ÎÒÃÇ½öÐÞ¸ÄÁËÆäÖÐµÄ SystemInit_ExtMemCtl() º¯Êý¡£
 *
-*	Copyright (C), 2015-2016, ���������� www.armfly.com
+*	Copyright (C), 2015-2016, °²¸»À³µç×Ó www.armfly.com
 *
 *********************************************************************************************************
 */
 
 /*
-	����������ʾ��
+	¡¾°²¸»À³ÌáÊ¾¡¿
 	
 	
-	1�� STM32F407 ȱʡ���ⲿ����Ƶ����25MHz�� PLL��Ƶ�� 168MHz ��ΪCPUϵͳʱ�ӡ�
-		����ⲿ����Ƶ�ʲ��� 25MHz�� ���޸�  "stm32f4xx.h " �ļ��е� "HSE_VALUE" �궨��
+	1¡¢ STM32F407 È±Ê¡µÄÍâ²¿¾§ÕñÆµÂÊÊÇ25MHz£¬ PLL±¶Æµµ½ 168MHz ×÷ÎªCPUÏµÍ³Ê±ÖÓ¡£
+		Èç¹ûÍâ²¿¾§ÕñÆµÂÊ²»ÊÇ 25MHz£¬ ÇëÐÞ¸Ä  "stm32f4xx.h " ÎÄ¼þÖÐµÄ "HSE_VALUE" ºê¶¨Òå
 
-		- STM32F429 ȱʡ���ⲿ����Ƶ����8MHz�� PLL��Ƶ�� 180MHz ��ΪCPUϵͳʱ�ӡ�
-		����ⲿ����Ƶ�ʲ��� 8MHz�� ���޸�  "stm32f4xx.h " �ļ��е� "HSE_VALUE" �궨��
+		- STM32F429 È±Ê¡µÄÍâ²¿¾§ÕñÆµÂÊÊÇ8MHz£¬ PLL±¶Æµµ½ 180MHz ×÷ÎªCPUÏµÍ³Ê±ÖÓ¡£
+		Èç¹ûÍâ²¿¾§ÕñÆµÂÊ²»ÊÇ 8MHz£¬ ÇëÐÞ¸Ä  "stm32f4xx.h " ÎÄ¼þÖÐµÄ "HSE_VALUE" ºê¶¨Òå
 	     
-	2�� �����Ҫ��������λ�ⲿSRAM�� ���  "DATA_IN_ExtSRAM" �궨�壬ȱʡ�Ǳ�ע�͵��ġ�
-		�����Ҫ��������λ�ⲿSDRAM�����  "DATA_IN_ExtSDRAM" �궨�壬ȱʡ�Ǳ�ע�͵��ġ�
+	2¡¢ Èç¹ûÐèÒª½«±äÁ¿¶¨Î»Íâ²¿SRAM£¬ Çë´ò¿ª  "DATA_IN_ExtSRAM" ºê¶¨Òå£¬È±Ê¡ÊÇ±»×¢ÊÍµôµÄ¡£
+		Èç¹ûÐèÒª½«±äÁ¿¶¨Î»Íâ²¿SDRAM£¬Çë´ò¿ª  "DATA_IN_ExtSDRAM" ºê¶¨Òå£¬È±Ê¡ÊÇ±»×¢ÊÍµôµÄ¡£
 	
-	3�� �����Ҫ������λ��CPU�ڲ������ "VECT_TAB_SRAM" �궨�壬ȱʡ�Ǳ�ע�͵��ġ�
-		SystemInit_ExtMemCtl() ��������main()����֮ǰ��ִ�еģ�����Ҫ���FSMC���ߵ����á�����ⲿSRAM�ĵ�ַ
-		��ST�İ��Ӳ�ͬ����ô����Ҫ�������������
+	3¡¢ Èç¹ûÐèÒª½«³ÌÐò¶¨Î»ÔÚCPUÄÚ²¿£¬Çë´ò¿ª "VECT_TAB_SRAM" ºê¶¨Òå£¬È±Ê¡ÊÇ±»×¢ÊÍµôµÄ¡£
+		SystemInit_ExtMemCtl() º¯ÊýÊÇÔÚmain()º¯ÊýÖ®Ç°±»Ö´ÐÐµÄ£¬ËüÖ÷ÒªÍê³ÉFSMC×ÜÏßµÄÅäÖÃ¡£Èç¹ûÍâ²¿SRAMµÄµØÖ·
+		ºÍSTµÄ°å×Ó²»Í¬£¬ÄÇÃ´ÄãÐèÒª¸ü¸ÄÕâ¸öº¯Êý¡£
 	
-	4��"DATA_IN_ExtSRAM" �� "VECT_TAB_SRAM" ��������Ҳ�����ڹ��������� predefine ������ָ����
+	4¡¢"DATA_IN_ExtSRAM" ºÍ "VECT_TAB_SRAM" ÕâÁ½¸öºêÒ²¿ÉÒÔÔÚ¹¤³ÌÅäÖÃÖÐ predefine ²ÎÊýÖÐÖ¸¶¨¡£
 	
-	5�� SystemCoreClock ȫ�ֱ�����ʾϵͳ��Ƶ��Hz����ȱʡ�� 180000000. ��C�����п���ֱ��ʹ�ø�ȫ�ֱ�����
-	   ������������й����ж�̬�޸���PLL��Ƶϵ���������л���ʱ��Դ�������ִ��һ�� SystemCoreClockUpdate()
-	   ����������������Զ�����PLL��Ƶ���������ʵ�ʵ���Ƶ��
+	5¡¢ SystemCoreClock È«¾Ö±äÁ¿±íÊ¾ÏµÍ³Ö÷Æµ£¨Hz£©£¬È±Ê¡ÊÇ 180000000. ÔÚC³ÌÐòÖÐ¿ÉÒÔÖ±½ÓÊ¹ÓÃ¸ÄÈ«¾Ö±äÁ¿¡£
+	   Èç¹û³ÌÐòÔÚÔËÐÐ¹ý³ÌÖÐ¶¯Ì¬ÐÞ¸ÄÁËPLL±¶ÆµÏµÊý£¬»òÕßÇÐ»»ÁËÊ±ÖÓÔ´£¬ÇëÎñ±ØÖ´ÐÐÒ»´Î SystemCoreClockUpdate()
+	   º¯Êý£¬Õâ¸öº¯Êý»á×Ô¶¯¸ù¾ÝPLL±¶Æµ²ÎÊý¼ÆËã³öÊµ¼ÊµÄÖ÷Æµ¡£
 	
 */
 /**
@@ -388,9 +388,9 @@
      through STLINK MCO pin of STM32F103 microcontroller. The frequency cannot be changed
      and is fixed at 8 MHz. 
      Hardware configuration needed for Nucleo Board:
-     � SB54, SB55 OFF
-     � R35 removed
-     � SB16, SB50 ON */
+     – SB54, SB55 OFF
+     – R35 removed
+     – SB16, SB50 ON */
 /* #define USE_HSE_BYPASS */
 
 #if defined(USE_HSE_BYPASS)     
@@ -405,7 +405,7 @@
                                    This value must be a multiple of 0x200. */
 /******************************************************************************/
 
-#if 0	/* �̼��� */
+#if 0	/* ¹Ì¼þ¿â */
 	/************************* PLL Parameters *************************************/
 	#if defined(STM32F40_41xxx) || defined(STM32F427_437xx) || defined(STM32F429_439xx) || defined(STM32F401xx) || defined(STM32F469_479xx)
 	 /* PLL_VCO = (HSE_VALUE or HSI_VALUE / PLL_M) * PLL_N */
@@ -452,9 +452,9 @@
 	/* SYSCLK = PLL_VCO / PLL_P */
 	#define PLL_P      4   
 	#endif /* STM32F410xx || STM32F411xE */
-#else		/* �޸ĺ� */
-	#if 0	/* �ⲿ����8MHz, ϵͳ��Ƶ 180MHz�� USB & SDIOʱ�� 48M  */
-		/* PLL_VCO = (HSE_VALUE / PLL_M) * PLL_N = 720MHz ����Ƶ�� ����ֵ 192-432 */
+#else		/* ÐÞ¸Äºó */
+	#if 0	/* Íâ²¿¾§Õñ8MHz, ÏµÍ³Ö÷Æµ 180MHz£¬ USB & SDIOÊ±ÖÓ 48M  */
+		/* PLL_VCO = (HSE_VALUE / PLL_M) * PLL_N = 720MHz £¨³¬Æµ£© Õý³£Öµ 192-432 */
 		#define PLL_M      4
 		#define PLL_N      360
 		
@@ -465,8 +465,8 @@
 		#define PLL_P      4
 	#endif
 
-	#if 1	/* 8M���� ϵͳ��Ƶ 168M�� USB & SDIOʱ�� 48M  */
-		/* PLL_VCO = (HSE_VALUE / PLL_M) * PLL_N = 336MHz  ����ֵ 192-432 */
+	#if 1	/* 8M¾§Õñ£¬ ÏµÍ³Ö÷Æµ 168M£¬ USB & SDIOÊ±ÖÓ 48M  */
+		/* PLL_VCO = (HSE_VALUE / PLL_M) * PLL_N = 336MHz  Õý³£Öµ 192-432 */
 		#define PLL_M      8
 		#define PLL_N      336
 		
@@ -477,8 +477,8 @@
 		#define PLL_P      2
 	#endif
 
-	#if 0	/* 8M���� ϵͳ��Ƶ 192M (��Ƶ)�� USB & SDIOʱ�� 48M  */
-		/* PLL_VCO = (HSE_VALUE / PLL_M) * PLL_N = 336MHz   ����ֵ 192-432 */
+	#if 0	/* 8M¾§Õñ£¬ ÏµÍ³Ö÷Æµ 192M (³¬Æµ)£¬ USB & SDIOÊ±ÖÓ 48M  */
+		/* PLL_VCO = (HSE_VALUE / PLL_M) * PLL_N = 336MHz   Õý³£Öµ 192-432 */
 		#define PLL_M      8
 		#define PLL_N      384
 		
@@ -489,7 +489,7 @@
 		#define PLL_P      2
 	#endif
 
-	#if 0	/* 25M���� ϵͳ��Ƶ 168M */
+	#if 0	/* 25M¾§Õñ£¬ ÏµÍ³Ö÷Æµ 168M */
 		/* PLL_VCO = (HSE_VALUE or HSI_VALUE / PLL_M) * PLL_N */
 		#define PLL_M      25
 		/* USB OTG FS, SDIO and RNG Clock =  PLL_VCO / PLLQ */

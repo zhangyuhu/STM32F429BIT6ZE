@@ -1,12 +1,12 @@
 /*
 *********************************************************************************************************
 *
-*	Ä£¿éÃû³Æ : SPI×ÜÏßÇý¶¯
-*	ÎÄ¼þÃû³Æ : bsp_spi_bus.h
-*	°æ    ±¾ : V1.0
-*	Ëµ    Ã÷ : Í·ÎÄ¼þ
+*	æ¨¡å—åç§° : SPIæ€»çº¿é©±åŠ¨
+*	æ–‡ä»¶åç§° : bsp_spi_bus.h
+*	ç‰ˆ    æœ¬ : V1.0
+*	è¯´    æ˜Ž : å¤´æ–‡ä»¶
 *
-*	Copyright (C), 2014-2015, °²¸»À³µç×Ó www.armfly.com
+*	Copyright (C), 2014-2015, å®‰å¯ŒèŽ±ç”µå­ www.armfly.com
 *
 *********************************************************************************************************
 */
@@ -14,13 +14,13 @@
 #ifndef __BSP_SPI_BUS_H
 #define __BSP_SPI_BUS_H
 
-//#define SOFT_SPI		/* ¶¨Òå´ËÐÐ±íÊ¾Ê¹ÓÃGPIOÄ£ÄâSPI½Ó¿Ú */
-#define HARD_SPI		/* ¶¨Òå´ËÐÐ±íÊ¾Ê¹ÓÃCPUµÄÓ²¼þSPI½Ó¿Ú */
+//#define SOFT_SPI		/* å®šä¹‰æ­¤è¡Œè¡¨ç¤ºä½¿ç”¨GPIOæ¨¡æ‹ŸSPIæŽ¥å£ */
+#define HARD_SPI		/* å®šä¹‰æ­¤è¡Œè¡¨ç¤ºä½¿ç”¨CPUçš„ç¡¬ä»¶SPIæŽ¥å£ */
 
 /*
-	¡¾SPIÊ±ÖÓ×î¿ìÊÇ2·ÖÆµ£¬²»Ö§³Ö²»·ÖÆµ¡¿
-	Èç¹ûÊÇSPI1£¬2·ÖÆµÊ±SCKÊ±ÖÓ = 42M£¬4·ÖÆµÊ±SCKÊ±ÖÓ = 21M
-	Èç¹ûÊÇSPI3, 2·ÖÆµÊ±SCKÊ±ÖÓ = 21M
+	ã€SPIæ—¶é’Ÿæœ€å¿«æ˜¯2åˆ†é¢‘ï¼Œä¸æ”¯æŒä¸åˆ†é¢‘ã€‘
+	å¦‚æžœæ˜¯SPI1ï¼Œ2åˆ†é¢‘æ—¶SCKæ—¶é’Ÿ = 42Mï¼Œ4åˆ†é¢‘æ—¶SCKæ—¶é’Ÿ = 21M
+	å¦‚æžœæ˜¯SPI3, 2åˆ†é¢‘æ—¶SCKæ—¶é’Ÿ = 21M
 */
 #define SPI_SPEED_42M		SPI_BaudRatePrescaler_2
 #define SPI_SPEED_21M		SPI_BaudRatePrescaler_4
@@ -48,4 +48,4 @@ void bsp_SetSpiSck(uint8_t _data);
 
 #endif
 
-/***************************** °²¸»À³µç×Ó www.armfly.com (END OF FILE) *********************************/
+/***************************** å®‰å¯ŒèŽ±ç”µå­ www.armfly.com (END OF FILE) *********************************/

@@ -78,7 +78,7 @@ DRESULT disk_ioctl (BYTE pdrv, BYTE cmd, void* buff);
 #define FS_NAND		1
 #define FS_USB		2
 
-/* ÓÃÓÚ R0.10b ÐÂ°æ±¾ */
+/* ç”¨äºŽ R0.10b æ–°ç‰ˆæœ¬ */
 #define FS_VOLUME_SD		"0:"
 #define FS_VOLUME_NAND		"1:"
 #define FS_VOLUME_USB		"2:"

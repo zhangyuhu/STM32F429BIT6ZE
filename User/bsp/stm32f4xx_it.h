@@ -1,12 +1,12 @@
 /*
 *********************************************************************************************************
 *
-*	Ä£¿éÃû³Æ : ÖĞ¶Ï·şÎñ³ÌĞò
-*	ÎÄ¼şÃû³Æ : stm32f4xx_it.h
-*	°æ    ±¾ : V1.0
-*	Ëµ    Ã÷ : Í·ÎÄ¼ş
+*	æ¨¡å—åç§° : ä¸­æ–­æœåŠ¡ç¨‹åº
+*	æ–‡ä»¶åç§° : stm32f4xx_it.h
+*	ç‰ˆ    æœ¬ : V1.0
+*	è¯´    æ˜ : å¤´æ–‡ä»¶
 *
-*	Copyright (C), 2013-2014, °²¸»À³µç×Ó www.armfly.com
+*	Copyright (C), 2013-2014, å®‰å¯Œè±ç”µå­ www.armfly.com
 *
 *********************************************************************************************************
 */
@@ -28,7 +28,7 @@ void UsageFault_Handler(void);
 void SVC_Handler(void);
 void DebugMon_Handler(void);
 void PendSV_Handler(void);
-//void SysTick_Handler(void);  Õâ¸öISR±»ÒÆµ½ bsp_timer.c
+//void SysTick_Handler(void);  è¿™ä¸ªISRè¢«ç§»åˆ° bsp_timer.c
 
 #ifdef __cplusplus
 }
@@ -36,4 +36,4 @@ void PendSV_Handler(void);
 
 #endif /* __STM32F4xx_IT_H */
 
-/***************************** °²¸»À³µç×Ó www.armfly.com (END OF FILE) *********************************/
+/***************************** å®‰å¯Œè±ç”µå­ www.armfly.com (END OF FILE) *********************************/

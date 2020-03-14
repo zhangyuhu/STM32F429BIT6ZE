@@ -1,35 +1,35 @@
 /*
 *********************************************************************************************************
 *
-*	Ä£¿éÃû³Æ : PS/2¼üÅÌÊó±êÇı¶¯Ä£¿é
-*	ÎÄ¼şÃû³Æ : bsp_ps2.c
-*	°æ    ±¾ : V1.0
-*	Ëµ    Ã÷ :
+*	æ¨¡å—åç§° : PS/2é”®ç›˜é¼ æ ‡é©±åŠ¨æ¨¡å—
+*	æ–‡ä»¶åç§° : bsp_ps2.c
+*	ç‰ˆ    æœ¬ : V1.0
+*	è¯´    æ˜ :
 *
-*	ĞŞ¸Ä¼ÇÂ¼ :
-*		°æ±¾ºÅ  ÈÕÆÚ         ×÷Õß     ËµÃ÷
-*		V1.0    2014-02-12   armfly  ÕıÊ½·¢²¼
+*	ä¿®æ”¹è®°å½• :
+*		ç‰ˆæœ¬å·  æ—¥æœŸ         ä½œè€…     è¯´æ˜
+*		V1.0    2014-02-12   armfly  æ­£å¼å‘å¸ƒ
 *
-*	Copyright (C), 2013-2014, °²¸»À³µç×Ó www.armfly.com
+*	Copyright (C), 2013-2014, å®‰å¯Œè±ç”µå­ www.armfly.com
 *
 *********************************************************************************************************
 */
 
 /*
-	Ê¹ÓÃËµÃ÷:
-	1. ¿ª»úÖ´ĞĞ1´Î bsp_InitPS2() ÅäÖÃGPIO
-	2. Ö´ĞĞ PS2_StartWork() ´ò¿ªPS2ÖĞ¶Ï
-	3. Ã¿msµ÷ÓÃ PS2_Timer().  ÔÚbsp.c ÖĞbsp_RunPer10ms() º¯ÊıÖĞÔö¼Óµ÷ÓÃ¼´¿É¡£
-	4. ²»ĞèÒªPS2¹¦ÄÜÊ±, µ÷ÓÃ PS2_StopWork() ¹Ø±ÕÖĞ¶Ï¡£	
+	ä½¿ç”¨è¯´æ˜:
+	1. å¼€æœºæ‰§è¡Œ1æ¬¡ bsp_InitPS2() é…ç½®GPIO
+	2. æ‰§è¡Œ PS2_StartWork() æ‰“å¼€PS2ä¸­æ–­
+	3. æ¯msè°ƒç”¨ PS2_Timer().  åœ¨bsp.c ä¸­bsp_RunPer10ms() å‡½æ•°ä¸­å¢åŠ è°ƒç”¨å³å¯ã€‚
+	4. ä¸éœ€è¦PS2åŠŸèƒ½æ—¶, è°ƒç”¨ PS2_StopWork() å…³é—­ä¸­æ–­ã€‚	
 */
 
 #include "bsp.h"
 
-/* ´òÓ¡µ÷ÊÔÓï¾ä */
+/* æ‰“å°è°ƒè¯•è¯­å¥ */
 #define ps2_printf printf
 //#define ps2_printf(...)
 
-/* ¶¨ÒåGPIO¶Ë¿Ú  PG7 = PS2_CLK   PG3 = PS2_DATA */
+/* å®šä¹‰GPIOç«¯å£  PG7 = PS2_CLK   PG3 = PS2_DATA */
 #define RCC_PS2_CLK   RCC_AHB1Periph_GPIOG
 #define PORT_PS2_CLK  GPIOG
 #define PIN_PS2_CLK   GPIO_Pin_7
@@ -93,10 +93,10 @@ static const KB_STR_T s_KeyNameTab[] =
     {KB_7, "7"},
     {KB_8, "8"},
     {KB_9, "9"},
-    {KB_PIE, "`"},	/* Æ²£¬¼üÅÌ×óÉÏ½Ç */
-    {KB_SUB, "-"},	/* ÖĞ¸Ü£¬¼õºÅ */
-    {KB_EQU, "="},	/* µÈºÅ */
-    {KB_FXG, "\\"},	/* ·´Ğ±¸Ü */
+    {KB_PIE, "`"},	/* æ’‡ï¼Œé”®ç›˜å·¦ä¸Šè§’ */
+    {KB_SUB, "-"},	/* ä¸­æ ï¼Œå‡å· */
+    {KB_EQU, "="},	/* ç­‰å· */
+    {KB_FXG, "\\"},	/* åæ–œæ  */
     {KB_BKSP,"Backspace"},
     {KB_SPACE, "Space"},
     {KB_TAB, "Tab"},
@@ -139,12 +139,12 @@ static const KB_STR_T s_KeyNameTab[] =
     {KB_D_ARROW, "Down Arrow"},
     {KB_R_ARROW, "Right Arrow"},
     {KB_NUM, "Num Lock"},
-    {KB_KP_DIV, "KP /"},    /* Ğ¡¼üÅÌ³ıºÅ  KP ±íÊ¾Ğ¡¼üÅÌ */
-    {KB_KP_MULT, "KP *"},	/* Ğ¡¼üÅÌ³ËºÅ */
+    {KB_KP_DIV, "KP /"},    /* å°é”®ç›˜é™¤å·  KP è¡¨ç¤ºå°é”®ç›˜ */
+    {KB_KP_MULT, "KP *"},	/* å°é”®ç›˜ä¹˜å· */
     {KB_KP_SUB, "KP -"},	/* - */
     {KB_KP_ADD, "KP +"},
     {KB_KP_ENTER, "KP Enter"},
-    {KB_KP_DOT, "KP ."},	/* Ğ¡Êıµã */
+    {KB_KP_DOT, "KP ."},	/* å°æ•°ç‚¹ */
     {KB_KP_0, "KP 0"},
     {KB_KP_1, "KP 1"},
     {KB_KP_2, "KP 2"},
@@ -155,14 +155,14 @@ static const KB_STR_T s_KeyNameTab[] =
     {KB_KP_7, "KP 7"},
     {KB_KP_8, "KP 8"},
     {KB_KP_9, "KP 9"},
-    {KB_YZKH, "]"}, 	/* ] ÓÒÖĞÀ¨ºÅ */
-    {KB_SEMICOLON, ";"},/* ; ·ÖºÅ */
-    {KB_QUOTES, "'"},	/* µ¥ÒıºÅ */
-    {KB_COMMA, ","},	/* ¶ººÅ */
-    {KB_DOT, "."},		/* Ğ¡Êıµã */
-    {KB_DIV, "/"},		/* ³ıºÅ */
+    {KB_YZKH, "]"}, 	/* ] å³ä¸­æ‹¬å· */
+    {KB_SEMICOLON, ";"},/* ; åˆ†å· */
+    {KB_QUOTES, "'"},	/* å•å¼•å· */
+    {KB_COMMA, ","},	/* é€—å· */
+    {KB_DOT, "."},		/* å°æ•°ç‚¹ */
+    {KB_DIV, "/"},		/* é™¤å· */
 	
-	{0, ""}		/* ²é±í½áÊø±êÖ¾ */
+	{0, ""}		/* æŸ¥è¡¨ç»“æŸæ ‡å¿— */
 };
 
 PS2_T g_tPS2;
@@ -173,28 +173,28 @@ static uint8_t PS2_HookKeyboard(uint32_t _msg);
 
 /*
 *********************************************************************************************************
-*	º¯ Êı Ãû: bsp_InitPS2
-*	¹¦ÄÜËµÃ÷: ÅäÖÃSTM32µÄGPIO,ÓÃÓÚPS2
-*	ĞÎ    ²Î: ÎŞ
-*	·µ »Ø Öµ: ÎŞ
+*	å‡½ æ•° å: bsp_InitPS2
+*	åŠŸèƒ½è¯´æ˜: é…ç½®STM32çš„GPIO,ç”¨äºPS2
+*	å½¢    å‚: æ— 
+*	è¿” å› å€¼: æ— 
 *********************************************************************************************************
 */
 void bsp_InitPS2(void)
 {
 	GPIO_InitTypeDef GPIO_InitStructure;
 
-	/* ´ò¿ªGPIOÊ±ÖÓ */
+	/* æ‰“å¼€GPIOæ—¶é’Ÿ */
 	RCC_AHB1PeriphClockCmd(RCC_PS2_CLK | RCC_PS2_DATA, ENABLE);
 
 	PS2_CLK_1();
 	PS2_DATA_1();
 
-	/* ÅäÖÃCLK ºÍ DATA ÎªÊäÈëÒı½Å */
-	//GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;		/* ÉèÎªÊäÈë¿Ú */
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;		/* ÉèÎªÊä³ö¿Ú */
-	GPIO_InitStructure.GPIO_OType = GPIO_OType_OD;		/* ÉèÎª¿ªÂ©Ä£Ê½ */
-	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;	/* ÉÏÏÂÀ­µç×è²»Ê¹ÄÜ */
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;	/* IO¿Ú×î´óËÙ¶È */
+	/* é…ç½®CLK å’Œ DATA ä¸ºè¾“å…¥å¼•è„š */
+	//GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;		/* è®¾ä¸ºè¾“å…¥å£ */
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;		/* è®¾ä¸ºè¾“å‡ºå£ */
+	GPIO_InitStructure.GPIO_OType = GPIO_OType_OD;		/* è®¾ä¸ºå¼€æ¼æ¨¡å¼ */
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;	/* ä¸Šä¸‹æ‹‰ç”µé˜»ä¸ä½¿èƒ½ */
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;	/* IOå£æœ€å¤§é€Ÿåº¦ */
 
 	GPIO_InitStructure.GPIO_Pin = PIN_PS2_CLK;
 	GPIO_Init(PORT_PS2_CLK, &GPIO_InitStructure);
@@ -208,10 +208,10 @@ void bsp_InitPS2(void)
 
 /*
 *********************************************************************************************************
-*	º¯ Êı Ãû: PS2_StartWork
-*	¹¦ÄÜËµÃ÷: ÅäÖÃÖĞ¶Ï£¬¿ªÊ¼½âÂë
-*	ĞÎ    ²Î: ÎŞ
-*	·µ »Ø Öµ: ÎŞ
+*	å‡½ æ•° å: PS2_StartWork
+*	åŠŸèƒ½è¯´æ˜: é…ç½®ä¸­æ–­ï¼Œå¼€å§‹è§£ç 
+*	å½¢    å‚: æ— 
+*	è¿” å› å€¼: æ— 
 *********************************************************************************************************
 */
 void PS2_StartWork(void)
@@ -219,23 +219,23 @@ void PS2_StartWork(void)
 	EXTI_InitTypeDef   EXTI_InitStructure;
 	NVIC_InitTypeDef   NVIC_InitStructure;
 
-	/* Ê¹ÄÜSYSCFGÊ±ÖÓ */
+	/* ä½¿èƒ½SYSCFGæ—¶é’Ÿ */
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_SYSCFG, ENABLE);
 
-	/* Á¬½Ó EXTI Line7 µ½ PG7 Òı½Å */
+	/* è¿æ¥ EXTI Line7 åˆ° PG7 å¼•è„š */
 	SYSCFG_EXTILineConfig(EXTI_PortSourceGPIOG, EXTI_PinSource7);
 
-	/* ÅäÖÃ EXTI LineXXX */
+	/* é…ç½® EXTI LineXXX */
 	EXTI_InitStructure.EXTI_Line = EXTI_Line7;
 	EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;
-	EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Falling;		/* ÏÂ½µÑØ(µÈ´ı DRDY ÓÉ1±ä0µÄÊ±¿Ì) */
+	EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Falling;		/* ä¸‹é™æ²¿(ç­‰å¾… DRDY ç”±1å˜0çš„æ—¶åˆ») */
 	EXTI_InitStructure.EXTI_LineCmd = ENABLE;
 	EXTI_Init(&EXTI_InitStructure);
 
-	/* ÉèÖÃNVICÓÅÏÈ¼¶·Ö×é */
+	/* è®¾ç½®NVICä¼˜å…ˆçº§åˆ†ç»„ */
 	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);
 
-	/* ÖĞ¶ÏÓÅÏÈ¼¶ÅäÖÃ ×îµÍÓÅÏÈ¼¶ ÕâÀïÒ»¶¨Òª·Ö¿ªµÄÉèÖÃÖĞ¶Ï£¬²»ÄÜ¹»ºÏ²¢µ½Ò»¸öÀïÃæÉèÖÃ */
+	/* ä¸­æ–­ä¼˜å…ˆçº§é…ç½® æœ€ä½ä¼˜å…ˆçº§ è¿™é‡Œä¸€å®šè¦åˆ†å¼€çš„è®¾ç½®ä¸­æ–­ï¼Œä¸èƒ½å¤Ÿåˆå¹¶åˆ°ä¸€ä¸ªé‡Œé¢è®¾ç½® */
 	NVIC_InitStructure.NVIC_IRQChannel = EXTI9_5_IRQn;
 	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0x03;
 	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0x03;
@@ -247,15 +247,15 @@ void PS2_StartWork(void)
 
 	g_tPS2.Status = 0;
 
-	PS2_ClearBuf();		/* ¸´Î»FIFO£¬Çå³ı»º³åÇø */
+	PS2_ClearBuf();		/* å¤ä½FIFOï¼Œæ¸…é™¤ç¼“å†²åŒº */
 }
 
 /*
 *********************************************************************************************************
-*	º¯ Êı Ãû: PS2_StopWork
-*	¹¦ÄÜËµÃ÷: Í£Ö¹½âÂë
-*	ĞÎ    ²Î: ÎŞ
-*	·µ »Ø Öµ: ÎŞ
+*	å‡½ æ•° å: PS2_StopWork
+*	åŠŸèƒ½è¯´æ˜: åœæ­¢è§£ç 
+*	å½¢    å‚: æ— 
+*	è¿” å› å€¼: æ— 
 *********************************************************************************************************
 */
 void PS2_StopWork(void)
@@ -263,19 +263,19 @@ void PS2_StopWork(void)
 	EXTI_InitTypeDef   EXTI_InitStructure;
 //	NVIC_InitTypeDef   NVIC_InitStructure;
 
-	/* ÅäÖÃ EXTI LineXXX */
+	/* é…ç½® EXTI LineXXX */
 	EXTI_InitStructure.EXTI_Line = EXTI_Line7;
 	EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;
-	EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Falling;	/* ÏÂ½µÑØ(µÈ´ı DRDY ÓÉ1±ä0µÄÊ±¿Ì) */
-	EXTI_InitStructure.EXTI_LineCmd = DISABLE;		/* ½ûÖ¹ */
+	EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Falling;	/* ä¸‹é™æ²¿(ç­‰å¾… DRDY ç”±1å˜0çš„æ—¶åˆ») */
+	EXTI_InitStructure.EXTI_LineCmd = DISABLE;		/* ç¦æ­¢ */
 	EXTI_Init(&EXTI_InitStructure);
 
 #if 0
-	/* ÖĞ¶ÏÓÅÏÈ¼¶ÅäÖÃ ×îµÍÓÅÏÈ¼¶ ÕâÀïÒ»¶¨Òª·Ö¿ªµÄÉèÖÃÖĞ¶Ï£¬²»ÄÜ¹»ºÏ²¢µ½Ò»¸öÀïÃæÉèÖÃ */
+	/* ä¸­æ–­ä¼˜å…ˆçº§é…ç½® æœ€ä½ä¼˜å…ˆçº§ è¿™é‡Œä¸€å®šè¦åˆ†å¼€çš„è®¾ç½®ä¸­æ–­ï¼Œä¸èƒ½å¤Ÿåˆå¹¶åˆ°ä¸€ä¸ªé‡Œé¢è®¾ç½® */
 	NVIC_InitStructure.NVIC_IRQChannel = EXTI9_5_IRQn;
 	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0x03;
 	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0x03;
-	NVIC_InitStructure.NVIC_IRQChannelCmd = DISABLE;		/* ½ûÖ¹ */
+	NVIC_InitStructure.NVIC_IRQChannelCmd = DISABLE;		/* ç¦æ­¢ */
 	NVIC_Init(&NVIC_InitStructure);
 #endif
 
@@ -284,10 +284,10 @@ void PS2_StopWork(void)
 
 /*
 *********************************************************************************************************
-*	º¯ Êı Ãû: PS2_Timer
-*	¹¦ÄÜËµÃ÷: ´Ëº¯Êı±ØĞëÃ¿ms±»Ö´ĞĞ1´Î£¬ ¼ÓÈëµ½ bsp.c ÖĞµÄ bsp_RunPer1ms() º¯Êı
-*	ĞÎ    ²Î: ÎŞ
-*	·µ »Ø Öµ: ÎŞ
+*	å‡½ æ•° å: PS2_Timer
+*	åŠŸèƒ½è¯´æ˜: æ­¤å‡½æ•°å¿…é¡»æ¯msè¢«æ‰§è¡Œ1æ¬¡ï¼Œ åŠ å…¥åˆ° bsp.c ä¸­çš„ bsp_RunPer1ms() å‡½æ•°
+*	å½¢    å‚: æ— 
+*	è¿” å› å€¼: æ— 
 *********************************************************************************************************
 */
 void PS2_Timer(void)
@@ -296,7 +296,7 @@ void PS2_Timer(void)
 	{
 		if (--g_tPS2.TxTimeOut == 0)
 		{
-			/* ÊÍ·Å DATAÏß */
+			/* é‡Šæ”¾ DATAçº¿ */
 			PS2_DATA_1();
 		}
 	}
@@ -332,28 +332,28 @@ void PS2_Timer(void)
 
 				if (PS2_HookKeyboard(value))
 				{
-					if (g_tPS2.LedReq < 2)	/* Ö÷»ú¸ø¼üÅÌ·¢ËÍÃüÁî½×¶Î ²»½«¼üÅÌµÄÓ¦´ğÏûÏ¢ËÍÍùÓ¦ÓÃ²ã */
+					if (g_tPS2.LedReq < 2)	/* ä¸»æœºç»™é”®ç›˜å‘é€å‘½ä»¤é˜¶æ®µ ä¸å°†é”®ç›˜çš„åº”ç­”æ¶ˆæ¯é€å¾€åº”ç”¨å±‚ */
 					{					
-						PS2_PutMsg(value);	/* ½«°´¼ü´úÂë·ÅÈëFIFO, ½»¸øÓ¦ÓÃ²ã´¦Àí */
+						PS2_PutMsg(value);	/* å°†æŒ‰é”®ä»£ç æ”¾å…¥FIFO, äº¤ç»™åº”ç”¨å±‚å¤„ç† */
 					}
 				}
 			}
 		}
 	}
 	
-	/* ¸ø¼üÅÌ·¢ËÍÃüÁî£¬¿ØÖÆ¼üÅÌµÄÖ¸Ê¾µÆ */
+	/* ç»™é”®ç›˜å‘é€å‘½ä»¤ï¼Œæ§åˆ¶é”®ç›˜çš„æŒ‡ç¤ºç¯ */
 	if (g_tPS2.LedReq > 0)
 	{
 		g_tPS2.LedReq++;
 		if (g_tPS2.LedReq == 2)
 		{			
-			PS2_SendCmd(0xED);				/* ·¢ËÍÖ¸ÁîµÚ1×Ö½Ú -- ĞŞ¸ÄLED×´Ì¬  */
+			PS2_SendCmd(0xED);				/* å‘é€æŒ‡ä»¤ç¬¬1å­—èŠ‚ -- ä¿®æ”¹LEDçŠ¶æ€  */
 		}
 		else if (g_tPS2.LedReq == 7)
 		{
-			PS2_SendCmd(g_tPS2.LedData);	/* ÑÓ³Ù5ms ·¢ËÍÖ¸ÁîµÚ2×Ö½Ú -- Ö¸Ê¾µÆ×´Ì¬ */
+			PS2_SendCmd(g_tPS2.LedData);	/* å»¶è¿Ÿ5ms å‘é€æŒ‡ä»¤ç¬¬2å­—èŠ‚ -- æŒ‡ç¤ºç¯çŠ¶æ€ */
 		}		
-		else if (g_tPS2.LedReq == 17)		/* ÔÙÑÓ³Ù10ms, µÈ¼üÅÌµÄÓ¦´ğÍê³ÉºóÍË³ö */
+		else if (g_tPS2.LedReq == 17)		/* å†å»¶è¿Ÿ10ms, ç­‰é”®ç›˜çš„åº”ç­”å®Œæˆåé€€å‡º */
 		{
 			g_tPS2.LedReq = 0;
 		}
@@ -362,73 +362,73 @@ void PS2_Timer(void)
 
 /*
 *********************************************************************************************************
-*	º¯ Êı Ãû: PS2_HookKeyboard
-*	¹¦ÄÜËµÃ÷: ¼üÅÌ¹³×Óº¯Êı£¬½»¸øÓ¦ÓÃ³ÌĞòÖ®Ç°½øĞĞÔ¤´¦Àí¡£
-*	ĞÎ    ²Î: _msg  ¼üÖµ´úÂë
-*	·µ »Ø Öµ: 0 ±íÊ¾ÄÚ²¿´¦Àí£¬²»½»¸øÓ¦ÓÃ²ã¡£1±íÊ¾»¹ĞèÒª½»¸øÓ¦ÓÃ²ã´¦Àí¡£
+*	å‡½ æ•° å: PS2_HookKeyboard
+*	åŠŸèƒ½è¯´æ˜: é”®ç›˜é’©å­å‡½æ•°ï¼Œäº¤ç»™åº”ç”¨ç¨‹åºä¹‹å‰è¿›è¡Œé¢„å¤„ç†ã€‚
+*	å½¢    å‚: _msg  é”®å€¼ä»£ç 
+*	è¿” å› å€¼: 0 è¡¨ç¤ºå†…éƒ¨å¤„ç†ï¼Œä¸äº¤ç»™åº”ç”¨å±‚ã€‚1è¡¨ç¤ºè¿˜éœ€è¦äº¤ç»™åº”ç”¨å±‚å¤„ç†ã€‚
 *********************************************************************************************************
 */
 static uint8_t PS2_HookKeyboard(uint32_t _msg)
 {
-	uint8_t reput = 1;	/* Õı³£Ê¹ÓÃÊ±¿ÉÒÔÉèÖÃÎª0. CTRL , ALT ,SHIFT °´¼üÊÂ¼şÎŞĞèÉÏ±¨Ó¦ÓÃ²ã´¦Àí */
+	uint8_t reput = 1;	/* æ­£å¸¸ä½¿ç”¨æ—¶å¯ä»¥è®¾ç½®ä¸º0. CTRL , ALT ,SHIFT æŒ‰é”®äº‹ä»¶æ— éœ€ä¸ŠæŠ¥åº”ç”¨å±‚å¤„ç† */
 
-	/* ´¦ÀíPS2¼üÅÌ×´Ì¬ */
+	/* å¤„ç†PS2é”®ç›˜çŠ¶æ€ */
 	switch (_msg)
 	{
-		case KB_L_SHFT:		/* Shift ¼ü°´ÏÂ */
+		case KB_L_SHFT:		/* Shift é”®æŒ‰ä¸‹ */
 		case KB_R_SHFT:
 			g_tPS2.ksShift = 1;
 			break;
 
-		case BREAK_L_SHFT:	/* Shift ¼üËÉ¿ª */
+		case BREAK_L_SHFT:	/* Shift é”®æ¾å¼€ */
 		case BREAK_R_SHFT:
 			g_tPS2.ksShift = 0;
 			break;
 
-		case KB_L_CTRL:		/* Ctrl ¼ü°´ÏÂ */
+		case KB_L_CTRL:		/* Ctrl é”®æŒ‰ä¸‹ */
 		case KB_R_CTRL:
 			g_tPS2.ksCtrl = 1;
 			break;
 
-		case BREAK_L_CTRL:	/* Ctrl ¼üËÉ¿ª */
+		case BREAK_L_CTRL:	/* Ctrl é”®æ¾å¼€ */
 		case BREAK_R_CTRL:
 			g_tPS2.ksCtrl = 0;
 			break;
 
-		case KB_L_ALT:		/* Alt ¼ü°´ÏÂ */
+		case KB_L_ALT:		/* Alt é”®æŒ‰ä¸‹ */
 		case KB_R_ALT:
 			g_tPS2.ksAlt = 1;
 			break;
 
-		case BREAK_L_ALT:	/* Alt ¼üËÉ¿ª */
+		case BREAK_L_ALT:	/* Alt é”®æ¾å¼€ */
 		case BREAK_R_ALT:
 			g_tPS2.ksAlt = 0;
 			break;
 
-		case KB_CAPS:		/* ´óĞ¡Ğ´ÇĞ»» */
+		case KB_CAPS:		/* å¤§å°å†™åˆ‡æ¢ */
 			if (g_tPS2.ksCapsLock == 0)
 			{
 				g_tPS2.ksCapsLock = 1;
-				//ps2_printf(" ¿ªCaps LockµÆ\r\n");
+				//ps2_printf(" å¼€Caps Lockç¯\r\n");
 			}
 			else
 			{
 				g_tPS2.ksCapsLock = 0;
-				//ps2_printf(" ¹ØCaps LockµÆ\r\n");
+				//ps2_printf(" å…³Caps Lockç¯\r\n");
 			}
 			PS2_SetKeyboardLed(LED_CapsLock, g_tPS2.ksCapsLock);
 			break;
 
-		case KB_NUM:		/* Êı×ÖĞ¡¼üÅÌÊ¹ÄÜ */
+		case KB_NUM:		/* æ•°å­—å°é”®ç›˜ä½¿èƒ½ */
 			if (g_tPS2.KsNumLock == 0)
 			{
 				g_tPS2.KsNumLock = 1;
-				//ps2_printf(" ¿ªNum LockµÆ\r\n");
+				//ps2_printf(" å¼€Num Lockç¯\r\n");
 			}
 			else
 			{
 				g_tPS2.KsNumLock = 0;
-				//ps2_printf(" ¹ØNum LockµÆ\r\n");
+				//ps2_printf(" å…³Num Lockç¯\r\n");
 			}
 			PS2_SetKeyboardLed(LED_NumLock, g_tPS2.KsNumLock);
 			break;
@@ -437,12 +437,12 @@ static uint8_t PS2_HookKeyboard(uint32_t _msg)
 			if (g_tPS2.KsScrollLock == 0)
 			{
 				g_tPS2.KsScrollLock = 1;
-				//ps2_printf(" ¿ªScroll LockµÆ\r\n");
+				//ps2_printf(" å¼€Scroll Lockç¯\r\n");
 			}
 			else
 			{
 				g_tPS2.KsScrollLock = 0;
-				//ps2_printf(" ¹ØScroll LockµÆ\r\n");
+				//ps2_printf(" å…³Scroll Lockç¯\r\n");
 			}
 			PS2_SetKeyboardLed(LED_ScrollLock, g_tPS2.KsScrollLock);
 			break;
@@ -457,10 +457,10 @@ static uint8_t PS2_HookKeyboard(uint32_t _msg)
 
 /*
 *********************************************************************************************************
-*	º¯ Êı Ãû: GetNameOfKey
-*	¹¦ÄÜËµÃ÷: »ñµÃ°´¼üÃû×Ö
-*	ĞÎ    ²Î: ÎŞ
-*	·µ »Ø Öµ: ×Ö·û´®Ö¸Õë
+*	å‡½ æ•° å: GetNameOfKey
+*	åŠŸèƒ½è¯´æ˜: è·å¾—æŒ‰é”®åå­—
+*	å½¢    å‚: æ— 
+*	è¿” å› å€¼: å­—ç¬¦ä¸²æŒ‡é’ˆ
 *********************************************************************************************************
 */
 const char * GetNameOfKey(uint32_t _code)
@@ -488,10 +488,10 @@ const char * GetNameOfKey(uint32_t _code)
 
 /*
 *********************************************************************************************************
-*	º¯ Êı Ãû: PS2_PutMsg
-*	¹¦ÄÜËµÃ÷: ½«1¸ö¼üÖµÑ¹Èë°´¼üFIFO»º³åÇø¡£¿ÉÓÃÓÚÄ£ÄâÒ»¸ö°´¼ü¡£
-*	ĞÎ    ²Î:  _KeyCode : °´¼ü´úÂë
-*	·µ »Ø Öµ: ÎŞ
+*	å‡½ æ•° å: PS2_PutMsg
+*	åŠŸèƒ½è¯´æ˜: å°†1ä¸ªé”®å€¼å‹å…¥æŒ‰é”®FIFOç¼“å†²åŒºã€‚å¯ç”¨äºæ¨¡æ‹Ÿä¸€ä¸ªæŒ‰é”®ã€‚
+*	å½¢    å‚:  _KeyCode : æŒ‰é”®ä»£ç 
+*	è¿” å› å€¼: æ— 
 *********************************************************************************************************
 */
 void PS2_PutMsg(uint32_t _KeyCode)
@@ -506,10 +506,10 @@ void PS2_PutMsg(uint32_t _KeyCode)
 
 /*
 *********************************************************************************************************
-*	º¯ Êı Ãû: bsp_GetMsg
-*	¹¦ÄÜËµÃ÷: ´Ó°´¼üFIFO»º³åÇø¶ÁÈ¡Ò»¸ö¼üÖµ¡£
-*	ĞÎ    ²Î:  ÎŞ
-*	·µ »Ø Öµ: °´¼ü´úÂë
+*	å‡½ æ•° å: bsp_GetMsg
+*	åŠŸèƒ½è¯´æ˜: ä»æŒ‰é”®FIFOç¼“å†²åŒºè¯»å–ä¸€ä¸ªé”®å€¼ã€‚
+*	å½¢    å‚:  æ— 
+*	è¿” å› å€¼: æŒ‰é”®ä»£ç 
 *********************************************************************************************************
 */
 uint32_t PS2_GetMsg(void)
@@ -534,15 +534,15 @@ uint32_t PS2_GetMsg(void)
 
 /*
 *********************************************************************************************************
-*	º¯ Êı Ãû: PS2_ClearBuf
-*	¹¦ÄÜËµÃ÷: Çå³ı°´¼ü»º³åÇø
-*	ĞÎ    ²Î: ÎŞ
-*	·µ »Ø Öµ: ÎŞ
+*	å‡½ æ•° å: PS2_ClearBuf
+*	åŠŸèƒ½è¯´æ˜: æ¸…é™¤æŒ‰é”®ç¼“å†²åŒº
+*	å½¢    å‚: æ— 
+*	è¿” å› å€¼: æ— 
 *********************************************************************************************************
 */
 void PS2_ClearBuf(void)
 {
-	/* ¶Ô°´¼üFIFO¶ÁĞ´Ö¸ÕëÇåÁã */
+	/* å¯¹æŒ‰é”®FIFOè¯»å†™æŒ‡é’ˆæ¸…é›¶ */
 	g_tPS2.Read = 0;
 	g_tPS2.Write = 0;
 
@@ -553,56 +553,56 @@ void PS2_ClearBuf(void)
 
 /*
 *********************************************************************************************************
-*	º¯ Êı Ãû: PS2_SendCmd
-*	¹¦ÄÜËµÃ÷: ÏòÊó±ê»ò¼üÅÌ·¢ËÍ1×Ö½ÚÊı¾İ
-*	ĞÎ    ²Î: _byte : ´ı·¢ËÍµÄÊı¾İ
-*	·µ »Ø Öµ: ÎŞ
+*	å‡½ æ•° å: PS2_SendCmd
+*	åŠŸèƒ½è¯´æ˜: å‘é¼ æ ‡æˆ–é”®ç›˜å‘é€1å­—èŠ‚æ•°æ®
+*	å½¢    å‚: _byte : å¾…å‘é€çš„æ•°æ®
+*	è¿” å› å€¼: æ— 
 *********************************************************************************************************
 */
 static void PS2_SendCmd(uint8_t _byte)
 {
 	/*
-		Ö÷»ú±ØĞë°´ÏÂÃæµÄ²½Öè·¢ËÍÊı¾İµ½PS/2Éè±¸£º
-		1)  °ÑClockÏßÀ­µÍÖÁÉÙ100us£»
-		2)  °ÑDataÏßÀ­µÍ£»
-		3)  ÊÍ·ÅClockÏß£»
-		4)  µÈ´ıPS/2Éè±¸°ÑClockÏßÀ­µÍ£»
-		5)  ÉèÖÃ/¸´Î»DataÏß·¢ËÍµÚÒ»¸öÊı¾İÎ»£»
-		6)  µÈ´ıPS/2Éè±¸°ÑÊ±ÖÓÀ­¸ß£»
-		7)  µÈ´ıPS/2Éè±¸°ÑÊ±ÖÓÀ­µÍ£»
-		8)  ÖØ¸´5-7²½·¢ËÍÊ£ÏÂµÄ7¸öÊı¾İÎ»ºÍĞ£ÑéÎ»£»
-		9)  ÊÍ·ÅDataÏß£¬¼´·¢ËÍÍ£Ö¹Î»(1)£»
-		10) µÈ´ıPS/2Éè±¸°ÑClockÏßÀ­¸ß£» //´Ë²½¿ÉÊ¡ÂÔ,ÒòÎªÏÂÒ»²½PS/2Éè±¸»¹ÊÇ»á°ÑDataÏßÀ­µÍµÄ
-		11) µÈ´ıPS/2Éè±¸°ÑDataÏßÀ­µÍ£»
-		12) µÈ´ıPS/2Éè±¸°ÑClockÏßÀ­µÍ£»
-		13) µÈ´ıPS/2Éè±¸ÊÍ·ÅClockÏßºÍDataÏß¡£
+		ä¸»æœºå¿…é¡»æŒ‰ä¸‹é¢çš„æ­¥éª¤å‘é€æ•°æ®åˆ°PS/2è®¾å¤‡ï¼š
+		1)  æŠŠClockçº¿æ‹‰ä½è‡³å°‘100usï¼›
+		2)  æŠŠDataçº¿æ‹‰ä½ï¼›
+		3)  é‡Šæ”¾Clockçº¿ï¼›
+		4)  ç­‰å¾…PS/2è®¾å¤‡æŠŠClockçº¿æ‹‰ä½ï¼›
+		5)  è®¾ç½®/å¤ä½Dataçº¿å‘é€ç¬¬ä¸€ä¸ªæ•°æ®ä½ï¼›
+		6)  ç­‰å¾…PS/2è®¾å¤‡æŠŠæ—¶é’Ÿæ‹‰é«˜ï¼›
+		7)  ç­‰å¾…PS/2è®¾å¤‡æŠŠæ—¶é’Ÿæ‹‰ä½ï¼›
+		8)  é‡å¤5-7æ­¥å‘é€å‰©ä¸‹çš„7ä¸ªæ•°æ®ä½å’Œæ ¡éªŒä½ï¼›
+		9)  é‡Šæ”¾Dataçº¿ï¼Œå³å‘é€åœæ­¢ä½(1)ï¼›
+		10) ç­‰å¾…PS/2è®¾å¤‡æŠŠClockçº¿æ‹‰é«˜ï¼› //æ­¤æ­¥å¯çœç•¥,å› ä¸ºä¸‹ä¸€æ­¥PS/2è®¾å¤‡è¿˜æ˜¯ä¼šæŠŠDataçº¿æ‹‰ä½çš„
+		11) ç­‰å¾…PS/2è®¾å¤‡æŠŠDataçº¿æ‹‰ä½ï¼›
+		12) ç­‰å¾…PS/2è®¾å¤‡æŠŠClockçº¿æ‹‰ä½ï¼›
+		13) ç­‰å¾…PS/2è®¾å¤‡é‡Šæ”¾Clockçº¿å’ŒDataçº¿ã€‚
 	*/
 
 	g_tPS2.Sending = 1;
 	g_tPS2.Cmd = _byte;
 	g_tPS2.Status = 0;	/*  */
 
-	PS2_CLK_0();		/* °ÑClockÏßÀ­µÍÖÁÉÙ100us --- ÉèÖÃµÍºó»á´¥·¢CLKÏÂ½µÑØÖĞ¶Ï£¨ÖĞ¶Ï·şÎñ³ÌĞòÓ¦¸Ã¶ªÆúÕâ¸öÊÂ¼ş£© */
+	PS2_CLK_0();		/* æŠŠClockçº¿æ‹‰ä½è‡³å°‘100us --- è®¾ç½®ä½åä¼šè§¦å‘CLKä¸‹é™æ²¿ä¸­æ–­ï¼ˆä¸­æ–­æœåŠ¡ç¨‹åºåº”è¯¥ä¸¢å¼ƒè¿™ä¸ªäº‹ä»¶ï¼‰ */
 	bsp_DelayUS(100);
 
-	PS2_DATA_0();		/* °ÑDataÏßÀ­µÍ */
-	g_tPS2.TxTimeOut = 2;		/* ±ÜÃâÃ»²åPS2Éè±¸Ê±£¬DATAÏßÒ»Ö±±»À­µÍ */
+	PS2_DATA_0();		/* æŠŠDataçº¿æ‹‰ä½ */
+	g_tPS2.TxTimeOut = 2;		/* é¿å…æ²¡æ’PS2è®¾å¤‡æ—¶ï¼ŒDATAçº¿ä¸€ç›´è¢«æ‹‰ä½ */
 
 	bsp_DelayUS(50);
 
-	PS2_CLK_1();		/* ÊÍ·ÅClockÏß */
+	PS2_CLK_1();		/* é‡Šæ”¾Clockçº¿ */
 
-	/* ºóÃæµÄ¹ı³ÌÓĞCLKÏÂ½µÑØÖĞ¶Ï·şÎñ³ÌĞòÍê³É */
+	/* åé¢çš„è¿‡ç¨‹æœ‰CLKä¸‹é™æ²¿ä¸­æ–­æœåŠ¡ç¨‹åºå®Œæˆ */
 	
 }
 
 /*
 *********************************************************************************************************
-*	º¯ Êı Ãû: PS2_WaitMsg
-*	¹¦ÄÜËµÃ÷: µÈ´ıÓ¦´ğ.
-*	ĞÎ    ²Î: _rsp : ´æ·Å½á¹û
-*			 _timeout : ³¬Ê±Ê±¼ä£¬±ØĞë´óÓÚ0¡£µ¥Î» ms
-*	·µ »Ø Öµ: 0 ±íÊ¾ÎŞÊı¾İ£¬ 1±íÊ¾³É¹¦
+*	å‡½ æ•° å: PS2_WaitMsg
+*	åŠŸèƒ½è¯´æ˜: ç­‰å¾…åº”ç­”.
+*	å½¢    å‚: _rsp : å­˜æ”¾ç»“æœ
+*			 _timeout : è¶…æ—¶æ—¶é—´ï¼Œå¿…é¡»å¤§äº0ã€‚å•ä½ ms
+*	è¿” å› å€¼: 0 è¡¨ç¤ºæ— æ•°æ®ï¼Œ 1è¡¨ç¤ºæˆåŠŸ
 *********************************************************************************************************
 */
 static uint8_t PS2_WaitMsg(uint32_t *_rsp, uint16_t _timeout)
@@ -625,18 +625,18 @@ static uint8_t PS2_WaitMsg(uint32_t *_rsp, uint16_t _timeout)
 
 	if (i == _timeout)
 	{
-		return 0;	/* ³¬Ê±Î´¶Áµ½Êı¾İ */
+		return 0;	/* è¶…æ—¶æœªè¯»åˆ°æ•°æ® */
 	}
-	return 1;	/* ³É¹¦¶Áµ½Êı¾İ */
+	return 1;	/* æˆåŠŸè¯»åˆ°æ•°æ® */
 }
 
 
 /*
 *********************************************************************************************************
-*	º¯ Êı Ãû: PS2_GetDevceType
-*	¹¦ÄÜËµÃ÷: ×Ô¶¯Ê¶±ğÉè±¸ÀàĞÍ£¨Êó±ê»¹ÊÇ¼üÅÌ£©
-*	ĞÎ    ²Î: ÎŞ
-*	·µ »Ø Öµ: 0 ±íÊ¾Ê§°Ü£¬ 1±íÊ¾³É¹¦
+*	å‡½ æ•° å: PS2_GetDevceType
+*	åŠŸèƒ½è¯´æ˜: è‡ªåŠ¨è¯†åˆ«è®¾å¤‡ç±»å‹ï¼ˆé¼ æ ‡è¿˜æ˜¯é”®ç›˜ï¼‰
+*	å½¢    å‚: æ— 
+*	è¿” å› å€¼: 0 è¡¨ç¤ºå¤±è´¥ï¼Œ 1è¡¨ç¤ºæˆåŠŸ
 *********************************************************************************************************
 */
 uint8_t PS2_GetDevceType(void)
@@ -645,16 +645,16 @@ uint8_t PS2_GetDevceType(void)
 	uint8_t dev;
 	uint8_t i;
 
-	/* Ê¶±ğ·½·¨Îª£º·¢ËÍ0xFFÖ¸Áî£¬Ó¦´ğFA    AA µÄÊÇ¼üÅÌ£¬Ó¦´ğ FA     AA 00 µÄÊÇÊó±ê¡£ */
+	/* è¯†åˆ«æ–¹æ³•ä¸ºï¼šå‘é€0xFFæŒ‡ä»¤ï¼Œåº”ç­”FA    AA çš„æ˜¯é”®ç›˜ï¼Œåº”ç­” FA     AA 00 çš„æ˜¯é¼ æ ‡ã€‚ */
 
 	dev = PS2_UNKNOW_DEVICE;
 
 	for (i = 0; i < 3; i++)
 	{
-		/* Ö÷°åºÍPS2Éè±¸Í¬Ê±ÉÏµçÊ±£¬Éè±¸ÄÚ²¿¿ÉÄÜÕıÔÚ³õÊ¼»¯£¬Òò´ËĞèÒªµÈ´ı */		
+		/* ä¸»æ¿å’ŒPS2è®¾å¤‡åŒæ—¶ä¸Šç”µæ—¶ï¼Œè®¾å¤‡å†…éƒ¨å¯èƒ½æ­£åœ¨åˆå§‹åŒ–ï¼Œå› æ­¤éœ€è¦ç­‰å¾… */		
 		PS2_SendCmd(0xFF);
 		ps2_printf("   Host   : %X\r\n", 0xFF);
-		if (PS2_WaitMsg(&Rsp, 20))	/* 20ms ³¬Ê± */
+		if (PS2_WaitMsg(&Rsp, 20))	/* 20ms è¶…æ—¶ */
 		{
 			ps2_printf("   Device : %X\r\n", Rsp);			
 			if (Rsp == 0xFA)
@@ -665,12 +665,12 @@ uint8_t PS2_GetDevceType(void)
 
 					if (Rsp == 0xAA00)
 					{
-						dev = PS2_MOUSE;	/* Êó±ê */
+						dev = PS2_MOUSE;	/* é¼ æ ‡ */
 						break;
 					}
 					else if (Rsp == 0xAA)
 					{
-						dev = PS2_KEYBOARD;	/* ¼üÅÌ */
+						dev = PS2_KEYBOARD;	/* é”®ç›˜ */
 						break;
 					}
 				}
@@ -682,18 +682,18 @@ uint8_t PS2_GetDevceType(void)
 
 /*
 *********************************************************************************************************
-*	º¯ Êı Ãû: PS2_SetKeyboardLed
-*	¹¦ÄÜËµÃ÷: ÉèÖÃ¼üÅÌÖ¸Ê¾µÆ
-*	ĞÎ    ²Î: _id : ÄÄ¸öÖ¸Ê¾µÆ¡£LED_CpasLock , LED_NumLock,	LED_ScrollLock
-*			  _on : 0 ±íÊ¾Ãğ, 1 ±íÊ¾ÁÁ
-*	·µ »Ø Öµ: 0 ±íÊ¾Ê§°Ü£¬ 1±íÊ¾³É¹¦
+*	å‡½ æ•° å: PS2_SetKeyboardLed
+*	åŠŸèƒ½è¯´æ˜: è®¾ç½®é”®ç›˜æŒ‡ç¤ºç¯
+*	å½¢    å‚: _id : å“ªä¸ªæŒ‡ç¤ºç¯ã€‚LED_CpasLock , LED_NumLock,	LED_ScrollLock
+*			  _on : 0 è¡¨ç¤ºç­, 1 è¡¨ç¤ºäº®
+*	è¿” å› å€¼: 0 è¡¨ç¤ºå¤±è´¥ï¼Œ 1è¡¨ç¤ºæˆåŠŸ
 *********************************************************************************************************
 */
 void PS2_SetKeyboardLed(uint8_t _id, uint8_t _on)
 {
 	/*
-		0xED (Set/Reset LEDs) Ö÷»úÔÚ±¾ÃüÁîºó¸úËæÒ»¸ö²ÎÊı×Ö½ÚÓÃÓÚÖ¸Ê¾¼üÅÌÉÏNum Lock, Caps Lock,
-		and Scroll Lock LED µÄ×´Ì¬ Õâ¸ö²ÎÊı×Ö½ÚµÄ¶¨ÒåÈçÏÂ
+		0xED (Set/Reset LEDs) ä¸»æœºåœ¨æœ¬å‘½ä»¤åè·Ÿéšä¸€ä¸ªå‚æ•°å­—èŠ‚ç”¨äºæŒ‡ç¤ºé”®ç›˜ä¸ŠNum Lock, Caps Lock,
+		and Scroll Lock LED çš„çŠ¶æ€ è¿™ä¸ªå‚æ•°å­—èŠ‚çš„å®šä¹‰å¦‚ä¸‹
 
 		bin7      bin6      bin5      bin4      bin3      bin2       bin1      bin0
 		Always 0  Always 0  Always 0  Always 0  Always 0  Caps Lock  Num Lock  Scroll Lock
@@ -731,7 +731,7 @@ void PS2_SetKeyboardLed(uint8_t _id, uint8_t _on)
 		data |= (1 << 0);
 	}
 
-#if 1	/* ÔÚ systick msÖĞ¶Ï·şÎñ³ÌĞòÖĞ±»Ö´ĞĞ */	
+#if 1	/* åœ¨ systick msä¸­æ–­æœåŠ¡ç¨‹åºä¸­è¢«æ‰§è¡Œ */	
 	g_tPS2.LedReq = 1;
 	g_tPS2.LedData = data;
 #else	
@@ -752,34 +752,34 @@ void PS2_SetKeyboardLed(uint8_t _id, uint8_t _on)
 
 /*
 *********************************************************************************************************
-*	º¯ Êı Ãû: PS2_InitKeyboard
-*	¹¦ÄÜËµÃ÷: ³õÊ¼»¯¼üÅÌ
-*	ĞÎ    ²Î: ÎŞ
-*	·µ »Ø Öµ: 0 ±íÊ¾Ê§°Ü£¬ 1±íÊ¾³É¹¦
+*	å‡½ æ•° å: PS2_InitKeyboard
+*	åŠŸèƒ½è¯´æ˜: åˆå§‹åŒ–é”®ç›˜
+*	å½¢    å‚: æ— 
+*	è¿” å› å€¼: 0 è¡¨ç¤ºå¤±è´¥ï¼Œ 1è¡¨ç¤ºæˆåŠŸ
 *********************************************************************************************************
 */
 uint8_t PS2_InitKeyboard(void)
 {
-	uint32_t Rsp;	/* Êó±ê¸øÖ÷»úµÄÓ¦´ğÊı¾İ */
+	uint32_t Rsp;	/* é¼ æ ‡ç»™ä¸»æœºçš„åº”ç­”æ•°æ® */
 	uint16_t i;
 	uint8_t err = 0;
 
 	const uint8_t ucCmdList[] = {
 		0xFF,	// Reset command    ->  Mouse: FA AA 00
 
-		0xED,	// µãÁÁ3¸öÖ¸Ê¾µÆ
+		0xED,	// ç‚¹äº®3ä¸ªæŒ‡ç¤ºç¯
 		0x07,
 
-		0xED,	// ¹Ø±Õ3¸öÖ¸Ê¾µÆ
+		0xED,	// å…³é—­3ä¸ªæŒ‡ç¤ºç¯
 		0x00,
 	};
 
-	g_tPS2.ksShift = 0;					/* 1±íÊ¾ Shift ¼ü±»°´ÏÂ */
-	g_tPS2.ksCtrl = 0;					/* 1±íÊ¾ Ctrl ¼ü±»°´ÏÂ */
-	g_tPS2.ksAlt = 0;					/* 1±íÊ¾ Alt ¼ü±»°´ÏÂ */
-	g_tPS2.ksCapsLock = 0;				/* 1±íÊ¾ CapsLock ×´Ì¬Ö¸Ê¾µÆÁÁ */
-	g_tPS2.KsNumLock = 0;				/* 1±íÊ¾ NumLock ×´Ì¬Ö¸Ê¾µÆÁÁ */
-	g_tPS2.KsScrollLock = 0;			/* 1±íÊ¾ ScrollLock ×´Ì¬Ö¸Ê¾µÆÁÁ */
+	g_tPS2.ksShift = 0;					/* 1è¡¨ç¤º Shift é”®è¢«æŒ‰ä¸‹ */
+	g_tPS2.ksCtrl = 0;					/* 1è¡¨ç¤º Ctrl é”®è¢«æŒ‰ä¸‹ */
+	g_tPS2.ksAlt = 0;					/* 1è¡¨ç¤º Alt é”®è¢«æŒ‰ä¸‹ */
+	g_tPS2.ksCapsLock = 0;				/* 1è¡¨ç¤º CapsLock çŠ¶æ€æŒ‡ç¤ºç¯äº® */
+	g_tPS2.KsNumLock = 0;				/* 1è¡¨ç¤º NumLock çŠ¶æ€æŒ‡ç¤ºç¯äº® */
+	g_tPS2.KsScrollLock = 0;			/* 1è¡¨ç¤º ScrollLock çŠ¶æ€æŒ‡ç¤ºç¯äº® */
 
 	ps2_printf("Init Keyboard ...\r\n");
 	for (i = 0; i < sizeof(ucCmdList); i++)
@@ -790,7 +790,7 @@ uint8_t PS2_InitKeyboard(void)
 		{
 			ps2_printf("   KeyBoard : %X\r\n",Rsp);
 
-			if (ucCmdList[i] == 0xFF)	/* Èç¹ûÊÇ¸´Î»Ö¸Áî£¬ÔòµÈµ½Êó±êÄÚ²¿×Ô¼ì£¬È»ºó·µ»Ø0xAA 00 */
+			if (ucCmdList[i] == 0xFF)	/* å¦‚æœæ˜¯å¤ä½æŒ‡ä»¤ï¼Œåˆ™ç­‰åˆ°é¼ æ ‡å†…éƒ¨è‡ªæ£€ï¼Œç„¶åè¿”å›0xAA 00 */
 			{
 				ps2_printf("   KeyBoard resetting ...\r\n");
 				if (PS2_WaitMsg(&Rsp, 1000))
@@ -801,7 +801,7 @@ uint8_t PS2_InitKeyboard(void)
 		}
 		else
 		{
-			ps2_printf("   KeyBoard : ÎŞÓ¦´ğ\r\n");
+			ps2_printf("   KeyBoard : æ— åº”ç­”\r\n");
 			err = 1;
 		}
 	}
@@ -815,15 +815,15 @@ uint8_t PS2_InitKeyboard(void)
 
 /*
 *********************************************************************************************************
-*	º¯ Êı Ãû: PS2_InitMouse
-*	¹¦ÄÜËµÃ÷: ³õÊ¼»¯Êó±ê
-*	ĞÎ    ²Î: ÎŞ
-*	·µ »Ø Öµ: 0 ±íÊ¾Ê§°Ü£¬ 1±íÊ¾³É¹¦
+*	å‡½ æ•° å: PS2_InitMouse
+*	åŠŸèƒ½è¯´æ˜: åˆå§‹åŒ–é¼ æ ‡
+*	å½¢    å‚: æ— 
+*	è¿” å› å€¼: 0 è¡¨ç¤ºå¤±è´¥ï¼Œ 1è¡¨ç¤ºæˆåŠŸ
 *********************************************************************************************************
 */
 uint8_t PS2_InitMouse(void)
 {
-	uint32_t Rsp;	/* Êó±ê¸øÖ÷»úµÄÓ¦´ğÊı¾İ */
+	uint32_t Rsp;	/* é¼ æ ‡ç»™ä¸»æœºçš„åº”ç­”æ•°æ® */
 	uint16_t i;
 	const uint8_t ucCmdList[] = {
 		0xFF,	// Reset command    ->  Mouse: FA AA 00
@@ -863,7 +863,7 @@ uint8_t PS2_InitMouse(void)
 		{
 			ps2_printf("   Mouse : %X\r\n",Rsp);
 
-			if (ucCmdList[i] == 0xFF)	/* Èç¹ûÊÇ¸´Î»Ö¸Áî£¬ÔòµÈµ½Êó±êÄÚ²¿×Ô¼ì£¬È»ºó·µ»Ø0xAA 00 */
+			if (ucCmdList[i] == 0xFF)	/* å¦‚æœæ˜¯å¤ä½æŒ‡ä»¤ï¼Œåˆ™ç­‰åˆ°é¼ æ ‡å†…éƒ¨è‡ªæ£€ï¼Œç„¶åè¿”å›0xAA 00 */
 			{
 				ps2_printf("   Mouse resetting ...\r\n");
 				if (PS2_WaitMsg(&Rsp, 1000))
@@ -874,7 +874,7 @@ uint8_t PS2_InitMouse(void)
 		}
 		else
 		{
-			ps2_printf("   Mouse : ÎŞÓ¦´ğ\r\n");
+			ps2_printf("   Mouse : æ— åº”ç­”\r\n");
 		}
 	}
 	return 1;
@@ -882,15 +882,15 @@ uint8_t PS2_InitMouse(void)
 
 /*
 *********************************************************************************************************
-*	º¯ Êı Ãû: PS2_IsMousePacket
-*	¹¦ÄÜËµÃ÷: ÅĞ¶ÏÊı¾İ°üÊÇ²»ÊÇÎ»ÒÆÊı¾İ°ü
-*	ĞÎ    ²Î: _input:4×Ö½ÚÊı¾İ
-*	·µ »Ø Öµ: 1 ±íÊ¾ÊÇÊó±êÎ»ÒÆÊı¾İ°ü  0 ±íÊ¾²»ÊÇ
+*	å‡½ æ•° å: PS2_IsMousePacket
+*	åŠŸèƒ½è¯´æ˜: åˆ¤æ–­æ•°æ®åŒ…æ˜¯ä¸æ˜¯ä½ç§»æ•°æ®åŒ…
+*	å½¢    å‚: _input:4å­—èŠ‚æ•°æ®
+*	è¿” å› å€¼: 1 è¡¨ç¤ºæ˜¯é¼ æ ‡ä½ç§»æ•°æ®åŒ…  0 è¡¨ç¤ºä¸æ˜¯
 *********************************************************************************************************
 */
 uint8_t PS2_IsMousePacket(uint32_t _input)
 {
-	/* Êó±ê·¢ËÍµÄµÚ1¸ö×Ö½Ú */
+	/* é¼ æ ‡å‘é€çš„ç¬¬1ä¸ªå­—èŠ‚ */
 	if (_input & 0x08000000)
 	{
 		return 1;
@@ -903,11 +903,11 @@ uint8_t PS2_IsMousePacket(uint32_t _input)
 
 /*
 *********************************************************************************************************
-*	º¯ Êı Ãû: PS2_DecodeMouse
-*	¹¦ÄÜËµÃ÷: ½âÂëÊó±êÊı¾İ°ü
-*	ĞÎ    ²Î: _input: Êó±ê·¢ËÍµÄÊı¾İ°ü£¨3×Ö½Ú»ò4×Ö½Ú£©
-*			  _res: ½âÂë½á¹û
-*	·µ »Ø Öµ: ÎŞ
+*	å‡½ æ•° å: PS2_DecodeMouse
+*	åŠŸèƒ½è¯´æ˜: è§£ç é¼ æ ‡æ•°æ®åŒ…
+*	å½¢    å‚: _input: é¼ æ ‡å‘é€çš„æ•°æ®åŒ…ï¼ˆ3å­—èŠ‚æˆ–4å­—èŠ‚ï¼‰
+*			  _res: è§£ç ç»“æœ
+*	è¿” å› å€¼: æ— 
 *********************************************************************************************************
 */
 void PS2_DecodeMouse(uint32_t _input, MOUSE_PACKET_T *_res)
@@ -915,17 +915,17 @@ void PS2_DecodeMouse(uint32_t _input, MOUSE_PACKET_T *_res)
 	uint32_t data;
 
 	data = _input;
-	if ((_input & 0xFF000000) == 0)		/* ±ê×¼Êó±ê£¬3×Ö½Ú¸ñÊ½ */
+	if ((_input & 0xFF000000) == 0)		/* æ ‡å‡†é¼ æ ‡ï¼Œ3å­—èŠ‚æ ¼å¼ */
 	{
-		data <<= 8;			/* ×óÒÆ1¸ö×Ö½Ú, ±ãÓÚÍ³Ò»3×Ö½ÚÊı¾İ°üºÍ4×Ö½ÚÊı¾İ°ü¹²ÓÃ½âÂëÓï¾ä */
-		_res->Intelli = 0;	/* 0±íÊ¾±ê×¼Êó±ê */
+		data <<= 8;			/* å·¦ç§»1ä¸ªå­—èŠ‚, ä¾¿äºç»Ÿä¸€3å­—èŠ‚æ•°æ®åŒ…å’Œ4å­—èŠ‚æ•°æ®åŒ…å…±ç”¨è§£ç è¯­å¥ */
+		_res->Intelli = 0;	/* 0è¡¨ç¤ºæ ‡å‡†é¼ æ ‡ */
 	}
 	else
 	{
-		_res->Intelli = 1;	/* 1±íÊ¾ÖÇÄÜÊó±êÊó±ê */
+		_res->Intelli = 1;	/* 1è¡¨ç¤ºæ™ºèƒ½é¼ æ ‡é¼ æ ‡ */
 	}
 
-	/* ÖÇÄÜÊó±ê£¬ 4×Ö½Ú¸ñÊ½ */
+	/* æ™ºèƒ½é¼ æ ‡ï¼Œ 4å­—èŠ‚æ ¼å¼ */
 		/*
 		        Bit7       Bit6       Bit5      Bit4     Bit3      Bit 2      Bit 1      Bit 0
 		Byte 1  Yoverflow  Xoverflow  YsignBit  XsignBit Always 1  MiddleBtn  RightBtn   LeftBtn
@@ -933,10 +933,10 @@ void PS2_DecodeMouse(uint32_t _input, MOUSE_PACKET_T *_res)
 		Byte 3       Y Movement
 		Byte 4  Always 0   Always 0   5th Btn   4th Btn  Z3        Z2         Z1         Z0
 		*/
-	/* ±ê×¼Êó±ê£¬3×Ö½Ú¸ñÊ½£¬Ç°3×Ö½ÚºÍÖÇÄÜÊó±ê¸ñÊ½ÏàÍ¬£¬Ã»ÓĞµÚ4×Ö½Ú */
+	/* æ ‡å‡†é¼ æ ‡ï¼Œ3å­—èŠ‚æ ¼å¼ï¼Œå‰3å­—èŠ‚å’Œæ™ºèƒ½é¼ æ ‡æ ¼å¼ç›¸åŒï¼Œæ²¡æœ‰ç¬¬4å­—èŠ‚ */
 
 
-	/* YÖµÒç³ö */
+	/* Yå€¼æº¢å‡º */
 	if (data & 0x80000000)
 	{
 		_res->Yoverflow = 1;
@@ -946,7 +946,7 @@ void PS2_DecodeMouse(uint32_t _input, MOUSE_PACKET_T *_res)
 		_res->Yoverflow = 0;
 	}
 
-	/* XÖµÒç³ö */
+	/* Xå€¼æº¢å‡º */
 	if (data & 0x40000000)
 	{
 		_res->Xoverflow = 1;
@@ -956,21 +956,21 @@ void PS2_DecodeMouse(uint32_t _input, MOUSE_PACKET_T *_res)
 		_res->Xoverflow = 0;
 	}
 
-	/* Êó±êXÖáÎ»ÒÆ */
+	/* é¼ æ ‡Xè½´ä½ç§» */
 	_res->Xmove = ((data >> 16) & 0xFF);
 	if (data & 0x10000000)
 	{
-		_res->Xmove |= 0xFF00;	/* À©Õ¹·ûºÅÎ» */
+		_res->Xmove |= 0xFF00;	/* æ‰©å±•ç¬¦å·ä½ */
 	}
 
-	/* Êó±êYÖáÎ»ÒÆ */
+	/* é¼ æ ‡Yè½´ä½ç§» */
 	_res->Ymove = ((data >> 8) & 0xFF);
 	if (data & 0x20000000)
 	{
-		_res->Ymove |= 0xFF00;	/* À©Õ¹·ûºÅÎ» */
+		_res->Ymove |= 0xFF00;	/* æ‰©å±•ç¬¦å·ä½ */
 	}
 
-	/* Êó±êÖĞ¼ü */
+	/* é¼ æ ‡ä¸­é”® */
 	if (data & 0x04000000)
 	{
 		_res->BtnMid = 1;
@@ -980,7 +980,7 @@ void PS2_DecodeMouse(uint32_t _input, MOUSE_PACKET_T *_res)
 		_res->BtnMid = 0;
 	}
 
-	/* Êó±êÓÒ¼ü */
+	/* é¼ æ ‡å³é”® */
 	if (data & 0x02000000)
 	{
 		_res->BtnRight = 1;
@@ -990,7 +990,7 @@ void PS2_DecodeMouse(uint32_t _input, MOUSE_PACKET_T *_res)
 		_res->BtnRight = 0;
 	}
 
-	/* Êó±ê×ó¼ü */
+	/* é¼ æ ‡å·¦é”® */
 	if (data & 0x01000000)
 	{
 		_res->BtnLeft = 1;
@@ -1000,9 +1000,9 @@ void PS2_DecodeMouse(uint32_t _input, MOUSE_PACKET_T *_res)
 		_res->BtnLeft = 0;
 	}
 
-	/*---------------- ÏÂÃæµÄ´úÂë½ö¶ÔÖÇÄÜÊó±êÓĞÓÃ ----------------*/
+	/*---------------- ä¸‹é¢çš„ä»£ç ä»…å¯¹æ™ºèƒ½é¼ æ ‡æœ‰ç”¨ ----------------*/
 
-	/* Êó±êµÚ5¸ö¼ü */
+	/* é¼ æ ‡ç¬¬5ä¸ªé”® */
 	if (data & 0x00000020)
 	{
 		_res->Btn5 = 1;
@@ -1012,7 +1012,7 @@ void PS2_DecodeMouse(uint32_t _input, MOUSE_PACKET_T *_res)
 		_res->Btn5 = 0;
 	}
 
-	/* Êó±êµÚ4¸ö¼ü */
+	/* é¼ æ ‡ç¬¬4ä¸ªé”® */
 	if (data & 0x00000010)
 	{
 		_res->Btn4 = 1;
@@ -1023,9 +1023,9 @@ void PS2_DecodeMouse(uint32_t _input, MOUSE_PACKET_T *_res)
 	}
 
 	/*
-		Êó±ê¹öÂÖ¡£¶ÔÓÚÓĞÁ½¸ö¹öÂÖ(1¸ö´¹Ö±µÄ+1¸öË®Æ½µÄ)Êó±ê¡£
-			+1 ±íÊ¾´¹Ö±¹öÂÖÏòÉÏ¹ö¶¯£¬-1±íÊ¾´¹Ö±¹öÂÖÏòÏÂ¹ö¶¯£»
-			+2 ±íÊ¾Ë®Æ½¹öÂÖÏòÓÒ¹ö¶¯£¬-2±íÊ¾Ë®Æ½¹öÂÖÏò×ö¹ö¶¯¡£
+		é¼ æ ‡æ»šè½®ã€‚å¯¹äºæœ‰ä¸¤ä¸ªæ»šè½®(1ä¸ªå‚ç›´çš„+1ä¸ªæ°´å¹³çš„)é¼ æ ‡ã€‚
+			+1 è¡¨ç¤ºå‚ç›´æ»šè½®å‘ä¸Šæ»šåŠ¨ï¼Œ-1è¡¨ç¤ºå‚ç›´æ»šè½®å‘ä¸‹æ»šåŠ¨ï¼›
+			+2 è¡¨ç¤ºæ°´å¹³æ»šè½®å‘å³æ»šåŠ¨ï¼Œ-2è¡¨ç¤ºæ°´å¹³æ»šè½®å‘åšæ»šåŠ¨ã€‚
 	*/
 	_res->Zmove = (data & 0xF);
 	if (data & 0x00000008)
@@ -1036,10 +1036,10 @@ void PS2_DecodeMouse(uint32_t _input, MOUSE_PACKET_T *_res)
 
 /*
 *********************************************************************************************************
-*	º¯ Êı Ãû: PS2_ISR
-*	¹¦ÄÜËµÃ÷: ÖĞ¶Ï·şÎñ³ÌĞò
-*	ĞÎ    ²Î: _width Âö³å¿í¶È£¬µ¥Î» 10us
-*	·µ »Ø Öµ: ÎŞ
+*	å‡½ æ•° å: PS2_ISR
+*	åŠŸèƒ½è¯´æ˜: ä¸­æ–­æœåŠ¡ç¨‹åº
+*	å½¢    å‚: _width è„‰å†²å®½åº¦ï¼Œå•ä½ 10us
+*	è¿” å› å€¼: æ— 
 *********************************************************************************************************
 */
 void PS2_ISR(void)
@@ -1051,9 +1051,9 @@ void PS2_ISR(void)
 	int32_t time;
 	static int32_t s_last_time = 0;
 
-	if (g_tPS2.Sending == 0)	/* Ö÷»ú½ÓÊÕ¼üÅÌºÍÊó±êÊı¾İµÄ×´Ì¬ */
+	if (g_tPS2.Sending == 0)	/* ä¸»æœºæ¥æ”¶é”®ç›˜å’Œé¼ æ ‡æ•°æ®çš„çŠ¶æ€ */
 	{
-		if (PS2_DATA_IS_HIGH())	/* ¶ÁÈ¡ PS2_DATA ¿ÚÏßµÄµçÆ½ */
+		if (PS2_DATA_IS_HIGH())	/* è¯»å– PS2_DATA å£çº¿çš„ç”µå¹³ */
 		{
 			data = 1;
 		}
@@ -1062,7 +1062,7 @@ void PS2_ISR(void)
 			data = 0;
 		}
 
-		/* ÏÂÃæµÄ´úÂëÓÃÓÚ³¬Ê±Í¬²½. Èç¹û2´ÎÖĞ¶ÏµÄÊ±¼ä¼ä¸ô´óÓÚ2ms ÔòÍ¬²½ÆğÊ¼Î» */
+		/* ä¸‹é¢çš„ä»£ç ç”¨äºè¶…æ—¶åŒæ­¥. å¦‚æœ2æ¬¡ä¸­æ–­çš„æ—¶é—´é—´éš”å¤§äº2ms åˆ™åŒæ­¥èµ·å§‹ä½ */
 		time = bsp_GetRunTime();
 		if (time - s_last_time > 2)
 		{
@@ -1070,66 +1070,66 @@ void PS2_ISR(void)
 		}
 		s_last_time = time;
 
-		/* ½âÂë×´Ì¬»ú */
+		/* è§£ç çŠ¶æ€æœº */
 		switch (g_tPS2.Status)
 		{
-			case 0:			/* ÆğÊ¼Î»0 */
+			case 0:			/* èµ·å§‹ä½0 */
 				if (data == 0)
 				{
 					g_tPS2.Status = 1;
 
 					s_Pos = 0;
 					s_Byte = 0;
-					s_1Bits = 0;	/* ×Ö½ÚÖĞ1¸ö¸öÊı */
+					s_1Bits = 0;	/* å­—èŠ‚ä¸­1ä¸ªä¸ªæ•° */
 				}
 				break;
 
-			case 1:			/* 8Î»Êı¾İÎ» £¨bit0 ÏÈ´«£© */
+			case 1:			/* 8ä½æ•°æ®ä½ ï¼ˆbit0 å…ˆä¼ ï¼‰ */
 				s_Byte >>= 1;
 				if (data == 1)
 				{
 					s_Byte += 0x80;
-					s_1Bits++;		/* Í³¼Æ1µÄ¸öÊı */
+					s_1Bits++;		/* ç»Ÿè®¡1çš„ä¸ªæ•° */
 				}
 				s_Pos++;
 				if (s_Pos == 8)
 				{
-					g_tPS2.Status = 2;	/* ½øÈëÏÂÒ»¸ö×´Ì¬½ÓÊÕĞ£ÑéÎ» */
+					g_tPS2.Status = 2;	/* è¿›å…¥ä¸‹ä¸€ä¸ªçŠ¶æ€æ¥æ”¶æ ¡éªŒä½ */
 				}
 				break;
 
-			case 2:			/* ÆæĞ£ÑéÎ» */
+			case 2:			/* å¥‡æ ¡éªŒä½ */
 				s_1Bits += data;
 				if (s_1Bits % 2)
 				{
-					g_tPS2.Status = 3;	/* ÕıÈ·£¬½øÈëÏÂÒ»¸ö×´Ì¬½ÓÊÕÍ£Ö¹Î» */
+					g_tPS2.Status = 3;	/* æ­£ç¡®ï¼Œè¿›å…¥ä¸‹ä¸€ä¸ªçŠ¶æ€æ¥æ”¶åœæ­¢ä½ */
 				}
 				else
 				{
-					/* Ğ£Ñé²»ÕıÈ·, Òì³£ */
+					/* æ ¡éªŒä¸æ­£ç¡®, å¼‚å¸¸ */
 					g_tPS2.Status = 0;
 				}
 				break;
 
-			case 3:			/* ´¦ÀíÍ£Ö¹Î» */
+			case 3:			/* å¤„ç†åœæ­¢ä½ */
 				if (data == 1)
 				{
 					if (g_tPS2.Len < PS2_MAX_LEN)
 					{
 						g_tPS2.CodeBuf[g_tPS2.Len++] = s_Byte;
 					}
-					g_tPS2.RxTimeOut = 6;		/* 6ms ³¬Ê±ÅĞ¶Ï½áÊø */
+					g_tPS2.RxTimeOut = 6;		/* 6ms è¶…æ—¶åˆ¤æ–­ç»“æŸ */
 				}
-				g_tPS2.Status = 0;	/* ¼ÌĞøÏÂÒ»¸öbit */
+				g_tPS2.Status = 0;	/* ç»§ç»­ä¸‹ä¸€ä¸ªbit */
 				break;
 		}
 	}
-	else		/* g_tPS2.Sending == 1, Ö÷»ú·¢ËÍÃüÁîµÄ×´Ì¬ */
+	else		/* g_tPS2.Sending == 1, ä¸»æœºå‘é€å‘½ä»¤çš„çŠ¶æ€ */
 	{
-		/* ÏÈ´«Bit0 */
+		/* å…ˆä¼ Bit0 */
 		switch (g_tPS2.Status)
 		{
-			case 0:					/* ÆğÊ¼Î» */
+			case 0:					/* èµ·å§‹ä½ */
 				g_tPS2.TxTimeOut = 0;
 			
 				g_tPS2.Status = 2;
@@ -1138,15 +1138,15 @@ void PS2_ISR(void)
 				s_Byte = g_tPS2.Cmd;
 				break;
 
-			case 2:					/* ·¢ËÍ8¸öÊı¾İÎ» */
+			case 2:					/* å‘é€8ä¸ªæ•°æ®ä½ */
 				if (s_Byte & 0x01)
 				{
-					PS2_DATA_1();	/* °ÑDataÏßÀ­¸ß */
-					s_1Bits++;		/* Í³¼Æ1µÄ¸öÊı */
+					PS2_DATA_1();	/* æŠŠDataçº¿æ‹‰é«˜ */
+					s_1Bits++;		/* ç»Ÿè®¡1çš„ä¸ªæ•° */
 				}
 				else
 				{
-					PS2_DATA_0();	/* °ÑDataÏßÀ­µÍ */
+					PS2_DATA_0();	/* æŠŠDataçº¿æ‹‰ä½ */
 				}
 				s_Byte >>= 1;
 				if (++s_Pos >= 8)
@@ -1155,25 +1155,25 @@ void PS2_ISR(void)
 				}
 				break;
 
-			case 3:					/* ·¢ËÍÆæĞ£ÑéÎ» */
+			case 3:					/* å‘é€å¥‡æ ¡éªŒä½ */
 				if (s_1Bits % 2)
 				{
-					PS2_DATA_0();	/* °ÑDataÏßÀ­µÍ */
+					PS2_DATA_0();	/* æŠŠDataçº¿æ‹‰ä½ */
 				}
 				else
 				{
-					PS2_DATA_1();	/* °ÑDataÏßÀ­¸ß */
+					PS2_DATA_1();	/* æŠŠDataçº¿æ‹‰é«˜ */
 				}
 				g_tPS2.Status = 4;
 				break;
 
-			case 4:					/* ·¢ËÍÍ£Ö¹Î» */
-				PS2_DATA_1();	/* °ÑDataÏßÀ­¸ß */
+			case 4:					/* å‘é€åœæ­¢ä½ */
+				PS2_DATA_1();	/* æŠŠDataçº¿æ‹‰é«˜ */
 				g_tPS2.Status = 5;
 				break;
 
-			case 5:					/* Éè±¸´ËÊ±»áÀ­µÍ DATA£¬ ±íÊ¾ACKÓ¦´ğĞÅºÅ */
-				if (PS2_DATA_IS_HIGH())	/* ¶ÁÈ¡ PS2_DATA ¿ÚÏßµÄµçÆ½ */
+			case 5:					/* è®¾å¤‡æ­¤æ—¶ä¼šæ‹‰ä½ DATAï¼Œ è¡¨ç¤ºACKåº”ç­”ä¿¡å· */
+				if (PS2_DATA_IS_HIGH())	/* è¯»å– PS2_DATA å£çº¿çš„ç”µå¹³ */
 				{
 					g_tPS2.Ack = 1;
 				}
@@ -1182,7 +1182,7 @@ void PS2_ISR(void)
 					g_tPS2.Ack = 0;
 				}
 
-				/* ½øÈë½ÓÊÕ×´Ì¬ */
+				/* è¿›å…¥æ¥æ”¶çŠ¶æ€ */
 				g_tPS2.Sending = 0;
 				g_tPS2.Status = 0;
 				break;
@@ -1192,22 +1192,22 @@ void PS2_ISR(void)
 
 /*
 *********************************************************************************************************
-*	º¯ Êı Ãû: EXTI9_5_IRQHandler
-*	¹¦ÄÜËµÃ÷: Íâ²¿ÖĞ¶Ï·şÎñ³ÌĞò.
-*	ĞÎ    ²Î£ºÎŞ
-*	·µ »Ø Öµ: ÎŞ
+*	å‡½ æ•° å: EXTI9_5_IRQHandler
+*	åŠŸèƒ½è¯´æ˜: å¤–éƒ¨ä¸­æ–­æœåŠ¡ç¨‹åº.
+*	å½¢    å‚ï¼šæ— 
+*	è¿” å› å€¼: æ— 
 *********************************************************************************************************
 */
-#ifndef EXTI9_5_ISR_MOVE_OUT		/* bsp.h ÖĞ¶¨Òå´ËĞĞ£¬±íÊ¾±¾º¯ÊıÒÆµ½ stam32f4xx_it.c¡£ ±ÜÃâÖØ¸´¶¨Òå */
+#ifndef EXTI9_5_ISR_MOVE_OUT		/* bsp.h ä¸­å®šä¹‰æ­¤è¡Œï¼Œè¡¨ç¤ºæœ¬å‡½æ•°ç§»åˆ° stam32f4xx_it.cã€‚ é¿å…é‡å¤å®šä¹‰ */
 void EXTI9_5_IRQHandler(void)
 {
 	if (EXTI_GetITStatus(EXTI_Line7) != RESET)
 	{
-		EXTI_ClearITPendingBit(EXTI_Line7);		/* Çå³ıÖĞ¶Ï±êÖ¾Î» */
+		EXTI_ClearITPendingBit(EXTI_Line7);		/* æ¸…é™¤ä¸­æ–­æ ‡å¿—ä½ */
 
-		PS2_ISR();	/* PS2¼üÅÌÖĞ¶Ï·şÎñ³ÌĞò */
+		PS2_ISR();	/* PS2é”®ç›˜ä¸­æ–­æœåŠ¡ç¨‹åº */
 	}
 }
 #endif
 
-/***************************** °²¸»À³µç×Ó www.armfly.com (END OF FILE) *********************************/
+/***************************** å®‰å¯Œè±ç”µå­ www.armfly.com (END OF FILE) *********************************/

@@ -1,16 +1,16 @@
 /*
 *********************************************************************************************************
 *
-*	Ä£¿éÃû³Æ : DHT11 Çý¶¯Ä£¿é(1-wire Êý×ÖÎÂ¶È´«¸ÐÆ÷£©
-*	ÎÄ¼þÃû³Æ : bsp_dht11.c
-*	°æ    ±¾ : V1.0
-*	Ëµ    Ã÷ : DHT11ºÍCPUÖ®¼ä²ÉÓÃ1¸öGPIO½Ó¿Ú¡£½¨Òéµ÷ÓÃ DHT11_ReadData()µÄÆµÂÊ²»Òª´óÓÚ1Hz¡£
+*	æ¨¡å—åç§° : DHT11 é©±åŠ¨æ¨¡å—(1-wire æ•°å­—æ¸©åº¦ä¼ æ„Ÿå™¨ï¼‰
+*	æ–‡ä»¶åç§° : bsp_dht11.c
+*	ç‰ˆ    æœ¬ : V1.0
+*	è¯´    æ˜Ž : DHT11å’ŒCPUä¹‹é—´é‡‡ç”¨1ä¸ªGPIOæŽ¥å£ã€‚å»ºè®®è°ƒç”¨ DHT11_ReadData()çš„é¢‘çŽ‡ä¸è¦å¤§äºŽ1Hzã€‚
 *
-*	ÐÞ¸Ä¼ÇÂ¼ :
-*		°æ±¾ºÅ  ÈÕÆÚ         ×÷Õß     ËµÃ÷
-*		V1.0    2014-01-24  armfly  ÕýÊ½·¢²¼
+*	ä¿®æ”¹è®°å½• :
+*		ç‰ˆæœ¬å·  æ—¥æœŸ         ä½œè€…     è¯´æ˜Ž
+*		V1.0    2014-01-24  armfly  æ­£å¼å‘å¸ƒ
 *
-*	Copyright (C), 2013-2014, °²¸»À³µç×Ó www.armfly.com
+*	Copyright (C), 2013-2014, å®‰å¯ŒèŽ±ç”µå­ www.armfly.com
 *
 *********************************************************************************************************
 */
@@ -18,30 +18,30 @@
 #include "bsp.h"
 
 /*
-	DHT11 ¿ÉÒÔÖ±½Ó²éµ½STM32-V5¿ª·¢°åµÄU22 (4P) ²å×ù. Çë×¢Òâ·½Ïò£¬Èç¹û²å·´ÁË£¬±Ø¶¨ÉÕ»ÙDHT11¡£
+	DHT11 å¯ä»¥ç›´æŽ¥æŸ¥åˆ°STM32-V5å¼€å‘æ¿çš„U22 (4P) æ’åº§. è¯·æ³¨æ„æ–¹å‘ï¼Œå¦‚æžœæ’åäº†ï¼Œå¿…å®šçƒ§æ¯DHT11ã€‚
 
-     DHT11      STM32F407¿ª·¢°å
+     DHT11      STM32F407å¼€å‘æ¿
 	  VCC   ------  3.3V
-	  DQ    ------  PB1   (¿ª·¢°åÉÏÓÐ 4.7K ÉÏÀ­µç×è)
+	  DQ    ------  PB1   (å¼€å‘æ¿ä¸Šæœ‰ 4.7K ä¸Šæ‹‰ç”µé˜»)
 	  GND   ------  GND
 */
 
-/* ¶¨ÒåGPIO¶Ë¿Ú */
+/* å®šä¹‰GPIOç«¯å£ */
 #define RCC_DQ		RCC_AHB1Periph_GPIOB
 #define PORT_DQ		GPIOB
 #define PIN_DQ		GPIO_Pin_1
 
-#if 0 /* ¿âº¯Êý·½Ê½ */
+#if 0 /* åº“å‡½æ•°æ–¹å¼ */
 	#define DQ_0()		GPIO_ResetBits(PORT_DQ, PIN_DQ)
 	#define DQ_1()		GPIO_SetBits(PORT_DQ, PIN_DQ)
 
-	/* ÅÐ¶ÏDQÊäÈëÊÇ·ñÎªµÍ */
+	/* åˆ¤æ–­DQè¾“å…¥æ˜¯å¦ä¸ºä½Ž */
 	#define DQ_IS_LOW()	(GPIO_ReadInputDataBit(PORT_DQ, PIN_DQ) == Bit_RESET)
-#else	/* Ö±½Ó²Ù×÷¼Ä´æÆ÷£¬Ìá¸ßËÙ¶È */
+#else	/* ç›´æŽ¥æ“ä½œå¯„å­˜å™¨ï¼Œæé«˜é€Ÿåº¦ */
 	#define DQ_0()		PORT_DQ->BSRRH = PIN_DQ
 	#define DQ_1()		PORT_DQ->BSRRL = PIN_DQ
 
-	/* ÅÐ¶ÏDQÊäÈëÊÇ·ñÎªµÍ */
+	/* åˆ¤æ–­DQè¾“å…¥æ˜¯å¦ä¸ºä½Ž */
 	#define DQ_IS_LOW()	((PORT_DQ->IDR & PIN_DQ) == 0)
 #endif
 
@@ -49,26 +49,26 @@ static uint8_t DHT11_ReadByte(void);
 
 /*
 *********************************************************************************************************
-*	º¯ Êý Ãû: bsp_InitDHT11
-*	¹¦ÄÜËµÃ÷: ÅäÖÃSTM32µÄGPIOºÍSPI½Ó¿Ú£¬ÓÃÓÚÁ¬½Ó DHT11
-*	ÐÎ    ²Î: ÎÞ
-*	·µ »Ø Öµ: ÎÞ
+*	å‡½ æ•° å: bsp_InitDHT11
+*	åŠŸèƒ½è¯´æ˜Ž: é…ç½®STM32çš„GPIOå’ŒSPIæŽ¥å£ï¼Œç”¨äºŽè¿žæŽ¥ DHT11
+*	å½¢    å‚: æ— 
+*	è¿” å›ž å€¼: æ— 
 *********************************************************************************************************
 */
 void bsp_InitDHT11(void)
 {
 	GPIO_InitTypeDef GPIO_InitStructure;
 
-	/* ´ò¿ªGPIOÊ±ÖÓ */
+	/* æ‰“å¼€GPIOæ—¶é’Ÿ */
 	RCC_AHB1PeriphClockCmd(RCC_DQ, ENABLE);
 
 	DQ_1();
 
-	/* ÅäÖÃDQÎª¿ªÂ©Êä³ö */
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;		/* ÉèÎªÊä³ö¿Ú */
-	GPIO_InitStructure.GPIO_OType = GPIO_OType_OD;		/* ÉèÎª¿ªÂ©Ä£Ê½ */
-	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;	/* ÉÏÏÂÀ­µç×è²»Ê¹ÄÜ */
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;	/* IO¿Ú×î´óËÙ¶È */
+	/* é…ç½®DQä¸ºå¼€æ¼è¾“å‡º */
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;		/* è®¾ä¸ºè¾“å‡ºå£ */
+	GPIO_InitStructure.GPIO_OType = GPIO_OType_OD;		/* è®¾ä¸ºå¼€æ¼æ¨¡å¼ */
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;	/* ä¸Šä¸‹æ‹‰ç”µé˜»ä¸ä½¿èƒ½ */
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;	/* IOå£æœ€å¤§é€Ÿåº¦ */
 
 	GPIO_InitStructure.GPIO_Pin = PIN_DQ;
 	GPIO_Init(PORT_DQ, &GPIO_InitStructure);
@@ -76,30 +76,30 @@ void bsp_InitDHT11(void)
 
 /*
 *********************************************************************************************************
-*	º¯ Êý Ãû: DHT11_ReadData
-*	¹¦ÄÜËµÃ÷: ¸´Î»DHT11¡£ À­µÍDQÎªµÍ£¬³ÖÐø×îÉÙ480us£¬È»ºóµÈ´ý
-*	ÐÎ    ²Î: ÎÞ
-*	·µ »Ø Öµ: 0 Ê§°Ü£» 1 ±íÊ¾³É¹¦
+*	å‡½ æ•° å: DHT11_ReadData
+*	åŠŸèƒ½è¯´æ˜Ž: å¤ä½DHT11ã€‚ æ‹‰ä½ŽDQä¸ºä½Žï¼ŒæŒç»­æœ€å°‘480usï¼Œç„¶åŽç­‰å¾…
+*	å½¢    å‚: æ— 
+*	è¿” å›ž å€¼: 0 å¤±è´¥ï¼› 1 è¡¨ç¤ºæˆåŠŸ
 *********************************************************************************************************
 */
 uint8_t DHT11_ReadData(DHT11_T *_pDTH)
 {
 	/*
-		Ê±Ðò:
-		1. MCUÀ­µÍQD³ÖÐøÊ±¼ä´óÓÚ 18ms, È»ºóÊÍ·ÅQD = 1
+		æ—¶åº:
+		1. MCUæ‹‰ä½ŽQDæŒç»­æ—¶é—´å¤§äºŽ 18ms, ç„¶åŽé‡Šæ”¾QD = 1
 	*/
 	uint8_t i;
 	uint8_t k;
 	uint8_t sum;
 
-	/* 1. Ö÷»ú·¢ËÍÆðÊ¼ÐÅºÅ, DQÀ­µÍÊ±¼ä £¾ 18ms */
+	/* 1. ä¸»æœºå‘é€èµ·å§‹ä¿¡å·, DQæ‹‰ä½Žæ—¶é—´ ï¼ž 18ms */
 	DQ_0();		/* DQ = 0 */
 	bsp_DelayMS(20);
 	DQ_1();		/* DQ = 1 */
 
-	bsp_DelayUS(15);	/* µÈ´ý15us */
+	bsp_DelayUS(15);	/* ç­‰å¾…15us */
 
-	/* 2. µÈ´ýDQµçÆ½±äµÍ ( ³¬Ê±100us) */
+	/* 2. ç­‰å¾…DQç”µå¹³å˜ä½Ž ( è¶…æ—¶100us) */
 	for (k = 0; k < 10; k++)
 	{
 		if (DQ_IS_LOW())
@@ -110,10 +110,10 @@ uint8_t DHT11_ReadData(DHT11_T *_pDTH)
 	}
 	if (k >= 10)
 	{
-		goto quit;		/* ³¬Ê±ÎÞÓ¦´ð£¬Ê§°Ü */
+		goto quit;		/* è¶…æ—¶æ— åº”ç­”ï¼Œå¤±è´¥ */
 	}
 
-	/* 3.µÈ´ýDQµçÆ½±ä¸ß (³¬Ê±100us) */
+	/* 3.ç­‰å¾…DQç”µå¹³å˜é«˜ (è¶…æ—¶100us) */
 	for (k = 0; k < 10; k++)
 	{
 		if (!DQ_IS_LOW())
@@ -124,10 +124,10 @@ uint8_t DHT11_ReadData(DHT11_T *_pDTH)
 	}
 	if (k >= 10)
 	{
-		goto quit;		/* ³¬Ê±ÎÞÓ¦´ð£¬Ê§°Ü */
+		goto quit;		/* è¶…æ—¶æ— åº”ç­”ï¼Œå¤±è´¥ */
 	}
 
-	/* 4.µÈ´ýDQµçÆ½±äµÍ (³¬Ê±100us) */
+	/* 4.ç­‰å¾…DQç”µå¹³å˜ä½Ž (è¶…æ—¶100us) */
 	for (k = 0; k < 10; k++)
 	{
 		if (DQ_IS_LOW())
@@ -138,22 +138,22 @@ uint8_t DHT11_ReadData(DHT11_T *_pDTH)
 	}
 	if (k >= 10)
 	{
-		goto quit;		/* ³¬Ê±ÎÞÓ¦´ð£¬Ê§°Ü */
+		goto quit;		/* è¶…æ—¶æ— åº”ç­”ï¼Œå¤±è´¥ */
 	}
 
-	/* ¶Á40bit Êý¾Ý */
+	/* è¯»40bit æ•°æ® */
 	for (i = 0; i < 5; i++)
 	{
 		_pDTH->Buf[i] = DHT11_ReadByte();
 	}
 	bsp_DelayUS(100);
 
-	/* ¼ÆËãÐ£ÑéºÍ */
+	/* è®¡ç®—æ ¡éªŒå’Œ */
 	sum = _pDTH->Buf[0] + _pDTH->Buf[1] + _pDTH->Buf[2] + _pDTH->Buf[3];
 	if (sum == _pDTH->Buf[4])
 	{
-		_pDTH->Temp = _pDTH->Buf[2];	/* ÎÂ¶ÈÕûÊý²¿·Ö */
-		_pDTH->Hum = _pDTH->Buf[0];	/* Êª¶ÈÕûÊý²¿·Ö */
+		_pDTH->Temp = _pDTH->Buf[2];	/* æ¸©åº¦æ•´æ•°éƒ¨åˆ† */
+		_pDTH->Hum = _pDTH->Buf[0];	/* æ¹¿åº¦æ•´æ•°éƒ¨åˆ† */
 		return 1;
 	}
 quit:
@@ -162,16 +162,16 @@ quit:
 
 /*
 *********************************************************************************************************
-*	º¯ Êý Ãû: DHT11_ReadByte
-*	¹¦ÄÜËµÃ÷: ÏòDHT11¶ÁÈ¡1×Ö½ÚÊý¾Ý
-*	ÐÎ    ²Î: ÎÞ
-*	·µ »Ø Öµ: ÎÞ
+*	å‡½ æ•° å: DHT11_ReadByte
+*	åŠŸèƒ½è¯´æ˜Ž: å‘DHT11è¯»å–1å­—èŠ‚æ•°æ®
+*	å½¢    å‚: æ— 
+*	è¿” å›ž å€¼: æ— 
 *********************************************************************************************************
 */
 static uint8_t DHT11_ReadByte(void)
 {
 	/*
-		Ð´Êý¾ÝÊ±Ðò, ¼ûDHT11 page 16
+		å†™æ•°æ®æ—¶åº, è§DHT11 page 16
 	*/
 	uint8_t i,k;
 	uint8_t read = 0;
@@ -179,7 +179,7 @@ static uint8_t DHT11_ReadByte(void)
 	for (i = 0; i < 8; i++)
 	{
 		read <<= 1;
-		/* µÈ´ýDQµçÆ½±ä¸ß (³¬Ê±100us) */
+		/* ç­‰å¾…DQç”µå¹³å˜é«˜ (è¶…æ—¶100us) */
 		for (k = 0; k < 10; k++)
 		{
 			if (!DQ_IS_LOW())
@@ -190,10 +190,10 @@ static uint8_t DHT11_ReadByte(void)
 		}
 		if (k >= 10)
 		{
-			goto quit;		/* ³¬Ê±ÎÞÓ¦´ð£¬Ê§°Ü */
+			goto quit;		/* è¶…æ—¶æ— åº”ç­”ï¼Œå¤±è´¥ */
 		}
 
-		/* µÈ´ýDQµçÆ½±äµÍ£¬Í³¼ÆDQ¸ßµçÆ½Ê±³¤ (³¬Ê±100us) */
+		/* ç­‰å¾…DQç”µå¹³å˜ä½Žï¼Œç»Ÿè®¡DQé«˜ç”µå¹³æ—¶é•¿ (è¶…æ—¶100us) */
 		for (k = 0; k < 10; k++)
 		{
 			if (DQ_IS_LOW())
@@ -203,7 +203,7 @@ static uint8_t DHT11_ReadByte(void)
 			bsp_DelayUS(10);
 		}
 
-		if (k > 3)		/* ¸ßÂö³å³ÖÐøÊ±¼ä´óÓÚ40us £¬ÈÏÎªÊÇ1£¬·ñÔòÊÇ0 */
+		if (k > 3)		/* é«˜è„‰å†²æŒç»­æ—¶é—´å¤§äºŽ40us ï¼Œè®¤ä¸ºæ˜¯1ï¼Œå¦åˆ™æ˜¯0 */
 		{
 			read++;
 		}
@@ -215,4 +215,4 @@ quit:
 	return 0xFF;
 }
 
-/***************************** °²¸»À³µç×Ó www.armfly.com (END OF FILE) *********************************/
+/***************************** å®‰å¯ŒèŽ±ç”µå­ www.armfly.com (END OF FILE) *********************************/

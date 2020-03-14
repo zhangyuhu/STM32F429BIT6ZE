@@ -1,15 +1,15 @@
 /*
 *********************************************************************************************************
 *
-*	Ä£¿éÃû³Æ : cpuÄÚ²¿falsh²Ù×÷Ä£¿é(for F4)
-*	ÎÄ¼þÃû³Æ : bsp_cpu_flash.c
-*	°æ    ±¾ : V1.0
-*	Ëµ    Ã÷ : Ìá¹©¶ÁÐ´CPUÄÚ²¿FlashµÄº¯Êý
-*	ÐÞ¸Ä¼ÇÂ¼ :
-*		°æ±¾ºÅ  ÈÕÆÚ        ×÷Õß     ËµÃ÷
-*		V1.0    2013-02-01 armfly  ÕýÊ½·¢²¼
+*	æ¨¡å—åç§° : cpuå†…éƒ¨falshæ“ä½œæ¨¡å—(for F4)
+*	æ–‡ä»¶åç§° : bsp_cpu_flash.c
+*	ç‰ˆ    æœ¬ : V1.0
+*	è¯´    æ˜Ž : æä¾›è¯»å†™CPUå†…éƒ¨Flashçš„å‡½æ•°
+*	ä¿®æ”¹è®°å½• :
+*		ç‰ˆæœ¬å·  æ—¥æœŸ        ä½œè€…     è¯´æ˜Ž
+*		V1.0    2013-02-01 armfly  æ­£å¼å‘å¸ƒ
 *
-*	Copyright (C), 2013-2014, °²¸»À³µç×Ó www.armfly.com
+*	Copyright (C), 2013-2014, å®‰å¯ŒèŽ±ç”µå­ www.armfly.com
 *
 *********************************************************************************************************
 */
@@ -18,10 +18,10 @@
 
 /*
 *********************************************************************************************************
-*	º¯ Êý Ãû: bsp_GetSector
-*	¹¦ÄÜËµÃ÷: ¸ù¾ÝµØÖ·¼ÆËãÉÈÇøÊ×µØÖ·
-*	ÐÎ    ²Î:  ÎÞ
-*	·µ »Ø Öµ: ÉÈÇøÊ×µØÖ·
+*	å‡½ æ•° å: bsp_GetSector
+*	åŠŸèƒ½è¯´æ˜Ž: æ ¹æ®åœ°å€è®¡ç®—æ‰‡åŒºé¦–åœ°å€
+*	å½¢    å‚:  æ— 
+*	è¿” å›ž å€¼: æ‰‡åŒºé¦–åœ°å€
 *********************************************************************************************************
 */
 uint32_t bsp_GetSector(uint32_t Address)
@@ -82,25 +82,25 @@ uint32_t bsp_GetSector(uint32_t Address)
 
 /*
 *********************************************************************************************************
-*	º¯ Êý Ãû: bsp_ReadCpuFlash
-*	¹¦ÄÜËµÃ÷: ¶ÁÈ¡CPU FlashµÄÄÚÈÝ
-*	ÐÎ    ²Î:  _ucpDst : Ä¿±ê»º³åÇø
-*			 _ulFlashAddr : ÆðÊ¼µØÖ·
-*			 _ulSize : Êý¾Ý´óÐ¡£¨µ¥Î»ÊÇ×Ö½Ú£©
-*	·µ »Ø Öµ: 0=³É¹¦£¬1=Ê§°Ü
+*	å‡½ æ•° å: bsp_ReadCpuFlash
+*	åŠŸèƒ½è¯´æ˜Ž: è¯»å–CPU Flashçš„å†…å®¹
+*	å½¢    å‚:  _ucpDst : ç›®æ ‡ç¼“å†²åŒº
+*			 _ulFlashAddr : èµ·å§‹åœ°å€
+*			 _ulSize : æ•°æ®å¤§å°ï¼ˆå•ä½æ˜¯å­—èŠ‚ï¼‰
+*	è¿” å›ž å€¼: 0=æˆåŠŸï¼Œ1=å¤±è´¥
 *********************************************************************************************************
 */
 uint8_t bsp_ReadCpuFlash(uint32_t _ulFlashAddr, uint8_t *_ucpDst, uint32_t _ulSize)
 {
 	uint32_t i;
 
-	/* Èç¹ûÆ«ÒÆµØÖ·³¬¹ýÐ¾Æ¬ÈÝÁ¿£¬Ôò²»¸ÄÐ´Êä³ö»º³åÇø */
+	/* å¦‚æžœåç§»åœ°å€è¶…è¿‡èŠ¯ç‰‡å®¹é‡ï¼Œåˆ™ä¸æ”¹å†™è¾“å‡ºç¼“å†²åŒº */
 	if (_ulFlashAddr + _ulSize > FLASH_BASE_ADDR + FLASH_SIZE)
 	{
 		return 1;
 	}
 
-	/* ³¤¶ÈÎª0Ê±²»¼ÌÐø²Ù×÷,·ñÔòÆðÊ¼µØÖ·ÎªÆæµØÖ·»á³ö´í */
+	/* é•¿åº¦ä¸º0æ—¶ä¸ç»§ç»­æ“ä½œ,å¦åˆ™èµ·å§‹åœ°å€ä¸ºå¥‡åœ°å€ä¼šå‡ºé”™ */
 	if (_ulSize == 0)
 	{
 		return 1;
@@ -116,37 +116,37 @@ uint8_t bsp_ReadCpuFlash(uint32_t _ulFlashAddr, uint8_t *_ucpDst, uint32_t _ulSi
 
 /*
 *********************************************************************************************************
-*	º¯ Êý Ãû: bsp_CmpCpuFlash
-*	¹¦ÄÜËµÃ÷: ±È½ÏFlashÖ¸¶¨µØÖ·µÄÊý¾Ý.
-*	ÐÎ    ²Î: _ulFlashAddr : FlashµØÖ·
-*			 _ucpBuf : Êý¾Ý»º³åÇø
-*			 _ulSize : Êý¾Ý´óÐ¡£¨µ¥Î»ÊÇ×Ö½Ú£©
-*	·µ »Ø Öµ:
-*			FLASH_IS_EQU		0   FlashÄÚÈÝºÍ´ýÐ´ÈëµÄÊý¾ÝÏàµÈ£¬²»ÐèÒª²Á³ýºÍÐ´²Ù×÷
-*			FLASH_REQ_WRITE		1	Flash²»ÐèÒª²Á³ý£¬Ö±½ÓÐ´
-*			FLASH_REQ_ERASE		2	FlashÐèÒªÏÈ²Á³ý,ÔÙÐ´
-*			FLASH_PARAM_ERR		3	º¯Êý²ÎÊý´íÎó
+*	å‡½ æ•° å: bsp_CmpCpuFlash
+*	åŠŸèƒ½è¯´æ˜Ž: æ¯”è¾ƒFlashæŒ‡å®šåœ°å€çš„æ•°æ®.
+*	å½¢    å‚: _ulFlashAddr : Flashåœ°å€
+*			 _ucpBuf : æ•°æ®ç¼“å†²åŒº
+*			 _ulSize : æ•°æ®å¤§å°ï¼ˆå•ä½æ˜¯å­—èŠ‚ï¼‰
+*	è¿” å›ž å€¼:
+*			FLASH_IS_EQU		0   Flashå†…å®¹å’Œå¾…å†™å…¥çš„æ•°æ®ç›¸ç­‰ï¼Œä¸éœ€è¦æ“¦é™¤å’Œå†™æ“ä½œ
+*			FLASH_REQ_WRITE		1	Flashä¸éœ€è¦æ“¦é™¤ï¼Œç›´æŽ¥å†™
+*			FLASH_REQ_ERASE		2	Flashéœ€è¦å…ˆæ“¦é™¤,å†å†™
+*			FLASH_PARAM_ERR		3	å‡½æ•°å‚æ•°é”™è¯¯
 *********************************************************************************************************
 */
 uint8_t bsp_CmpCpuFlash(uint32_t _ulFlashAddr, uint8_t *_ucpBuf, uint32_t _ulSize)
 {
 	uint32_t i;
-	uint8_t ucIsEqu;	/* ÏàµÈ±êÖ¾ */
+	uint8_t ucIsEqu;	/* ç›¸ç­‰æ ‡å¿— */
 	uint8_t ucByte;
 
-	/* Èç¹ûÆ«ÒÆµØÖ·³¬¹ýÐ¾Æ¬ÈÝÁ¿£¬Ôò²»¸ÄÐ´Êä³ö»º³åÇø */
+	/* å¦‚æžœåç§»åœ°å€è¶…è¿‡èŠ¯ç‰‡å®¹é‡ï¼Œåˆ™ä¸æ”¹å†™è¾“å‡ºç¼“å†²åŒº */
 	if (_ulFlashAddr + _ulSize > FLASH_BASE_ADDR + FLASH_SIZE)
 	{
-		return FLASH_PARAM_ERR;		/*¡¡º¯Êý²ÎÊý´íÎó¡¡*/
+		return FLASH_PARAM_ERR;		/*ã€€å‡½æ•°å‚æ•°é”™è¯¯ã€€*/
 	}
 
-	/* ³¤¶ÈÎª0Ê±·µ»ØÕýÈ· */
+	/* é•¿åº¦ä¸º0æ—¶è¿”å›žæ­£ç¡® */
 	if (_ulSize == 0)
 	{
-		return FLASH_IS_EQU;		/* FlashÄÚÈÝºÍ´ýÐ´ÈëµÄÊý¾ÝÏàµÈ */
+		return FLASH_IS_EQU;		/* Flashå†…å®¹å’Œå¾…å†™å…¥çš„æ•°æ®ç›¸ç­‰ */
 	}
 
-	ucIsEqu = 1;			/* ÏÈ¼ÙÉèËùÓÐ×Ö½ÚºÍ´ýÐ´ÈëµÄÊý¾ÝÏàµÈ£¬Èç¹ûÓöµ½ÈÎºÎÒ»¸ö²»ÏàµÈ£¬ÔòÉèÖÃÎª 0 */
+	ucIsEqu = 1;			/* å…ˆå‡è®¾æ‰€æœ‰å­—èŠ‚å’Œå¾…å†™å…¥çš„æ•°æ®ç›¸ç­‰ï¼Œå¦‚æžœé‡åˆ°ä»»ä½•ä¸€ä¸ªä¸ç›¸ç­‰ï¼Œåˆ™è®¾ç½®ä¸º 0 */
 	for (i = 0; i < _ulSize; i++)
 	{
 		ucByte = *(uint8_t *)_ulFlashAddr;
@@ -155,11 +155,11 @@ uint8_t bsp_CmpCpuFlash(uint32_t _ulFlashAddr, uint8_t *_ucpBuf, uint32_t _ulSiz
 		{
 			if (ucByte != 0xFF)
 			{
-				return FLASH_REQ_ERASE;		/* ÐèÒª²Á³ýºóÔÙÐ´ */
+				return FLASH_REQ_ERASE;		/* éœ€è¦æ“¦é™¤åŽå†å†™ */
 			}
 			else
 			{
-				ucIsEqu = 0;	/* ²»ÏàµÈ£¬ÐèÒªÐ´ */
+				ucIsEqu = 0;	/* ä¸ç›¸ç­‰ï¼Œéœ€è¦å†™ */
 			}
 		}
 
@@ -169,22 +169,22 @@ uint8_t bsp_CmpCpuFlash(uint32_t _ulFlashAddr, uint8_t *_ucpBuf, uint32_t _ulSiz
 
 	if (ucIsEqu == 1)
 	{
-		return FLASH_IS_EQU;	/* FlashÄÚÈÝºÍ´ýÐ´ÈëµÄÊý¾ÝÏàµÈ£¬²»ÐèÒª²Á³ýºÍÐ´²Ù×÷ */
+		return FLASH_IS_EQU;	/* Flashå†…å®¹å’Œå¾…å†™å…¥çš„æ•°æ®ç›¸ç­‰ï¼Œä¸éœ€è¦æ“¦é™¤å’Œå†™æ“ä½œ */
 	}
 	else
 	{
-		return FLASH_REQ_WRITE;	/* Flash²»ÐèÒª²Á³ý£¬Ö±½ÓÐ´ */
+		return FLASH_REQ_WRITE;	/* Flashä¸éœ€è¦æ“¦é™¤ï¼Œç›´æŽ¥å†™ */
 	}
 }
 
 /*
 *********************************************************************************************************
-*	º¯ Êý Ãû: bsp_WriteCpuFlash
-*	¹¦ÄÜËµÃ÷: Ð´Êý¾Ýµ½CPU ÄÚ²¿Flash¡£
-*	ÐÎ    ²Î: _ulFlashAddr : FlashµØÖ·
-*			 _ucpSrc : Êý¾Ý»º³åÇø
-*			 _ulSize : Êý¾Ý´óÐ¡£¨µ¥Î»ÊÇ×Ö½Ú£©
-*	·µ »Ø Öµ: 0-³É¹¦£¬1-Êý¾Ý³¤¶È»òµØÖ·Òç³ö£¬2-Ð´Flash³ö´í(¹À¼ÆFlashÊÙÃüµ½)
+*	å‡½ æ•° å: bsp_WriteCpuFlash
+*	åŠŸèƒ½è¯´æ˜Ž: å†™æ•°æ®åˆ°CPU å†…éƒ¨Flashã€‚
+*	å½¢    å‚: _ulFlashAddr : Flashåœ°å€
+*			 _ucpSrc : æ•°æ®ç¼“å†²åŒº
+*			 _ulSize : æ•°æ®å¤§å°ï¼ˆå•ä½æ˜¯å­—èŠ‚ï¼‰
+*	è¿” å›ž å€¼: 0-æˆåŠŸï¼Œ1-æ•°æ®é•¿åº¦æˆ–åœ°å€æº¢å‡ºï¼Œ2-å†™Flashå‡ºé”™(ä¼°è®¡Flashå¯¿å‘½åˆ°)
 *********************************************************************************************************
 */
 uint8_t bsp_WriteCpuFlash(uint32_t _ulFlashAddr, uint8_t *_ucpSrc, uint32_t _ulSize)
@@ -192,13 +192,13 @@ uint8_t bsp_WriteCpuFlash(uint32_t _ulFlashAddr, uint8_t *_ucpSrc, uint32_t _ulS
 	uint32_t i;
 	uint8_t ucRet;
 
-	/* Èç¹ûÆ«ÒÆµØÖ·³¬¹ýÐ¾Æ¬ÈÝÁ¿£¬Ôò²»¸ÄÐ´Êä³ö»º³åÇø */
+	/* å¦‚æžœåç§»åœ°å€è¶…è¿‡èŠ¯ç‰‡å®¹é‡ï¼Œåˆ™ä¸æ”¹å†™è¾“å‡ºç¼“å†²åŒº */
 	if (_ulFlashAddr + _ulSize > FLASH_BASE_ADDR + FLASH_SIZE)
 	{
 		return 1;
 	}
 
-	/* ³¤¶ÈÎª0Ê±²»¼ÌÐø²Ù×÷  */
+	/* é•¿åº¦ä¸º0æ—¶ä¸ç»§ç»­æ“ä½œ  */
 	if (_ulSize == 0)
 	{
 		return 0;
@@ -211,33 +211,33 @@ uint8_t bsp_WriteCpuFlash(uint32_t _ulFlashAddr, uint8_t *_ucpSrc, uint32_t _ulS
 		return 0;
 	}
 
-	__set_PRIMASK(1);  		/* ¹ØÖÐ¶Ï */
+	__set_PRIMASK(1);  		/* å…³ä¸­æ–­ */
 
-	/* FLASH ½âËø */
+	/* FLASH è§£é” */
 	FLASH_Unlock();
 
   	/* Clear pending flags (if any) */
 	FLASH_ClearFlag(FLASH_FLAG_EOP | FLASH_FLAG_OPERR | FLASH_FLAG_WRPERR |
                   FLASH_FLAG_PGAERR | FLASH_FLAG_PGPERR|FLASH_FLAG_PGSERR);
 
-	/* ÐèÒª²Á³ý */
+	/* éœ€è¦æ“¦é™¤ */
 	if (ucRet == FLASH_REQ_ERASE)
 	{
 		FLASH_EraseSector(bsp_GetSector(_ulFlashAddr), VoltageRange_3);
 	}
 
-	/* °´×Ö½ÚÄ£Ê½±à³Ì£¨ÎªÌá¸ßÐ§ÂÊ£¬¿ÉÒÔ°´×Ö±à³Ì£¬Ò»´ÎÐ´Èë4×Ö½Ú£© */
+	/* æŒ‰å­—èŠ‚æ¨¡å¼ç¼–ç¨‹ï¼ˆä¸ºæé«˜æ•ˆçŽ‡ï¼Œå¯ä»¥æŒ‰å­—ç¼–ç¨‹ï¼Œä¸€æ¬¡å†™å…¥4å­—èŠ‚ï¼‰ */
 	for (i = 0; i < _ulSize; i++)
 	{
 		FLASH_ProgramByte(_ulFlashAddr++, *_ucpSrc++);
 	}
 
-  	/* Flash ¼ÓËø£¬½ûÖ¹Ð´Flash¿ØÖÆ¼Ä´æÆ÷ */
+  	/* Flash åŠ é”ï¼Œç¦æ­¢å†™FlashæŽ§åˆ¶å¯„å­˜å™¨ */
   	FLASH_Lock();
 
-  	__set_PRIMASK(0);  		/* ¿ªÖÐ¶Ï */
+  	__set_PRIMASK(0);  		/* å¼€ä¸­æ–­ */
 
 	return 0;
 }
 
-/***************************** °²¸»À³µç×Ó www.armfly.com (END OF FILE) *********************************/
+/***************************** å®‰å¯ŒèŽ±ç”µå­ www.armfly.com (END OF FILE) *********************************/

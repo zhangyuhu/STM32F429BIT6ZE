@@ -5,7 +5,7 @@
 
 
 
-/* 供外部调用的函数声明 */
+/* 渚涘閮ㄨ皟鐢ㄧ殑鍑芥暟澹版槑 */
 void DemoSPIFS(void);
 
 #endif

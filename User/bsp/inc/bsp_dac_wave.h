@@ -1,11 +1,11 @@
 	/*
 *********************************************************************************************************
 *
-*	Ä£¿éÃû³Æ : DACÊä³ö²¨ĞÎ
-*	ÎÄ¼şÃû³Æ : dac_wave.h
-*	°æ    ±¾ : V1.0
+*	æ¨¡å—åç§° : DACè¾“å‡ºæ³¢å½¢
+*	æ–‡ä»¶åç§° : dac_wave.h
+*	ç‰ˆ    æœ¬ : V1.0
 *
-*	Copyright (C), 2015-2016, °²¸»À³µç×Ó www.armfly.com
+*	Copyright (C), 2015-2016, å®‰å¯Œè±ç”µå­ www.armfly.com
 *
 *********************************************************************************************************
 */
@@ -13,14 +13,14 @@
 #ifndef __BSP_DAC_WAVE_H
 #define __BSP_DAC_WAVE_H
 
-/* ÕâĞ©º¯ÊıÊÇÍ¨ÓÃµÄÉèÖÃ£¬Èí¼ş¿ØÖÆDACÊı¾İ */
+/* è¿™äº›å‡½æ•°æ˜¯é€šç”¨çš„è®¾ç½®ï¼Œè½¯ä»¶æ§åˆ¶DACæ•°æ® */
 void bsp_InitDAC1(void);
 void bsp_SetDAC1(uint16_t _dac);
 
 void bsp_InitDAC2(void);
 void bsp_SetDAC2(uint16_t _dac);
 
-/* ÏÂÃæµÄº¯ÊıÓÃÓÚDMA²¨ĞÎ·¢ÉúÆ÷ */
+/* ä¸‹é¢çš„å‡½æ•°ç”¨äºDMAæ³¢å½¢å‘ç”Ÿå™¨ */
 void dac1_InitForDMA(uint32_t _BufAddr, uint32_t _Count, uint32_t _DacFreq);
 void dac1_SetSinWave(uint16_t _vpp, uint32_t _freq);
 void dac1_SetRectWave(uint16_t _low, uint16_t _high, uint32_t _freq, uint16_t _duty);

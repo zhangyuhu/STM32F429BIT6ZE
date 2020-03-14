@@ -1,12 +1,12 @@
 /*
 *********************************************************************************************************
 *
-*	Ä£¿éÃû³Æ : ¶¨Ê±Æ÷Ä£¿é
-*	ÎÄ¼þÃû³Æ : bsp_timer.h
-*	°æ    ±¾ : V1.3
-*	Ëµ    Ã÷ : Í·ÎÄ¼þ
+*	æ¨¡å—åç§° : å®šæ—¶å™¨æ¨¡å—
+*	æ–‡ä»¶åç§° : bsp_timer.h
+*	ç‰ˆ    æœ¬ : V1.3
+*	è¯´    æ˜Ž : å¤´æ–‡ä»¶
 *
-*	Copyright (C), 2015-2016, °²¸»À³µç×Ó www.armfly.com
+*	Copyright (C), 2015-2016, å®‰å¯ŒèŽ±ç”µå­ www.armfly.com
 *
 *********************************************************************************************************
 */
@@ -15,28 +15,28 @@
 #define __BSP_TIMER_H
 
 /*
-	ÔÚ´Ë¶¨ÒåÈô¸É¸öÈí¼þ¶¨Ê±Æ÷È«¾Ö±äÁ¿
-	×¢Òâ£¬±ØÐëÔö¼Ó__IO ¼´ volatile£¬ÒòÎªÕâ¸ö±äÁ¿ÔÚÖÐ¶ÏºÍÖ÷³ÌÐòÖÐÍ¬Ê±±»·ÃÎÊ£¬ÓÐ¿ÉÄÜÔì³É±àÒëÆ÷´íÎóÓÅ»¯¡£
+	åœ¨æ­¤å®šä¹‰è‹¥å¹²ä¸ªè½¯ä»¶å®šæ—¶å™¨å…¨å±€å˜é‡
+	æ³¨æ„ï¼Œå¿…é¡»å¢žåŠ __IO å³ volatileï¼Œå› ä¸ºè¿™ä¸ªå˜é‡åœ¨ä¸­æ–­å’Œä¸»ç¨‹åºä¸­åŒæ—¶è¢«è®¿é—®ï¼Œæœ‰å¯èƒ½é€ æˆç¼–è¯‘å™¨é”™è¯¯ä¼˜åŒ–ã€‚
 */
-#define TMR_COUNT	4		/* Èí¼þ¶¨Ê±Æ÷µÄ¸öÊý £¨¶¨Ê±Æ÷ID·¶Î§ 0 - 3) */
+#define TMR_COUNT	4		/* è½¯ä»¶å®šæ—¶å™¨çš„ä¸ªæ•° ï¼ˆå®šæ—¶å™¨IDèŒƒå›´ 0 - 3) */
 
-/* ¶¨Ê±Æ÷½á¹¹Ìå£¬³ÉÔ±±äÁ¿±ØÐëÊÇ volatile, ·ñÔòC±àÒëÆ÷ÓÅ»¯Ê±¿ÉÄÜÓÐÎÊÌâ */
+/* å®šæ—¶å™¨ç»“æž„ä½“ï¼Œæˆå‘˜å˜é‡å¿…é¡»æ˜¯ volatile, å¦åˆ™Cç¼–è¯‘å™¨ä¼˜åŒ–æ—¶å¯èƒ½æœ‰é—®é¢˜ */
 typedef enum
 {
-	TMR_ONCE_MODE = 0,		/* Ò»´Î¹¤×÷Ä£Ê½ */
-	TMR_AUTO_MODE = 1		/* ×Ô¶¯¶¨Ê±¹¤×÷Ä£Ê½ */
+	TMR_ONCE_MODE = 0,		/* ä¸€æ¬¡å·¥ä½œæ¨¡å¼ */
+	TMR_AUTO_MODE = 1		/* è‡ªåŠ¨å®šæ—¶å·¥ä½œæ¨¡å¼ */
 }TMR_MODE_E;
 
-/* ¶¨Ê±Æ÷½á¹¹Ìå£¬³ÉÔ±±äÁ¿±ØÐëÊÇ volatile, ·ñÔòC±àÒëÆ÷ÓÅ»¯Ê±¿ÉÄÜÓÐÎÊÌâ */
+/* å®šæ—¶å™¨ç»“æž„ä½“ï¼Œæˆå‘˜å˜é‡å¿…é¡»æ˜¯ volatile, å¦åˆ™Cç¼–è¯‘å™¨ä¼˜åŒ–æ—¶å¯èƒ½æœ‰é—®é¢˜ */
 typedef struct
 {
-	volatile uint8_t Mode;		/* ¼ÆÊýÆ÷Ä£Ê½£¬1´ÎÐÔ */
-	volatile uint8_t Flag;		/* ¶¨Ê±µ½´ï±êÖ¾  */
-	volatile uint32_t Count;	/* ¼ÆÊýÆ÷ */
-	volatile uint32_t PreLoad;	/* ¼ÆÊýÆ÷Ô¤×°Öµ */
+	volatile uint8_t Mode;		/* è®¡æ•°å™¨æ¨¡å¼ï¼Œ1æ¬¡æ€§ */
+	volatile uint8_t Flag;		/* å®šæ—¶åˆ°è¾¾æ ‡å¿—  */
+	volatile uint32_t Count;	/* è®¡æ•°å™¨ */
+	volatile uint32_t PreLoad;	/* è®¡æ•°å™¨é¢„è£…å€¼ */
 }SOFT_TMR;
 
-/* Ìá¹©¸øÆäËûCÎÄ¼þµ÷ÓÃµÄº¯Êý */
+/* æä¾›ç»™å…¶ä»–Cæ–‡ä»¶è°ƒç”¨çš„å‡½æ•° */
 void bsp_InitTimer(void);
 void bsp_DelayMS(uint32_t n);
 void bsp_DelayUS(uint32_t n);
@@ -52,4 +52,4 @@ void bsp_StartHardTimer(uint8_t _CC, uint32_t _uiTimeOut, void * _pCallBack);
 
 #endif
 
-/***************************** °²¸»À³µç×Ó www.armfly.com (END OF FILE) *********************************/
+/***************************** å®‰å¯ŒèŽ±ç”µå­ www.armfly.com (END OF FILE) *********************************/

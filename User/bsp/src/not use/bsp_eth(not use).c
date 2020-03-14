@@ -1,16 +1,16 @@
 /*
 *********************************************************************************************************
 *
-*	Ä£¿éÃû³Æ : STM32F4 ÄÚÖÃETH MAC Çı¶¯Ä£¿é
-*	ÎÄ¼şÃû³Æ : bsp_eth.c
-*	°æ    ±¾ : V2.4
-*	Ëµ    Ã÷ : °²¸»À³STM32-F4¿ª·¢°åÍâÀ©µÄMACÎª DM9161
+*	æ¨¡å—åç§° : STM32F4 å†…ç½®ETH MAC é©±åŠ¨æ¨¡å—
+*	æ–‡ä»¶åç§° : bsp_eth.c
+*	ç‰ˆ    æœ¬ : V2.4
+*	è¯´    æ˜ : å®‰å¯Œè±STM32-F4å¼€å‘æ¿å¤–æ‰©çš„MACä¸º DM9161
 *
-*	ĞŞ¸Ä¼ÇÂ¼ :
-*		°æ±¾ºÅ  ÈÕÆÚ        ×÷Õß     ËµÃ÷
-*		V1.0    2013-02-01 armfly  ÕıÊ½·¢²¼
+*	ä¿®æ”¹è®°å½• :
+*		ç‰ˆæœ¬å·  æ—¥æœŸ        ä½œè€…     è¯´æ˜
+*		V1.0    2013-02-01 armfly  æ­£å¼å‘å¸ƒ
 *
-*	Copyright (C), 2013-2014, °²¸»À³µç×Ó www.armfly.com
+*	Copyright (C), 2013-2014, å®‰å¯Œè±ç”µå­ www.armfly.com
 *
 *********************************************************************************************************
 */
@@ -26,7 +26,7 @@
 __IO uint32_t  EthInitStatus = 0;
 __IO uint8_t EthLinkStatus = 0;
 
-__IO uint8_t g_ucPhyAddress = 0;	/* PHY µØÖ· */
+__IO uint8_t g_ucPhyAddress = 0;	/* PHY åœ°å€ */
 
 static void ETH_GPIO_Config_RMII(void);
 static void ETH_MACDMA_Config(uint8_t ucPhyAddr);
@@ -75,7 +75,7 @@ void ETH_BSP_Config(void)
 		eth_printf("%04X, Phy Link Faile\r\n",ulTemp);
 	}
 	
-	/* ¶ÁÈ¡PHY ID, Ê¶±ğDM9161 */
+	/* è¯»å–PHY ID, è¯†åˆ«DM9161 */
 	{
 		uint32_t uiID;
 		
@@ -180,7 +180,7 @@ static void ETH_GPIO_Config_RMII(void)
 {
 	GPIO_InitTypeDef GPIO_InitStructure;
 
-	/* °²¸»À³STM32-F4¿ª·¢°åÍø¿¨½Ó¿Ú²ÉÓÃRMII
+	/* å®‰å¯Œè±STM32-F4å¼€å‘æ¿ç½‘å¡æ¥å£é‡‡ç”¨RMII
 		PA1/ETH_RMII_RX_CLK
 		PA2/ETH_MDIO
 		PA7/RMII_CRS_DV
@@ -335,9 +335,9 @@ uint32_t Eth_Link_PHYITConfig(uint16_t PHYAddress)
 //	uint32_t tmpreg = 0;
 
 	/* 
-		DM9161 ÖĞ¶Ï¿ØÖÆ¼Ä´æÆ÷ 21 		;
-		Ê¹ÄÜÖĞ¶ÏÊä³ö
-		È«Ë«¹¤Ä£Ê½±ä»¯¡¢ËÙ¶ÈÄ£Ê½±ä»¯ºÍLink×´Ì¬¸Ä±äÊ±²úÉúÖĞ¶Ï
+		DM9161 ä¸­æ–­æ§åˆ¶å¯„å­˜å™¨ 21 		;
+		ä½¿èƒ½ä¸­æ–­è¾“å‡º
+		å…¨åŒå·¥æ¨¡å¼å˜åŒ–ã€é€Ÿåº¦æ¨¡å¼å˜åŒ–å’ŒLinkçŠ¶æ€æ”¹å˜æ—¶äº§ç”Ÿä¸­æ–­
 	*/
 	if (!(ETH_WritePHYRegister(PHYAddress, 21, 0)))
 	{
@@ -359,7 +359,7 @@ void Eth_Link_EXTIConfig(void)
 	EXTI_InitTypeDef EXTI_InitStructure;
 	NVIC_InitTypeDef NVIC_InitStructure;
 
-	/* °²¸»À³STM32-F4¿ª·¢°åÊ¹ÓÃPH6×÷ÎªÖĞ¶ÏÊäÈë¿Ú, ÏÂ½µÑØ±íÊ¾ÖĞ¶ÏĞÅºÅ */
+	/* å®‰å¯Œè±STM32-F4å¼€å‘æ¿ä½¿ç”¨PH6ä½œä¸ºä¸­æ–­è¾“å…¥å£, ä¸‹é™æ²¿è¡¨ç¤ºä¸­æ–­ä¿¡å· */
 	/* Enable the INT (PH6) Clock */
 	RCC_AHB1PeriphClockCmd(ETH_LINK_GPIO_CLK, ENABLE);
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_SYSCFG, ENABLE);
@@ -396,7 +396,7 @@ void Eth_Link_EXTIConfig(void)
   */
 void Eth_Link_ITHandler(uint16_t PHYAddress)
 {
-	/* ¼ì²éÁ¬½Ó×´Ì¬ */
+	/* æ£€æŸ¥è¿æ¥çŠ¶æ€ */
 	if (((ETH_ReadPHYRegister(PHYAddress, 0x01)) & (1 << 2)) != 0)
 	{
 		EthLinkStatus = 1;

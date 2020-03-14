@@ -1,16 +1,16 @@
 /*
 *********************************************************************************************************
 *
-*	Ä£¿éÃû³Æ : STM32-V6¿ª·¢°åÀ©Õ¹IOÇý¶¯³ÌÐò
-*	ÎÄ¼þÃû³Æ : bsp_ext_io.c
-*	°æ    ±¾ : V1.0
-*	Ëµ    Ã÷ : V6¿ª·¢°åÔÚFMC×ÜÏßÉÏÀ©Õ¹ÁË32Î»Êä³öIO¡£µØÖ·Îª (0x6820 0000)
+*	æ¨¡å—åç§° : STM32-V6å¼€å‘æ¿æ‰©å±•IOé©±åŠ¨ç¨‹åº
+*	æ–‡ä»¶åç§° : bsp_ext_io.c
+*	ç‰ˆ    æœ¬ : V1.0
+*	è¯´    æ˜Ž : V6å¼€å‘æ¿åœ¨FMCæ€»çº¿ä¸Šæ‰©å±•äº†32ä½è¾“å‡ºIOã€‚åœ°å€ä¸º (0x6820 0000)
 *
-*	ÐÞ¸Ä¼ÇÂ¼ :
-*		°æ±¾ºÅ  ÈÕÆÚ        ×÷Õß     ËµÃ÷
-*		V1.0    2015-10-11  armfly  ÕýÊ½·¢²¼
+*	ä¿®æ”¹è®°å½• :
+*		ç‰ˆæœ¬å·  æ—¥æœŸ        ä½œè€…     è¯´æ˜Ž
+*		V1.0    2015-10-11  armfly  æ­£å¼å‘å¸ƒ
 *
-*	Copyright (C), 2015-2020, °²¸»À³µç×Ó www.armfly.com
+*	Copyright (C), 2015-2020, å®‰å¯ŒèŽ±ç”µå­ www.armfly.com
 *
 *********************************************************************************************************
 */
@@ -18,7 +18,7 @@
 #include "bsp.h"
 
 /*
-	°²¸»À³STM32-V6 ¿ª·¢°åÀ©Õ¹¿ÚÏß·ÖÅä: ×ÜÏßµØÖ· = 0x6400 0000
+	å®‰å¯ŒèŽ±STM32-V6 å¼€å‘æ¿æ‰©å±•å£çº¿åˆ†é…: æ€»çº¿åœ°å€ = 0x6400 0000
 	D0  - GPRS_RERM_ON
 	D1  - GPRS_RESET
 	D2  - NRF24L01_CE
@@ -37,7 +37,7 @@
 	D14 - AD7606_OS1
 	D15 - AD7606_OS2
 	
-	Ô¤ÁôµÄ8¸ö5VÊä³öIO: Y50_0 - Y50_1
+	é¢„ç•™çš„8ä¸ª5Vè¾“å‡ºIO: Y50_0 - Y50_1
 	D16  - Y50_0
 	D17  - Y50_1
 	D18  - Y50_2
@@ -47,7 +47,7 @@
 	D22  - Y50_6
 	D23  - Y50_7	
 
-	Ô¤ÁôµÄ8¸ö3.3VÊä³öIO: Y33_0 - Y33_1
+	é¢„ç•™çš„8ä¸ª3.3Vè¾“å‡ºIO: Y33_0 - Y33_1
 	D24  - AD7606_RESET
 	D25  - AD7606_RAGE
 	D26  - Y33_2
@@ -60,17 +60,17 @@
 
 #define  HC574_PORT	 *(uint32_t *)0x64001000
 
-__IO uint32_t g_HC574;	/* ±£´æ74HC574¶Ë¿Ú×´Ì¬ */
+__IO uint32_t g_HC574;	/* ä¿å­˜74HC574ç«¯å£çŠ¶æ€ */
 
 static void HC574_ConfigGPIO(void);
 static void HC574_ConfigFMC(void);
 
 /*
 *********************************************************************************************************
-*	º¯ Êý Ãû: bsp_InitExtIO
-*	¹¦ÄÜËµÃ÷: ÅäÖÃÀ©Õ¹IOÏà¹ØµÄGPIO. ÉÏµçÖ»ÄÜÖ´ÐÐÒ»´Î¡£
-*	ÐÎ    ²Î: ÎÞ
-*	·µ »Ø Öµ: ÎÞ
+*	å‡½ æ•° å: bsp_InitExtIO
+*	åŠŸèƒ½è¯´æ˜Ž: é…ç½®æ‰©å±•IOç›¸å…³çš„GPIO. ä¸Šç”µåªèƒ½æ‰§è¡Œä¸€æ¬¡ã€‚
+*	å½¢    å‚: æ— 
+*	è¿” å›ž å€¼: æ— 
 *********************************************************************************************************
 */
 void bsp_InitExtIO(void)
@@ -78,18 +78,18 @@ void bsp_InitExtIO(void)
 	HC574_ConfigGPIO();
 	HC574_ConfigFMC();
 	
-	/* ½«V6¿ª·¢°åÒ»Ð©Æ¬Ñ¡£¬LED¿ÚÉèÖÃÎª¸ß */
+	/* å°†V6å¼€å‘æ¿ä¸€äº›ç‰‡é€‰ï¼ŒLEDå£è®¾ç½®ä¸ºé«˜ */
 	g_HC574 = (NRF24L01_CE | VS1053_XDCS | LED1 | LED2 | LED3 | LED4);
-	HC574_PORT = g_HC574;	/* Ð´Ó²¼þ¶Ë¿Ú£¬¸ü¸ÄIO×´Ì¬ */
+	HC574_PORT = g_HC574;	/* å†™ç¡¬ä»¶ç«¯å£ï¼Œæ›´æ”¹IOçŠ¶æ€ */
 }
 
 /*
 *********************************************************************************************************
-*	º¯ Êý Ãû: HC574_SetPin
-*	¹¦ÄÜËµÃ÷: ÉèÖÃ74HC574¶Ë¿ÚÖµ
-*	ÐÎ    ²Î: _pin : ¹Ü½ÅºÅ£¬ 0-31; Ö»ÄÜÑ¡1¸ö£¬²»ÄÜ¶àÑ¡
-*			  _value : Éè¶¨µÄÖµ£¬0»ò1
-*	·µ »Ø Öµ: ÎÞ
+*	å‡½ æ•° å: HC574_SetPin
+*	åŠŸèƒ½è¯´æ˜Ž: è®¾ç½®74HC574ç«¯å£å€¼
+*	å½¢    å‚: _pin : ç®¡è„šå·ï¼Œ 0-31; åªèƒ½é€‰1ä¸ªï¼Œä¸èƒ½å¤šé€‰
+*			  _value : è®¾å®šçš„å€¼ï¼Œ0æˆ–1
+*	è¿” å›ž å€¼: æ— 
 *********************************************************************************************************
 */
 void HC574_SetPin(uint32_t _pin, uint8_t _value)
@@ -107,10 +107,10 @@ void HC574_SetPin(uint32_t _pin, uint8_t _value)
 
 /*
 *********************************************************************************************************
-*	º¯ Êý Ãû: HC574_GetPin
-*	¹¦ÄÜËµÃ÷: ÅÐ¶ÏÖ¸¶¨µÄ¹Ü½ÅÊä³öÊÇ1»¹ÊÇ0
-*	ÐÎ    ²Î: _pin : ¹Ü½ÅºÅ£¬ 0-31; Ö»ÄÜÑ¡1¸ö£¬²»ÄÜ¶àÑ¡
-*	·µ »Ø Öµ: 0»ò1
+*	å‡½ æ•° å: HC574_GetPin
+*	åŠŸèƒ½è¯´æ˜Ž: åˆ¤æ–­æŒ‡å®šçš„ç®¡è„šè¾“å‡ºæ˜¯1è¿˜æ˜¯0
+*	å½¢    å‚: _pin : ç®¡è„šå·ï¼Œ 0-31; åªèƒ½é€‰1ä¸ªï¼Œä¸èƒ½å¤šé€‰
+*	è¿” å›ž å€¼: 0æˆ–1
 *********************************************************************************************************
 */
 uint8_t HC574_GetPin(uint32_t _pin)
@@ -127,20 +127,20 @@ uint8_t HC574_GetPin(uint32_t _pin)
 
 /*
 *********************************************************************************************************
-*	º¯ Êý Ãû: HC574_ConfigGPIO
-*	¹¦ÄÜËµÃ÷: ÅäÖÃGPIO£¬FMC¹Ü½ÅÉèÖÃÎª¸´ÓÃ¹¦ÄÜ
-*	ÐÎ    ²Î:  ÎÞ
-*	·µ »Ø Öµ: ÎÞ
+*	å‡½ æ•° å: HC574_ConfigGPIO
+*	åŠŸèƒ½è¯´æ˜Ž: é…ç½®GPIOï¼ŒFMCç®¡è„šè®¾ç½®ä¸ºå¤ç”¨åŠŸèƒ½
+*	å½¢    å‚:  æ— 
+*	è¿” å›ž å€¼: æ— 
 *********************************************************************************************************
 */
 static void HC574_ConfigGPIO(void)
 {
 /*
-	°²¸»À³STM32-V6¿ª·¢°å½ÓÏß·½·¨£º4Æ¬74HC574¹ÒÔÚFMC 32Î»×ÜÏßÉÏ¡£1¸öµØÖ·¶Ë¿Ú¿ÉÒÔÀ©Õ¹³ö32¸öIO
+	å®‰å¯ŒèŽ±STM32-V6å¼€å‘æ¿æŽ¥çº¿æ–¹æ³•ï¼š4ç‰‡74HC574æŒ‚åœ¨FMC 32ä½æ€»çº¿ä¸Šã€‚1ä¸ªåœ°å€ç«¯å£å¯ä»¥æ‰©å±•å‡º32ä¸ªIO
 	PD0/FMC_D2
 	PD1/FMC_D3
-	PD4/FMC_NOE		---- ¶Á¿ØÖÆÐÅºÅ£¬OE = Output Enable £¬ N ±íÊ¾µÍÓÐÐ§
-	PD5/FMC_NWE		-XX- Ð´¿ØÖÆÐÅºÅ£¬AD7606 Ö»ÓÐ¶Á£¬ÎÞÐ´ÐÅºÅ
+	PD4/FMC_NOE		---- è¯»æŽ§åˆ¶ä¿¡å·ï¼ŒOE = Output Enable ï¼Œ N è¡¨ç¤ºä½Žæœ‰æ•ˆ
+	PD5/FMC_NWE		-XX- å†™æŽ§åˆ¶ä¿¡å·ï¼ŒAD7606 åªæœ‰è¯»ï¼Œæ— å†™ä¿¡å·
 	PD8/FMC_D13
 	PD9/FMC_D14
 	PD10/FMC_D15
@@ -157,9 +157,9 @@ static void HC574_ConfigGPIO(void)
 	PE14/FMC_D11
 	PE15/FMC_D12
 	
-	PG0/FMC_A10		--- ºÍÖ÷Æ¬Ñ¡FMC_NE2Ò»ÆðÒëÂë
-	PG1/FMC_A11		--- ºÍÖ÷Æ¬Ñ¡FMC_NE2Ò»ÆðÒëÂë
-	PG9/FMC_NE2		--- Ö÷Æ¬Ñ¡£¨OLED, 74HC574, DM9000, AD7606£©	
+	PG0/FMC_A10		--- å’Œä¸»ç‰‡é€‰FMC_NE2ä¸€èµ·è¯‘ç 
+	PG1/FMC_A11		--- å’Œä¸»ç‰‡é€‰FMC_NE2ä¸€èµ·è¯‘ç 
+	PG9/FMC_NE2		--- ä¸»ç‰‡é€‰ï¼ˆOLED, 74HC574, DM9000, AD7606ï¼‰	
 	
 	 +-------------------+------------------+
 	 +   32-bits Mode: D31-D16              +
@@ -177,14 +177,14 @@ static void HC574_ConfigGPIO(void)
 
 	GPIO_InitTypeDef GPIO_InitStructure;
 
-	/* Ê¹ÄÜ GPIOÊ±ÖÓ */
+	/* ä½¿èƒ½ GPIOæ—¶é’Ÿ */
 	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOD | RCC_AHB1Periph_GPIOE | RCC_AHB1Periph_GPIOG
 			| RCC_AHB1Periph_GPIOH | RCC_AHB1Periph_GPIOI, ENABLE);
 
-	/* Ê¹ÄÜFMCÊ±ÖÓ */
+	/* ä½¿èƒ½FMCæ—¶é’Ÿ */
 	RCC_AHB3PeriphClockCmd(RCC_AHB3Periph_FMC, ENABLE);
 
-	/* ÉèÖÃ GPIOD Ïà¹ØµÄIOÎª¸´ÓÃÍÆÍìÊä³ö */
+	/* è®¾ç½® GPIOD ç›¸å…³çš„IOä¸ºå¤ç”¨æŽ¨æŒ½è¾“å‡º */
 	GPIO_PinAFConfig(GPIOD, GPIO_PinSource0, GPIO_AF_FMC);
 	GPIO_PinAFConfig(GPIOD, GPIO_PinSource1, GPIO_AF_FMC);
 	GPIO_PinAFConfig(GPIOD, GPIO_PinSource4, GPIO_AF_FMC);
@@ -205,7 +205,7 @@ static void HC574_ConfigGPIO(void)
 	                            GPIO_Pin_15;
 	GPIO_Init(GPIOD, &GPIO_InitStructure);
 
-	/* ÉèÖÃ GPIOE Ïà¹ØµÄIOÎª¸´ÓÃÍÆÍìÊä³ö */
+	/* è®¾ç½® GPIOE ç›¸å…³çš„IOä¸ºå¤ç”¨æŽ¨æŒ½è¾“å‡º */
 	GPIO_PinAFConfig(GPIOE, GPIO_PinSource7 , GPIO_AF_FMC);
 	GPIO_PinAFConfig(GPIOE, GPIO_PinSource8 , GPIO_AF_FMC);
 	GPIO_PinAFConfig(GPIOE, GPIO_PinSource9 , GPIO_AF_FMC);
@@ -221,7 +221,7 @@ static void HC574_ConfigGPIO(void)
 	                            GPIO_Pin_15;
 	GPIO_Init(GPIOE, &GPIO_InitStructure);
 
-	/* ÉèÖÃ GPIOG Ïà¹ØµÄIOÎª¸´ÓÃÍÆÍìÊä³ö */
+	/* è®¾ç½® GPIOG ç›¸å…³çš„IOä¸ºå¤ç”¨æŽ¨æŒ½è¾“å‡º */
 	GPIO_PinAFConfig(GPIOG, GPIO_PinSource0, GPIO_AF_FMC);
 	GPIO_PinAFConfig(GPIOG, GPIO_PinSource1, GPIO_AF_FMC);
 	GPIO_PinAFConfig(GPIOG, GPIO_PinSource9, GPIO_AF_FMC);
@@ -229,7 +229,7 @@ static void HC574_ConfigGPIO(void)
 	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0 | GPIO_Pin_1 | GPIO_Pin_9;
 	GPIO_Init(GPIOG, &GPIO_InitStructure);
 
-	/* ÉèÖÃ GPIOH Ïà¹ØµÄIOÎª¸´ÓÃÍÆÍìÊä³ö */
+	/* è®¾ç½® GPIOH ç›¸å…³çš„IOä¸ºå¤ç”¨æŽ¨æŒ½è¾“å‡º */
 	GPIO_PinAFConfig(GPIOH, GPIO_PinSource8, GPIO_AF_FMC);
 	GPIO_PinAFConfig(GPIOH, GPIO_PinSource9, GPIO_AF_FMC);
 	GPIO_PinAFConfig(GPIOH, GPIO_PinSource10, GPIO_AF_FMC);
@@ -243,7 +243,7 @@ static void HC574_ConfigGPIO(void)
 						| GPIO_Pin_13 | GPIO_Pin_14 | GPIO_Pin_15;
 	GPIO_Init(GPIOH, &GPIO_InitStructure);
 
-	/* ÉèÖÃ GPIOI Ïà¹ØµÄIOÎª¸´ÓÃÍÆÍìÊä³ö */
+	/* è®¾ç½® GPIOI ç›¸å…³çš„IOä¸ºå¤ç”¨æŽ¨æŒ½è¾“å‡º */
 	GPIO_PinAFConfig(GPIOI, GPIO_PinSource0, GPIO_AF_FMC);
 	GPIO_PinAFConfig(GPIOI, GPIO_PinSource1, GPIO_AF_FMC);
 	GPIO_PinAFConfig(GPIOI, GPIO_PinSource2, GPIO_AF_FMC);
@@ -260,10 +260,10 @@ static void HC574_ConfigGPIO(void)
 
 /*
 *********************************************************************************************************
-*	º¯ Êý Ãû: HC574_ConfigFMC
-*	¹¦ÄÜËµÃ÷: ÅäÖÃFMC²¢¿Ú·ÃÎÊÊ±Ðò
-*	ÐÎ    ²Î:  ÎÞ
-*	·µ »Ø Öµ: ÎÞ
+*	å‡½ æ•° å: HC574_ConfigFMC
+*	åŠŸèƒ½è¯´æ˜Ž: é…ç½®FMCå¹¶å£è®¿é—®æ—¶åº
+*	å½¢    å‚:  æ— 
+*	è¿” å›ž å€¼: æ— 
 *********************************************************************************************************
 */
 static void HC574_ConfigFMC(void)
@@ -272,11 +272,11 @@ static void HC574_ConfigFMC(void)
 	FMC_NORSRAMTimingInitTypeDef  timing;
 
 	/*
-		AD7606¹æ¸ñÊéÒªÇó(3.3VÊ±)£ºRD¶ÁÐÅºÅµÍµçÆ½Âö³å¿í¶È×î¶Ì21ns£¬¸ßµçÆ½Âö³å×î¶Ì¿í¶È15ns¡£
+		AD7606è§„æ ¼ä¹¦è¦æ±‚(3.3Væ—¶)ï¼šRDè¯»ä¿¡å·ä½Žç”µå¹³è„‰å†²å®½åº¦æœ€çŸ­21nsï¼Œé«˜ç”µå¹³è„‰å†²æœ€çŸ­å®½åº¦15nsã€‚
 
-		°´ÕÕÈçÏÂÅäÖÃ ¶ÁÊý¾ùÕý³£¡£ÎªÁËºÍÍ¬BANKµÄLCDÅäÖÃÏàÍ¬£¬Ñ¡Ôñ3-0-6-1-0-0
-		3-0-5-1-0-0  : RD¸ß³ÖÐø75ns£¬ µÍµçÆ½³ÖÐø50ns.  1usÒÔÄÚ¿É¶ÁÈ¡8Â·Ñù±¾Êý¾Ýµ½ÄÚ´æ¡£
-		1-0-1-1-0-0  : RD¸ß75ns£¬µÍµçÆ½Ö´ÐÐ12ns×óÓÒ£¬ÏÂ½µÑØ²î²»¶àÒ²12ns.  Êý¾Ý¶ÁÈ¡ÕýÈ·¡£
+		æŒ‰ç…§å¦‚ä¸‹é…ç½® è¯»æ•°å‡æ­£å¸¸ã€‚ä¸ºäº†å’ŒåŒBANKçš„LCDé…ç½®ç›¸åŒï¼Œé€‰æ‹©3-0-6-1-0-0
+		3-0-5-1-0-0  : RDé«˜æŒç»­75nsï¼Œ ä½Žç”µå¹³æŒç»­50ns.  1usä»¥å†…å¯è¯»å–8è·¯æ ·æœ¬æ•°æ®åˆ°å†…å­˜ã€‚
+		1-0-1-1-0-0  : RDé«˜75nsï¼Œä½Žç”µå¹³æ‰§è¡Œ12nså·¦å³ï¼Œä¸‹é™æ²¿å·®ä¸å¤šä¹Ÿ12ns.  æ•°æ®è¯»å–æ­£ç¡®ã€‚
 	*/
 	/* FMC_Bank1_NORSRAM2 configuration */
 	timing.FMC_AddressSetupTime = 3;
@@ -309,7 +309,7 @@ static void HC574_ConfigFMC(void)
 	init.FMC_ExtendedMode = FMC_ExtendedMode_Disable;
 	init.FMC_AsynchronousWait = FMC_AsynchronousWait_Disable;	
 	init.FMC_WriteBurst = FMC_WriteBurst_Disable;
-	init.FMC_ContinousClock = FMC_CClock_SyncOnly;	//FMC_CClock_SyncAsync;	// FMC_CClock_SyncOnly;	/* 429±È407¶àµÄÒ»¸ö²ÎÊý */
+	init.FMC_ContinousClock = FMC_CClock_SyncOnly;	//FMC_CClock_SyncAsync;	// FMC_CClock_SyncOnly;	/* 429æ¯”407å¤šçš„ä¸€ä¸ªå‚æ•° */
 
 	init.FMC_ReadWriteTimingStruct = &timing;
 	init.FMC_WriteTimingStruct = &timing;
@@ -320,4 +320,4 @@ static void HC574_ConfigFMC(void)
 	FMC_NORSRAMCmd(FMC_Bank1_NORSRAM2, ENABLE);
 }
 
-/***************************** °²¸»À³µç×Ó www.armfly.com (END OF FILE) *********************************/
+/***************************** å®‰å¯ŒèŽ±ç”µå­ www.armfly.com (END OF FILE) *********************************/

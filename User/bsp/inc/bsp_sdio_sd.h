@@ -1,4 +1,4 @@
-// ±¾ÎÄ¼şÀ´Ô´ÓÚ stm324xg_eval_sdio_sd.h
+// æœ¬æ–‡ä»¶æ¥æºäº stm324xg_eval_sdio_sd.h
 
 /**
   ******************************************************************************
@@ -39,13 +39,13 @@
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f4xx.h"
 
-/****************** ÏÂÃæµÄÄÚÈİÀ´×Ô stm324xg_eval.h **********************************/
+/****************** ä¸‹é¢çš„å†…å®¹æ¥è‡ª stm324xg_eval.h **********************************/
 
 /**
   * @brief  SD FLASH SDIO Interface
   */
 
-/* ¶¨Òå¼ì²â¿¨²åÈëµÄGPIO. °²¸»À³STM32-V5, V6¿ª·¢°å¿¨²åÈëĞÅºÅÎª PE2 */
+/* å®šä¹‰æ£€æµ‹å¡æ’å…¥çš„GPIO. å®‰å¯Œè±STM32-V5, V6å¼€å‘æ¿å¡æ’å…¥ä¿¡å·ä¸º PE2 */
 #define SD_DETECT_PIN                    GPIO_Pin_2
 #define SD_DETECT_GPIO_PORT              GPIOE
 #define SD_DETECT_GPIO_CLK               RCC_AHB1Periph_GPIOE
@@ -58,7 +58,7 @@
 /**
   * @brief  SDIO Data Transfer Frequency (25MHz max)
   */
-#define SDIO_TRANSFER_CLK_DIV            ((uint8_t)0x0)		/* È±Ê¡ÊÇ0£¬ */
+#define SDIO_TRANSFER_CLK_DIV            ((uint8_t)0x0)		/* ç¼ºçœæ˜¯0ï¼Œ */
 
 #define SD_SDIO_DMA                   DMA2
 #define SD_SDIO_DMA_CLK               RCC_AHB1Periph_DMA2
@@ -88,7 +88,7 @@
  #define SD_SDIO_DMA_IRQHANDLER        DMA2_Stream6_IRQHandler
 #endif /* SD_SDIO_DMA_STREAM3 */
 
-/****************** ÏÂÃæµÄÄÚÈİÀ´×Ô stm324xg_eval_sdio_sd.h ***************************************/
+/****************** ä¸‹é¢çš„å†…å®¹æ¥è‡ª stm324xg_eval_sdio_sd.h ***************************************/
 
 /** @addtogroup Utilities
   * @{

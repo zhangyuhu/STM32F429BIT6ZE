@@ -1,16 +1,16 @@
 /*
 *********************************************************************************************************
 *
-*	Ä£¿éÃû³Æ : VS1053B mp3½âÂëÆ÷Ä£¿é
-*	ÎÄ¼þÃû³Æ : bsp_vs1053b.c
-*	°æ    ±¾ : V1.0
-*	Ëµ    Ã÷ : VS1053BÐ¾Æ¬µ×²ãÇý¶¯¡£
+*	æ¨¡å—åç§° : VS1053B mp3è§£ç å™¨æ¨¡å—
+*	æ–‡ä»¶åç§° : bsp_vs1053b.c
+*	ç‰ˆ    æœ¬ : V1.0
+*	è¯´    æ˜Ž : VS1053BèŠ¯ç‰‡åº•å±‚é©±åŠ¨ã€‚
 *
-*	ÐÞ¸Ä¼ÇÂ¼ :
-*		°æ±¾ºÅ  ÈÕÆÚ        ×÷Õß     ËµÃ÷
-*		V1.0    2013-07-12 armfly  ÕýÊ½·¢²¼
+*	ä¿®æ”¹è®°å½• :
+*		ç‰ˆæœ¬å·  æ—¥æœŸ        ä½œè€…     è¯´æ˜Ž
+*		V1.0    2013-07-12 armfly  æ­£å¼å‘å¸ƒ
 *
-*	Copyright (C), 2013-2014, °²¸»À³µç×Ó www.armfly.com
+*	Copyright (C), 2013-2014, å®‰å¯ŒèŽ±ç”µå­ www.armfly.com
 *
 *********************************************************************************************************
 */
@@ -18,7 +18,7 @@
 #include "bsp.h"
 
 /*
-	°²¸»À³STM32-V6¿ª·¢°åºÍVS1053BµÄ¿ÚÏßÁ¬½Ó£º
+	å®‰å¯ŒèŽ±STM32-V6å¼€å‘æ¿å’ŒVS1053Bçš„å£çº¿è¿žæŽ¥ï¼š
 		PB3/SPI3_SCK
 		PB4/SPI3_MISO
 		PB5/SPI3_MOSI
@@ -26,7 +26,7 @@
 		PB8/NRF905_DR/VS1053_DREQ
 		PC2/NRF905_CSN/VS1053_XCS
 		
-		À©Õ¹IO /NRF905_TRX_CE/VS1053_XDCS  
+		æ‰©å±•IO /NRF905_TRX_CE/VS1053_XDCS  
 */
 
 #define USE_HC574
@@ -39,8 +39,8 @@
 #define GPIO_DREQ  GPIOB
 #define PIN_DREQ   GPIO_Pin_8
 
-/*¡¡XDCS */
-#ifdef USE_HC574	/* Ê¹ÓÃÀ©Õ¹IO */	
+/*ã€€XDCS */
+#ifdef USE_HC574	/* ä½¿ç”¨æ‰©å±•IO */	
 	#define VS1053_DS_0()	HC574_SetPin(VS1053_XDCS, 0);
 	#define VS1053_DS_1()	HC574_SetPin(VS1053_XDCS, 1);
 #else
@@ -57,7 +57,7 @@
 
 #define VS1053_IS_BUSY()	((GPIO_DREQ->IDR & PIN_DREQ) == 0)
 
-#define DUMMY_BYTE    0xFF		/* ¿É¶¨ÒåÈÎÒâÖµ */
+#define DUMMY_BYTE    0xFF		/* å¯å®šä¹‰ä»»æ„å€¼ */
 
 uint8_t vs1053ram[5]={0,0,0,0,250};
 
@@ -142,45 +142,45 @@ const uint16_t plugin[605] = { /* Compressed plugin */
 
 /*
 *********************************************************************************************************
-*	º¯ Êý Ãû: vs1053_Init
-*	¹¦ÄÜËµÃ÷: ³õÊ¼»¯vs1053BÓ²¼þÉè±¸
-*	ÐÎ    ²Î: ÎÞ
-*	·µ »Ø Öµ: 1 ±íÊ¾³õÊ¼»¯Õý³££¬0±íÊ¾³õÊ¼»¯²»Õý³£
+*	å‡½ æ•° å: vs1053_Init
+*	åŠŸèƒ½è¯´æ˜Ž: åˆå§‹åŒ–vs1053Bç¡¬ä»¶è®¾å¤‡
+*	å½¢    å‚: æ— 
+*	è¿” å›ž å€¼: 1 è¡¨ç¤ºåˆå§‹åŒ–æ­£å¸¸ï¼Œ0è¡¨ç¤ºåˆå§‹åŒ–ä¸æ­£å¸¸
 *********************************************************************************************************
 */
 void vs1053_Init(void)
 {
 	GPIO_InitTypeDef GPIO_InitStructure;
 
-	/* ´ò¿ªÏà¹ØÄ£¿éµÄÊ±ÖÓ */
+	/* æ‰“å¼€ç›¸å…³æ¨¡å—çš„æ—¶é’Ÿ */
 	RCC_AHB1PeriphClockCmd(RCC_CS | RCC_DREQ, ENABLE);
 
-	/* ÅäÖÃPB8×÷Îªvs1053BµÄÊý¾ÝÇëÇó */
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;		/* ÉèÎªÊäÈë¿Ú */
-	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;		/* ÉèÎªÍÆÍìÄ£Ê½ */
-	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;	/* ÎÞÐèÉÏÏÂÀ­µç×è */
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;	/* IO¿ÚËÙ¶È */
+	/* é…ç½®PB8ä½œä¸ºvs1053Bçš„æ•°æ®è¯·æ±‚ */
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;		/* è®¾ä¸ºè¾“å…¥å£ */
+	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;		/* è®¾ä¸ºæŽ¨æŒ½æ¨¡å¼ */
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;	/* æ— éœ€ä¸Šä¸‹æ‹‰ç”µé˜» */
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;	/* IOå£é€Ÿåº¦ */
 	GPIO_InitStructure.GPIO_Pin = PIN_DREQ;
 	GPIO_Init(GPIO_DREQ, &GPIO_InitStructure);
 
-	/* ÅäÖÃPC2×÷Îªvs1053BµÄXCS */
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;		/* ÉèÎªÊä³ö¿Ú */
-	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;		/* ÉèÎªÍÆÍìÄ£Ê½ */
-	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;	/* ÉÏÏÂÀ­µç×è²»Ê¹ÄÜ */
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;	/* IO¿Ú×î´óËÙ¶È */
+	/* é…ç½®PC2ä½œä¸ºvs1053Bçš„XCS */
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;		/* è®¾ä¸ºè¾“å‡ºå£ */
+	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;		/* è®¾ä¸ºæŽ¨æŒ½æ¨¡å¼ */
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;	/* ä¸Šä¸‹æ‹‰ç”µé˜»ä¸ä½¿èƒ½ */
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;	/* IOå£æœ€å¤§é€Ÿåº¦ */
 	GPIO_InitStructure.GPIO_Pin = PIN_CS;
 	GPIO_Init(GPIO_CS, &GPIO_InitStructure);
 
-#ifdef USE_HC574	/* Ê¹ÓÃÀ©Õ¹IO */	
+#ifdef USE_HC574	/* ä½¿ç”¨æ‰©å±•IO */	
 	;
 #else
 	RCC_AHB1PeriphClockCmd(RCC_DS, ENABLE);
 
-	/* ÅäÖÃPA5×÷Îªvs1053BµÄXDCS */
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;		/* ÉèÎªÊä³ö¿Ú */
-	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;		/* ÉèÎªÍÆÍìÄ£Ê½ */
-	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;	/* ÉÏÏÂÀ­µç×è²»Ê¹ÄÜ */
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;	/* IO¿Ú×î´óËÙ¶È */
+	/* é…ç½®PA5ä½œä¸ºvs1053Bçš„XDCS */
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;		/* è®¾ä¸ºè¾“å‡ºå£ */
+	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;		/* è®¾ä¸ºæŽ¨æŒ½æ¨¡å¼ */
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;	/* ä¸Šä¸‹æ‹‰ç”µé˜»ä¸ä½¿èƒ½ */
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;	/* IOå£æœ€å¤§é€Ÿåº¦ */
 	GPIO_InitStructure.GPIO_Pin = PIN_DS;
 	GPIO_Init(GPIO_DS, &GPIO_InitStructure);
 #endif	
@@ -188,70 +188,70 @@ void vs1053_Init(void)
 	VS1053_CS_1();
 	VS1053_DS_1();	
 
-	/* Èí¼þSPIÄ£Äâ»¹ÊÇÓ²¼þSPIÓÉ bsp_spi_bus.c ÎÄ¼þ¾ö¶¨¡£ ²»ÒªÔÚÕâ¸öµØ·½ÅäÖÃSPIÓ²¼þ */
+	/* è½¯ä»¶SPIæ¨¡æ‹Ÿè¿˜æ˜¯ç¡¬ä»¶SPIç”± bsp_spi_bus.c æ–‡ä»¶å†³å®šã€‚ ä¸è¦åœ¨è¿™ä¸ªåœ°æ–¹é…ç½®SPIç¡¬ä»¶ */
 	//bsp_CfgSPIForVS1053B();
 }
 
 /*
 *********************************************************************************************************
-*	º¯ Êý Ãû: bsp_CfgSPIForVS1053B
-*	¹¦ÄÜËµÃ÷: ÅäÖÃSTM32ÄÚ²¿SPIÓ²¼þµÄ¹¤×÷Ä£Ê½¡¢ËÙ¶ÈµÈ²ÎÊý£¬ÓÃÓÚ·ÃÎÊVS1053B
-*	ÐÎ    ²Î:  ÎÞ
-*	·µ »Ø Öµ: ÎÞ
+*	å‡½ æ•° å: bsp_CfgSPIForVS1053B
+*	åŠŸèƒ½è¯´æ˜Ž: é…ç½®STM32å†…éƒ¨SPIç¡¬ä»¶çš„å·¥ä½œæ¨¡å¼ã€é€Ÿåº¦ç­‰å‚æ•°ï¼Œç”¨äºŽè®¿é—®VS1053B
+*	å½¢    å‚:  æ— 
+*	è¿” å›ž å€¼: æ— 
 *********************************************************************************************************
 */
 void bsp_CfgSPIForVS1053B(void)
 {
 	SPI_InitTypeDef  SPI_InitStructure;
 
-	/* ´ò¿ªSPIÊ±ÖÓ */
+	/* æ‰“å¼€SPIæ—¶é’Ÿ */
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_SPI1, ENABLE);
 
-	/* SPI1 ÅäÖÃ */
-	SPI_InitStructure.SPI_Direction = SPI_Direction_2Lines_FullDuplex;	/* Ñ¡Ôñ2ÏßÈ«Ë«¹¤Ä£Ê½ */
-	SPI_InitStructure.SPI_Mode = SPI_Mode_Master;		/* CPUµÄSPI×÷ÎªÖ÷Éè±¸ */
-	SPI_InitStructure.SPI_DataSize = SPI_DataSize_8b;	/* 8¸öÊý¾Ý */
-	SPI_InitStructure.SPI_CPOL = SPI_CPOL_Low;			/* CLKÒý½Å¿ÕÏÐ×´Ì¬µçÆ½ = 0 */
-	SPI_InitStructure.SPI_CPHA = SPI_CPHA_1Edge;		/* Êý¾Ý²ÉÑùÔÚµÚ1¸ö±ßÑØ(ÉÏÉýÑØ) */
-	SPI_InitStructure.SPI_NSS = SPI_NSS_Soft;  			/* Èí¼þ¿ØÖÆÆ¬Ñ¡ */
+	/* SPI1 é…ç½® */
+	SPI_InitStructure.SPI_Direction = SPI_Direction_2Lines_FullDuplex;	/* é€‰æ‹©2çº¿å…¨åŒå·¥æ¨¡å¼ */
+	SPI_InitStructure.SPI_Mode = SPI_Mode_Master;		/* CPUçš„SPIä½œä¸ºä¸»è®¾å¤‡ */
+	SPI_InitStructure.SPI_DataSize = SPI_DataSize_8b;	/* 8ä¸ªæ•°æ® */
+	SPI_InitStructure.SPI_CPOL = SPI_CPOL_Low;			/* CLKå¼•è„šç©ºé—²çŠ¶æ€ç”µå¹³ = 0 */
+	SPI_InitStructure.SPI_CPHA = SPI_CPHA_1Edge;		/* æ•°æ®é‡‡æ ·åœ¨ç¬¬1ä¸ªè¾¹æ²¿(ä¸Šå‡æ²¿) */
+	SPI_InitStructure.SPI_NSS = SPI_NSS_Soft;  			/* è½¯ä»¶æŽ§åˆ¶ç‰‡é€‰ */
 
 	/*
-		ÓÉÓÚSPI1µÄÊ±ÖÓÔ´ÊÇ84M, SPI3µÄÊ±ÖÓÔ´ÊÇ42M¡£ÎªÁË»ñµÃ¸ü¿ìµÄËÙ¶È£¬Èí¼þÉÏÑ¡ÔñSPI1¡£
-		pdf page=23 vs1053B SPIÊäÈëÊ±ÖÓ 4¸öCLKI cycles£» CLKI = 12.288M
-		Òò´Ë×î´óSPIÊ±ÖÓ = 12.288 / 4 = 3.072MHz
-		ÐèÒª 32·ÖÆµ
+		ç”±äºŽSPI1çš„æ—¶é’Ÿæºæ˜¯84M, SPI3çš„æ—¶é’Ÿæºæ˜¯42Mã€‚ä¸ºäº†èŽ·å¾—æ›´å¿«çš„é€Ÿåº¦ï¼Œè½¯ä»¶ä¸Šé€‰æ‹©SPI1ã€‚
+		pdf page=23 vs1053B SPIè¾“å…¥æ—¶é’Ÿ 4ä¸ªCLKI cyclesï¼› CLKI = 12.288M
+		å› æ­¤æœ€å¤§SPIæ—¶é’Ÿ = 12.288 / 4 = 3.072MHz
+		éœ€è¦ 32åˆ†é¢‘
 	*/
 	SPI_InitStructure.SPI_BaudRatePrescaler = SPI_BaudRatePrescaler_64;
 
-	SPI_InitStructure.SPI_FirstBit = SPI_FirstBit_MSB;	/* ×î¸ßÎ»ÏÈ´«Êä */
+	SPI_InitStructure.SPI_FirstBit = SPI_FirstBit_MSB;	/* æœ€é«˜ä½å…ˆä¼ è¾“ */
 	SPI_InitStructure.SPI_CRCPolynomial = 7;
 	SPI_Init(SPI1,&SPI_InitStructure);
 
-	SPI_Cmd(SPI1, DISABLE);			/* ÏÈ½ûÖ¹SPI  */
+	SPI_Cmd(SPI1, DISABLE);			/* å…ˆç¦æ­¢SPI  */
 
-	SPI_Cmd(SPI1, ENABLE);			/* Ê¹ÄÜSPI  */
+	SPI_Cmd(SPI1, ENABLE);			/* ä½¿èƒ½SPI  */
 }
 
 /*
 *********************************************************************************************************
-*	º¯ Êý Ãû: vs1053_SetCS(0)
-*	¹¦ÄÜËµÃ÷: ÉèÖÃCS¡£ ÓÃÓÚÔËÐÐÖÐSPI¹²Ïí¡£
-*	ÐÎ    ²Î: ÎÞ
-	·µ »Ø Öµ: ÎÞ
+*	å‡½ æ•° å: vs1053_SetCS(0)
+*	åŠŸèƒ½è¯´æ˜Ž: è®¾ç½®CSã€‚ ç”¨äºŽè¿è¡Œä¸­SPIå…±äº«ã€‚
+*	å½¢    å‚: æ— 
+	è¿” å›ž å€¼: æ— 
 *********************************************************************************************************
 */
 static void vs1053_SetCS(uint8_t _level)
 {
 	if (_level == 0)
 	{
-		bsp_SpiBusEnter();	/* Õ¼ÓÃSPI×ÜÏß£¬ ÓÃÓÚ×ÜÏß¹²Ïí */
+		bsp_SpiBusEnter();	/* å ç”¨SPIæ€»çº¿ï¼Œ ç”¨äºŽæ€»çº¿å…±äº« */
 
-		#ifdef SOFT_SPI		/* Èí¼þSPI */
+		#ifdef SOFT_SPI		/* è½¯ä»¶SPI */
 			bsp_SetSpiSck(0);
 			VS1053_CS_0();
 		#endif
 
-		#ifdef HARD_SPI		/* Ó²¼þSPI */
+		#ifdef HARD_SPI		/* ç¡¬ä»¶SPI */
 			VS1053_CS_0();
 
 			bsp_SPI_Init(SPI_Direction_2Lines_FullDuplex | SPI_Mode_Master | SPI_DataSize_8b
@@ -262,30 +262,30 @@ static void vs1053_SetCS(uint8_t _level)
 	{
 		VS1053_CS_1();
 
-		bsp_SpiBusExit();	/* ÊÍ·ÅSPI×ÜÏß£¬ ÓÃÓÚ×ÜÏß¹²Ïí */
+		bsp_SpiBusExit();	/* é‡Šæ”¾SPIæ€»çº¿ï¼Œ ç”¨äºŽæ€»çº¿å…±äº« */
 	}
 }
 
 /*
 *********************************************************************************************************
-*	º¯ Êý Ãû: vs1053_SetDS(0)
-*	¹¦ÄÜËµÃ÷: ÉèÖÃDS¡£ ÓÃÓÚÔËÐÐÖÐSPI¹²Ïí¡£
-*	ÐÎ    ²Î: ÎÞ
-	·µ »Ø Öµ: ÎÞ
+*	å‡½ æ•° å: vs1053_SetDS(0)
+*	åŠŸèƒ½è¯´æ˜Ž: è®¾ç½®DSã€‚ ç”¨äºŽè¿è¡Œä¸­SPIå…±äº«ã€‚
+*	å½¢    å‚: æ— 
+	è¿” å›ž å€¼: æ— 
 *********************************************************************************************************
 */
 static void vs1053_SetDS(uint8_t _level)
 {
 	if (_level == 0)
 	{
-		bsp_SpiBusEnter();	/* Õ¼ÓÃSPI×ÜÏß£¬ ÓÃÓÚ×ÜÏß¹²Ïí */
+		bsp_SpiBusEnter();	/* å ç”¨SPIæ€»çº¿ï¼Œ ç”¨äºŽæ€»çº¿å…±äº« */
 
-		#ifdef SOFT_SPI		/* Èí¼þSPI */
+		#ifdef SOFT_SPI		/* è½¯ä»¶SPI */
 			bsp_SetSpiSck(0);
 			VS1053_DS_0();
 		#endif
 
-		#ifdef HARD_SPI		/* Ó²¼þSPI */
+		#ifdef HARD_SPI		/* ç¡¬ä»¶SPI */
 			VS1053_DS_0();
 
 			bsp_SPI_Init(SPI_Direction_2Lines_FullDuplex | SPI_Mode_Master | SPI_DataSize_8b
@@ -296,21 +296,21 @@ static void vs1053_SetDS(uint8_t _level)
 	{
 		VS1053_DS_1();
 
-		bsp_SpiBusExit();	/* ÊÍ·ÅSPI×ÜÏß£¬ ÓÃÓÚ×ÜÏß¹²Ïí */
+		bsp_SpiBusExit();	/* é‡Šæ”¾SPIæ€»çº¿ï¼Œ ç”¨äºŽæ€»çº¿å…±äº« */
 	}
 }
 
 /*
 *********************************************************************************************************
-*	º¯ Êý Ãû: vs1053_WriteCmd
-*	¹¦ÄÜËµÃ÷: Ïòvs1053Ð´ÃüÁî
-*	ÐÎ    ²Î: _ucAddr £º µØÖ·£» 		_usData £ºÊý¾Ý
-*	·µ »Ø Öµ: ÎÞ
+*	å‡½ æ•° å: vs1053_WriteCmd
+*	åŠŸèƒ½è¯´æ˜Ž: å‘vs1053å†™å‘½ä»¤
+*	å½¢    å‚: _ucAddr ï¼š åœ°å€ï¼› 		_usData ï¼šæ•°æ®
+*	è¿” å›ž å€¼: æ— 
 *********************************************************************************************************
 */
 void vs1053_WriteCmd(uint8_t _ucAddr, uint16_t _usData)
 {
-	/* µÈ´ýÐ¾Æ¬ÄÚ²¿²Ù×÷Íê³É */
+	/* ç­‰å¾…èŠ¯ç‰‡å†…éƒ¨æ“ä½œå®Œæˆ */
 	if (vs1053_WaitTimeOut())
 	{
 		return;
@@ -318,20 +318,20 @@ void vs1053_WriteCmd(uint8_t _ucAddr, uint16_t _usData)
 
 	vs1053_SetCS(0);
 
-	bsp_spiWrite0(VS_WRITE_COMMAND);	/* ·¢ËÍvs1053µÄÐ´ÃüÁî */
-	bsp_spiWrite0(_ucAddr); 			/* ¼Ä´æÆ÷µØÖ· */
-	bsp_spiWrite0(_usData >> 8); 	/* ·¢ËÍ¸ß8Î» */
-	bsp_spiWrite0(_usData);	 		/* ·¢ËÍµÍ8Î» */
+	bsp_spiWrite0(VS_WRITE_COMMAND);	/* å‘é€vs1053çš„å†™å‘½ä»¤ */
+	bsp_spiWrite0(_ucAddr); 			/* å¯„å­˜å™¨åœ°å€ */
+	bsp_spiWrite0(_usData >> 8); 	/* å‘é€é«˜8ä½ */
+	bsp_spiWrite0(_usData);	 		/* å‘é€ä½Ž8ä½ */
 	
 	vs1053_SetCS(1);
 }
 
 /*
 *********************************************************************************************************
-*	º¯ Êý Ãû: vs1053_ReqNewData
-*	¹¦ÄÜËµÃ÷: ÅÐ¶Ïvs1053ÊÇ·ñÇëÇóÐÂÊý¾Ý¡£ vs1053ÄÚ²¿ÓÐ0.5k»º³åÇø¡£
-*	ÐÎ    ²Î: ÎÞ
-*	·µ »Ø Öµ: ÎÞ
+*	å‡½ æ•° å: vs1053_ReqNewData
+*	åŠŸèƒ½è¯´æ˜Ž: åˆ¤æ–­vs1053æ˜¯å¦è¯·æ±‚æ–°æ•°æ®ã€‚ vs1053å†…éƒ¨æœ‰0.5kç¼“å†²åŒºã€‚
+*	å½¢    å‚: æ— 
+*	è¿” å›ž å€¼: æ— 
 *********************************************************************************************************
 */
 uint8_t vs1053_ReqNewData(void)
@@ -348,10 +348,10 @@ uint8_t vs1053_ReqNewData(void)
 
 /*
 *********************************************************************************************************
-*	º¯ Êý Ãû: vs1053_PreWriteData
-*	¹¦ÄÜËµÃ÷: ×¼±¸Ïòvs1053Ð´Êý¾Ý£¬µ÷ÓÃ1´Î¼´¿É
-*	ÐÎ    ²Î: _ÎÞ
-*	·µ »Ø Öµ: ÎÞ
+*	å‡½ æ•° å: vs1053_PreWriteData
+*	åŠŸèƒ½è¯´æ˜Ž: å‡†å¤‡å‘vs1053å†™æ•°æ®ï¼Œè°ƒç”¨1æ¬¡å³å¯
+*	å½¢    å‚: _æ— 
+*	è¿” å›ž å€¼: æ— 
 *********************************************************************************************************
 */
 void vs1053_PreWriteData(void)
@@ -362,10 +362,10 @@ void vs1053_PreWriteData(void)
 
 /*
 *********************************************************************************************************
-*	º¯ Êý Ãû: vs1053_WriteData
-*	¹¦ÄÜËµÃ÷: Ïòvs1053Ð´Êý¾Ý
-*	ÐÎ    ²Î: ÎÞ
-*	·µ »Ø Öµ: ÎÞ
+*	å‡½ æ•° å: vs1053_WriteData
+*	åŠŸèƒ½è¯´æ˜Ž: å‘vs1053å†™æ•°æ®
+*	å½¢    å‚: æ— 
+*	è¿” å›ž å€¼: æ— 
 *********************************************************************************************************
 */
 void vs1053_WriteData(uint8_t _ucData)
@@ -377,17 +377,17 @@ void vs1053_WriteData(uint8_t _ucData)
 
 /*
 *********************************************************************************************************
-*	º¯ Êý Ãû: vs1053_ReadReg
-*	¹¦ÄÜËµÃ÷: ¶Ávs1053µÄ¼Ä´æÆ÷
-*	ÐÎ    ²Î: _ucAddr:¼Ä´æÆ÷µØÖ·
-*	·µ »Ø Öµ: ¼Ä´æÆ÷Öµ
+*	å‡½ æ•° å: vs1053_ReadReg
+*	åŠŸèƒ½è¯´æ˜Ž: è¯»vs1053çš„å¯„å­˜å™¨
+*	å½¢    å‚: _ucAddr:å¯„å­˜å™¨åœ°å€
+*	è¿” å›ž å€¼: å¯„å­˜å™¨å€¼
 *********************************************************************************************************
 */
 uint16_t vs1053_ReadReg(uint8_t _ucAddr)
 {
 	uint16_t usTemp;
 
-	/* µÈ´ýÐ¾Æ¬ÄÚ²¿²Ù×÷Íê³É */
+	/* ç­‰å¾…èŠ¯ç‰‡å†…éƒ¨æ“ä½œå®Œæˆ */
 	if (vs1053_WaitTimeOut())
 	{
 		return 0;
@@ -395,10 +395,10 @@ uint16_t vs1053_ReadReg(uint8_t _ucAddr)
 
 	vs1053_SetCS(0);
 	
-	bsp_spiWrite0(VS_READ_COMMAND);	/* ·¢ËÍvs1053¶ÁÃüÁî */
-	bsp_spiWrite0(_ucAddr);			/* ·¢ËÍµØÖ· */
-	usTemp = bsp_spiRead0() << 8;	/* ¶ÁÈ¡¸ß×Ö½Ú */
-	usTemp += bsp_spiRead0();		/* ¶ÁÈ¡µÍ×Ö½Ú */
+	bsp_spiWrite0(VS_READ_COMMAND);	/* å‘é€vs1053è¯»å‘½ä»¤ */
+	bsp_spiWrite0(_ucAddr);			/* å‘é€åœ°å€ */
+	usTemp = bsp_spiRead0() << 8;	/* è¯»å–é«˜å­—èŠ‚ */
+	usTemp += bsp_spiRead0();		/* è¯»å–ä½Žå­—èŠ‚ */
 	
 	vs1053_SetCS(1);
 	return usTemp;
@@ -406,17 +406,17 @@ uint16_t vs1053_ReadReg(uint8_t _ucAddr)
 
 /*
 *********************************************************************************************************
-*	º¯ Êý Ãû: vs1053_ReadChipID
-*	¹¦ÄÜËµÃ÷: ¶Ávs1053Ð¾Æ¬µÄ°æ±¾¼´ID£¬ ÓÃÓÚÊ¶±ðÊÇVS1003»¹ÊÇ VS1053
-*	ÐÎ    ²Î: ÎÞ
-*	·µ »Ø Öµ: 4bitµÄÐ¾Æ¬ID¡£Version
+*	å‡½ æ•° å: vs1053_ReadChipID
+*	åŠŸèƒ½è¯´æ˜Ž: è¯»vs1053èŠ¯ç‰‡çš„ç‰ˆæœ¬å³IDï¼Œ ç”¨äºŽè¯†åˆ«æ˜¯VS1003è¿˜æ˜¯ VS1053
+*	å½¢    å‚: æ— 
+*	è¿” å›ž å€¼: 4bitçš„èŠ¯ç‰‡IDã€‚Version
 *********************************************************************************************************
 */
 uint8_t vs1053_ReadChipID(void)
 {
 	uint16_t usStatus;
 	/* pdf page 40
-		SCI STATUS ×´Ì¬¼Ä´æÆ÷µÄ Bit7:4 ±íÊ¾Ð¾Æ¬µÄ°æ±¾
+		SCI STATUS çŠ¶æ€å¯„å­˜å™¨çš„ Bit7:4 è¡¨ç¤ºèŠ¯ç‰‡çš„ç‰ˆæœ¬
 		0 for VS1001
 		1 for VS1011
 		2 for VS1002
@@ -433,10 +433,10 @@ uint8_t vs1053_ReadChipID(void)
 
 /*
 *********************************************************************************************************
-*	º¯ Êý Ãû: vs1053_WaitBusy
-*	¹¦ÄÜËµÃ÷: µÈ´ýÐ¾Æ¬ÄÚ²¿½áÊø²Ù×÷¡£¸ù¾ÝDREQ¿ÚÏßµÄ×´Ì¬Ê¶±ðÐ¾Æ¬ÊÇ·ñÃ¦¡£¸Ãº¯ÊýÓÃÓÚÖ¸Áî²Ù×÷¼äÑÓ³Ù¡£
-*	ÐÎ    ²Î: ÎÞ
-*	·µ »Ø Öµ: 0 ±íÊ¾³¬Ê±£¬ 1±íÊ¾
+*	å‡½ æ•° å: vs1053_WaitBusy
+*	åŠŸèƒ½è¯´æ˜Ž: ç­‰å¾…èŠ¯ç‰‡å†…éƒ¨ç»“æŸæ“ä½œã€‚æ ¹æ®DREQå£çº¿çš„çŠ¶æ€è¯†åˆ«èŠ¯ç‰‡æ˜¯å¦å¿™ã€‚è¯¥å‡½æ•°ç”¨äºŽæŒ‡ä»¤æ“ä½œé—´å»¶è¿Ÿã€‚
+*	å½¢    å‚: æ— 
+*	è¿” å›ž å€¼: 0 è¡¨ç¤ºè¶…æ—¶ï¼Œ 1è¡¨ç¤º
 *********************************************************************************************************
 */
 uint8_t vs1053_WaitTimeOut(void)
@@ -453,10 +453,10 @@ uint8_t vs1053_WaitTimeOut(void)
 
 	if (i >= 4000000)
 	{
-		return 1;	/* ³¬Ê±ÎÞÓ¦´ð£¬Ó²¼þÒì³£ */
+		return 1;	/* è¶…æ—¶æ— åº”ç­”ï¼Œç¡¬ä»¶å¼‚å¸¸ */
 	}
 
-	return 0;	/* Õý³£·µ»Ø */
+	return 0;	/* æ­£å¸¸è¿”å›ž */
 }
 
 void LoadUserPatch(void)
@@ -489,7 +489,7 @@ void LoadUserPatch(void)
 			}
 		}
 	}
-	/* µÈ´ýÐ¾Æ¬ÄÚ²¿²Ù×÷Íê³É */
+	/* ç­‰å¾…èŠ¯ç‰‡å†…éƒ¨æ“ä½œå®Œæˆ */
 	if (vs1053_WaitTimeOut())
 	{
 		return;
@@ -498,19 +498,19 @@ void LoadUserPatch(void)
 
 /*
 *********************************************************************************************************
-*	º¯ Êý Ãû: vs1053_TestRam
-*	¹¦ÄÜËµÃ÷: ²âÊÔvs1053BµÄÄÚ²¿RAM
-*	ÐÎ    ²Î: ÎÞ
-*	·µ »Ø Öµ: 1±íÊ¾OK, 0±íÊ¾´íÎó.
+*	å‡½ æ•° å: vs1053_TestRam
+*	åŠŸèƒ½è¯´æ˜Ž: æµ‹è¯•vs1053Bçš„å†…éƒ¨RAM
+*	å½¢    å‚: æ— 
+*	è¿” å›ž å€¼: 1è¡¨ç¤ºOK, 0è¡¨ç¤ºé”™è¯¯.
 *********************************************************************************************************
 */
 uint8_t vs1053_TestRam(void)
 {
 	uint16_t usRegValue;
 
- 	vs1053_WriteCmd(SCI_MODE, 0x0820);	/* ½øÈëvs1053µÄ²âÊÔÄ£Ê½ */
+ 	vs1053_WriteCmd(SCI_MODE, 0x0820);	/* è¿›å…¥vs1053çš„æµ‹è¯•æ¨¡å¼ */
 
-	/* µÈ´ýÐ¾Æ¬ÄÚ²¿²Ù×÷Íê³É */
+	/* ç­‰å¾…èŠ¯ç‰‡å†…éƒ¨æ“ä½œå®Œæˆ */
 	if (vs1053_WaitTimeOut())
 	{
 		return 0;
@@ -529,13 +529,13 @@ uint8_t vs1053_TestRam(void)
 	
 	vs1053_SetDS(1);
 
-	/* µÈ´ýÐ¾Æ¬ÄÚ²¿²Ù×÷Íê³É */
+	/* ç­‰å¾…èŠ¯ç‰‡å†…éƒ¨æ“ä½œå®Œæˆ */
 	if (vs1053_WaitTimeOut())
 	{
 		return 0;
 	}
 
-	usRegValue = vs1053_ReadReg(SCI_HDAT0); /* Èç¹ûµÃµ½µÄÖµÎª0x807F£¬Ôò±íÃ÷OK */
+	usRegValue = vs1053_ReadReg(SCI_HDAT0); /* å¦‚æžœå¾—åˆ°çš„å€¼ä¸º0x807Fï¼Œåˆ™è¡¨æ˜ŽOK */
 
 	if (usRegValue == 0x807F)
 	{
@@ -549,47 +549,47 @@ uint8_t vs1053_TestRam(void)
 
 /*
 *********************************************************************************************************
-*	º¯ Êý Ãû: vs1053_TestSine
-*	¹¦ÄÜËµÃ÷: ÕýÏÒ²âÊÔ
-*	ÐÎ    ²Î: ÎÞ
-*	·µ »Ø Öµ: ÎÞ
+*	å‡½ æ•° å: vs1053_TestSine
+*	åŠŸèƒ½è¯´æ˜Ž: æ­£å¼¦æµ‹è¯•
+*	å½¢    å‚: æ— 
+*	è¿” å›ž å€¼: æ— 
 *********************************************************************************************************
 */
 void vs1053_TestSine(void)
 {
 	/*
-		ÕýÏÒ²âÊÔÍ¨¹ýÓÐÐòµÄ8×Ö½Ú³õÊ¼»¯£¬0x53 0xEF 0x6E n 0 0 0 0
-		ÏëÒªÍË³öÕýÏÒ²âÊÔÄ£Ê½µÄ»°£¬·¢ËÍÈçÏÂÐòÁÐ 0x45 0x78 0x69 0x74 0 0 0 0 .
+		æ­£å¼¦æµ‹è¯•é€šè¿‡æœ‰åºçš„8å­—èŠ‚åˆå§‹åŒ–ï¼Œ0x53 0xEF 0x6E n 0 0 0 0
+		æƒ³è¦é€€å‡ºæ­£å¼¦æµ‹è¯•æ¨¡å¼çš„è¯ï¼Œå‘é€å¦‚ä¸‹åºåˆ— 0x45 0x78 0x69 0x74 0 0 0 0 .
 
-		ÕâÀïµÄn±»¶¨ÒåÎªÕýÏÒ²âÊÔÊ¹ÓÃ£¬¶¨Òå
-		ÈçÏÂ£º
+		è¿™é‡Œçš„nè¢«å®šä¹‰ä¸ºæ­£å¼¦æµ‹è¯•ä½¿ç”¨ï¼Œå®šä¹‰
+		å¦‚ä¸‹ï¼š
 		n bits
-		Ãû³ÆÎ» ÃèÊö
-		FsIdx 7£º5 ²ÉÑùÂÊË÷Òý
-		S 4£º0 ÕýÏÒÌø¹ýËÙ¶È
-		ÕýÏÒÊä³öÆµÂÊ¿ÉÍ¨¹ýÕâ¸ö¹«Ê½¼ÆËã£ºF=Fs¡Á(S/128).
-		ÀýÈç£ºÕýÏÒ²âÊÔÖµÎª126 Ê±±»¼¤»î£¬¶þ½øÖÆÎª
-		0b01111110¡£ÔòFsIdx=0b011=3,ËùÒÔFs=22050Hz¡£
-		S=0b11110=30, ËùÒÔ×îÖÕµÄÕýÏÒÊä³öÆµÂÊÎª
-		F=22050Hz¡Á30/128=5168Hz¡£
+		åç§°ä½ æè¿°
+		FsIdx 7ï¼š5 é‡‡æ ·çŽ‡ç´¢å¼•
+		S 4ï¼š0 æ­£å¼¦è·³è¿‡é€Ÿåº¦
+		æ­£å¼¦è¾“å‡ºé¢‘çŽ‡å¯é€šè¿‡è¿™ä¸ªå…¬å¼è®¡ç®—ï¼šF=FsÃ—(S/128).
+		ä¾‹å¦‚ï¼šæ­£å¼¦æµ‹è¯•å€¼ä¸º126 æ—¶è¢«æ¿€æ´»ï¼ŒäºŒè¿›åˆ¶ä¸º
+		0b01111110ã€‚åˆ™FsIdx=0b011=3,æ‰€ä»¥Fs=22050Hzã€‚
+		S=0b11110=30, æ‰€ä»¥æœ€ç»ˆçš„æ­£å¼¦è¾“å‡ºé¢‘çŽ‡ä¸º
+		F=22050HzÃ—30/128=5168Hzã€‚
 
 
-		ÕýÏÒÊä³öÆµÂÊ¿ÉÍ¨¹ýÕâ¸ö¹«Ê½¼ÆËã£ºF = Fs¡Á(S/128).
+		æ­£å¼¦è¾“å‡ºé¢‘çŽ‡å¯é€šè¿‡è¿™ä¸ªå…¬å¼è®¡ç®—ï¼šF = FsÃ—(S/128).
 	*/
 
-	vs1053_WriteCmd(0x0b,0x2020);	  	/* ÉèÖÃÒôÁ¿	*/
- 	vs1053_WriteCmd(SCI_MODE, 0x0820);	/* ½øÈëvs1053µÄ²âÊÔÄ£Ê½	*/
+	vs1053_WriteCmd(0x0b,0x2020);	  	/* è®¾ç½®éŸ³é‡	*/
+ 	vs1053_WriteCmd(SCI_MODE, 0x0820);	/* è¿›å…¥vs1053çš„æµ‹è¯•æ¨¡å¼	*/
 
- 	/* µÈ´ýÐ¾Æ¬ÄÚ²¿²Ù×÷Íê³É */
+ 	/* ç­‰å¾…èŠ¯ç‰‡å†…éƒ¨æ“ä½œå®Œæˆ */
 	if (vs1053_WaitTimeOut())
 	{
 		return;
 	}
 
  	/*
- 		½øÈëÕýÏÒ²âÊÔ×´Ì¬
- 		ÃüÁîÐòÁÐ£º0x53 0xef 0x6e n 0x00 0x00 0x00 0x00
- 		ÆäÖÐn = 0x24, Éè¶¨vs1053Ëù²úÉúµÄÕýÏÒ²¨µÄÆµÂÊÖµ
+ 		è¿›å…¥æ­£å¼¦æµ‹è¯•çŠ¶æ€
+ 		å‘½ä»¤åºåˆ—ï¼š0x53 0xef 0x6e n 0x00 0x00 0x00 0x00
+ 		å…¶ä¸­n = 0x24, è®¾å®švs1053æ‰€äº§ç”Ÿçš„æ­£å¼¦æ³¢çš„é¢‘çŽ‡å€¼
  	*/
 	vs1053_SetDS(0);
 	bsp_spiWrite0(0x53);
@@ -602,7 +602,7 @@ void vs1053_TestSine(void)
 	bsp_spiWrite0(0x00);
 	vs1053_SetDS(1);
 
-	/* ÍË³öÕýÏÒ²âÊÔ */
+	/* é€€å‡ºæ­£å¼¦æµ‹è¯• */
     vs1053_SetDS(0);
 	bsp_spiWrite0(0x45);
 	bsp_spiWrite0(0x78);
@@ -617,30 +617,30 @@ void vs1053_TestSine(void)
 
 /*
 *********************************************************************************************************
-*	º¯ Êý Ãû: vs1053_SoftReset
-*	¹¦ÄÜËµÃ÷: Èí¸´Î»vs1053¡£ ÔÚ¸èÇúÖ®¼äÐèÒªÖ´ÐÐ±¾º¯Êý¡£
-*	ÐÎ    ²Î: ÎÞ
-*	·µ »Ø Öµ: ÎÞ
+*	å‡½ æ•° å: vs1053_SoftReset
+*	åŠŸèƒ½è¯´æ˜Ž: è½¯å¤ä½vs1053ã€‚ åœ¨æ­Œæ›²ä¹‹é—´éœ€è¦æ‰§è¡Œæœ¬å‡½æ•°ã€‚
+*	å½¢    å‚: æ— 
+*	è¿” å›ž å€¼: æ— 
 *********************************************************************************************************
 */
 void vs1053_SoftReset(void)
 {
 	uint8_t retry;
 
-	/* µÈ´ýÐ¾Æ¬ÄÚ²¿²Ù×÷Íê³É */
+	/* ç­‰å¾…èŠ¯ç‰‡å†…éƒ¨æ“ä½œå®Œæˆ */
 	if (vs1053_WaitTimeOut())
 	{
 		return;
 	}
 
-	//vs1053_WriteByte(0X00);//Æô¶¯´«Êä
+	//vs1053_WriteByte(0X00);//å¯åŠ¨ä¼ è¾“
 	retry = 0;
-	while(vs1053_ReadReg(SCI_MODE) != 0x0804) // Èí¼þ¸´Î»,ÐÂÄ£Ê½
+	while(vs1053_ReadReg(SCI_MODE) != 0x0804) // è½¯ä»¶å¤ä½,æ–°æ¨¡å¼
 	{
-		/* µÈ´ýÖÁÉÙ1.35ms  */
-		vs1053_WriteCmd(SCI_MODE, 0x0804);// Èí¼þ¸´Î»,ÐÂÄ£Ê½
+		/* ç­‰å¾…è‡³å°‘1.35ms  */
+		vs1053_WriteCmd(SCI_MODE, 0x0804);// è½¯ä»¶å¤ä½,æ–°æ¨¡å¼
 
-		/* µÈ´ýÐ¾Æ¬ÄÚ²¿²Ù×÷Íê³É */
+		/* ç­‰å¾…èŠ¯ç‰‡å†…éƒ¨æ“ä½œå®Œæˆ */
 		if (vs1053_WaitTimeOut())
 		{
 			return;
@@ -654,28 +654,28 @@ void vs1053_SoftReset(void)
 
 #if 0
 	vs1053_WriteCmd(SCI_CLOCKF,0x9800);
-	vs1053_WriteCmd(SCI_AUDATA,0xBB81); /* ²ÉÑùÂÊ48k£¬Á¢ÌåÉù */
+	vs1053_WriteCmd(SCI_AUDATA,0xBB81); /* é‡‡æ ·çŽ‡48kï¼Œç«‹ä½“å£° */
 
 	vs1053_WriteCmd(SCI_BASS, 0x0000);	/* */
-    vs1053_WriteCmd(SCI_VOL, 0x2020); 	/* ÉèÖÃÎª×î´óÒôÁ¿,0ÊÇ×î´ó  */
+    vs1053_WriteCmd(SCI_VOL, 0x2020); 	/* è®¾ç½®ä¸ºæœ€å¤§éŸ³é‡,0æ˜¯æœ€å¤§  */
 
-	ResetDecodeTime();	/* ¸´Î»½âÂëÊ±¼ä	*/
+	ResetDecodeTime();	/* å¤ä½è§£ç æ—¶é—´	*/
 
-    /* Ïòvs1053·¢ËÍ4¸ö×Ö½ÚÎÞÐ§Êý¾Ý£¬ÓÃÒÔÆô¶¯SPI·¢ËÍ */
-    VS1053_DS_0();//Ñ¡ÖÐÊý¾Ý´«Êä
+    /* å‘vs1053å‘é€4ä¸ªå­—èŠ‚æ— æ•ˆæ•°æ®ï¼Œç”¨ä»¥å¯åŠ¨SPIå‘é€ */
+    VS1053_DS_0();//é€‰ä¸­æ•°æ®ä¼ è¾“
 	vs1053_WriteByte(0xFF);
 	vs1053_WriteByte(0xFF);
 	vs1053_WriteByte(0xFF);
 	vs1053_WriteByte(0xFF);
-	VS1053_DS_1();//È¡ÏûÊý¾Ý´«Êä
+	VS1053_DS_1();//å–æ¶ˆæ•°æ®ä¼ è¾“
 #else
 	/* Set clock register, doubler etc. */
 	vs1053_WriteCmd(SCI_CLOCKF, 0xA000);
 
-	//vs1053_WriteCmd(SCI_BASS, 0x0000);	/* µÍÒô¸ßÒôÔöÇ¿¿ØÖÆ£¬ 0±íÊ¾²»ÆôÓÃ */
-    //vs1053_WriteCmd(SCI_VOL, 0x2020); 	/* ÉèÖÃÎª×î´óÒôÁ¿,0ÊÇ×î´ó  */
+	//vs1053_WriteCmd(SCI_BASS, 0x0000);	/* ä½ŽéŸ³é«˜éŸ³å¢žå¼ºæŽ§åˆ¶ï¼Œ 0è¡¨ç¤ºä¸å¯ç”¨ */
+    //vs1053_WriteCmd(SCI_VOL, 0x2020); 	/* è®¾ç½®ä¸ºæœ€å¤§éŸ³é‡,0æ˜¯æœ€å¤§  */
 
-	/* µÈ´ýÐ¾Æ¬ÄÚ²¿²Ù×÷Íê³É */
+	/* ç­‰å¾…èŠ¯ç‰‡å†…éƒ¨æ“ä½œå®Œæˆ */
 	if (vs1053_WaitTimeOut())
 	{
 		return;
@@ -687,16 +687,16 @@ void vs1053_SoftReset(void)
 
 /*
 *********************************************************************************************************
-*	º¯ Êý Ãû: vs1053_SetVolume
-*	¹¦ÄÜËµÃ÷: ÉèÖÃvs1053ÒôÁ¿¡£0 ÊÇ¾²Òô£¬ 254×î´ó
-*	ÐÎ    ²Î: ÎÞ
-*	·µ »Ø Öµ: ÎÞ
+*	å‡½ æ•° å: vs1053_SetVolume
+*	åŠŸèƒ½è¯´æ˜Ž: è®¾ç½®vs1053éŸ³é‡ã€‚0 æ˜¯é™éŸ³ï¼Œ 254æœ€å¤§
+*	å½¢    å‚: æ— 
+*	è¿” å›ž å€¼: æ— 
 *********************************************************************************************************
 */
 void vs1053_SetVolume(uint8_t _ucVol)
 {
 
-	/* ¶ÔÓÚ VS1053£¬ 0±íÊ¾×î´óÒôÁ¿£¬254±íÊ¾¾²Òô */
+	/* å¯¹äºŽ VS1053ï¼Œ 0è¡¨ç¤ºæœ€å¤§éŸ³é‡ï¼Œ254è¡¨ç¤ºé™éŸ³ */
 	if (_ucVol == 0)
 	{
 		_ucVol = 254;
@@ -715,13 +715,13 @@ void vs1053_SetVolume(uint8_t _ucVol)
 
 /*
 *********************************************************************************************************
-*	º¯ Êý Ãû: vs1053_SetBASS
-*	¹¦ÄÜËµÃ÷: ÉèÖÃ¸ßÒôÔöÇ¿ºÍµÍÒôÔöÇ¿
-*	ÐÎ    ²Î: _cHighAmp     : ¸ßÒôÔöÇ¿·ù¶È ¡¾-8, 7¡¿  (0ÊÇ¹Ø±Õ)
-*			 _usHighFreqCut : ¸ßÒôÔöÇ¿½ØÖ¹ÆµÂÊ ¡¾1000, 15000¡¿ Hz
-*			 _ucLowAmp      : µÍÒôÔöÇ¿·ù¶È ¡¾0, 15¡¿  (0ÊÇ¹Ø±Õ)
-*			 _usLowFreqCut : µÍÒôÔöÇ¿½ØÖ¹ÆµÂÊ ¡¾20, 150¡¿ Hz
-*	·µ »Ø Öµ: ÎÞ
+*	å‡½ æ•° å: vs1053_SetBASS
+*	åŠŸèƒ½è¯´æ˜Ž: è®¾ç½®é«˜éŸ³å¢žå¼ºå’Œä½ŽéŸ³å¢žå¼º
+*	å½¢    å‚: _cHighAmp     : é«˜éŸ³å¢žå¼ºå¹…åº¦ ã€-8, 7ã€‘  (0æ˜¯å…³é—­)
+*			 _usHighFreqCut : é«˜éŸ³å¢žå¼ºæˆªæ­¢é¢‘çŽ‡ ã€1000, 15000ã€‘ Hz
+*			 _ucLowAmp      : ä½ŽéŸ³å¢žå¼ºå¹…åº¦ ã€0, 15ã€‘  (0æ˜¯å…³é—­)
+*			 _usLowFreqCut : ä½ŽéŸ³å¢žå¼ºæˆªæ­¢é¢‘çŽ‡ ã€20, 150ã€‘ Hz
+*	è¿” å›ž å€¼: æ— 
 *********************************************************************************************************
 */
 void vs1053_SetBASS(int8_t _cHighAmp, uint16_t _usHighFreqCut, uint8_t _ucLowAmp, uint16_t _usLowFreqCut)
@@ -729,16 +729,16 @@ void vs1053_SetBASS(int8_t _cHighAmp, uint16_t _usHighFreqCut, uint8_t _ucLowAmp
 	uint16_t usValue;
 
 	/*
-		SCI_BASS ¼Ä´æÆ÷¶¨Òå:
+		SCI_BASS å¯„å­˜å™¨å®šä¹‰:
 
-		Bit15:12  ¸ßÒô¿ØÖÆ -8 ... 7  (0ÊÇ¹Ø±Õ)
-		Bit11:8   ÏÂÏÞÆµÂÊ,µ¥Î»1KHz,  1...15
+		Bit15:12  é«˜éŸ³æŽ§åˆ¶ -8 ... 7  (0æ˜¯å…³é—­)
+		Bit11:8   ä¸‹é™é¢‘çŽ‡,å•ä½1KHz,  1...15
 
-		Bit7:4    µÍÒô¿ØÖÆ 0...15 (0ÊÇ¹Ø±Õ)
-		Bit3:0    ÉÏÏÞÆµÂÊ,µ¥Î»10Hz, 2...15
+		Bit7:4    ä½ŽéŸ³æŽ§åˆ¶ 0...15 (0æ˜¯å…³é—­)
+		Bit3:0    ä¸Šé™é¢‘çŽ‡,å•ä½10Hz, 2...15
 	*/
 
-	/* ¸ßÒôÔöÇ¿·ù¶È */
+	/* é«˜éŸ³å¢žå¼ºå¹…åº¦ */
 	if (_cHighAmp < -8)
 	{
 		_cHighAmp = -8;
@@ -749,7 +749,7 @@ void vs1053_SetBASS(int8_t _cHighAmp, uint16_t _usHighFreqCut, uint8_t _ucLowAmp
 	}
 	usValue = _cHighAmp << 12;
 
-	/* ¸ßÒôÔöÇ¿½ØÖ¹ÆµÂÊ */
+	/* é«˜éŸ³å¢žå¼ºæˆªæ­¢é¢‘çŽ‡ */
 	if (_usHighFreqCut < 1000)
 	{
 		_usHighFreqCut = 1000;
@@ -760,14 +760,14 @@ void vs1053_SetBASS(int8_t _cHighAmp, uint16_t _usHighFreqCut, uint8_t _ucLowAmp
 	}
 	usValue  += ((_usHighFreqCut / 1000) << 8);
 
-	/* µÍÒôÔöÇ¿·ù¶È */
+	/* ä½ŽéŸ³å¢žå¼ºå¹…åº¦ */
 	if (_ucLowAmp > 15)
 	{
 		_ucLowAmp = 15;
 	}
 	usValue  += (_ucLowAmp << 4);
 
-	/* µÍÒôÔöÇ¿½ØÖ¹ÆµÂÊ */
+	/* ä½ŽéŸ³å¢žå¼ºæˆªæ­¢é¢‘çŽ‡ */
 	if (_usLowFreqCut < 20)
 	{
 		_usLowFreqCut = 20;
@@ -783,10 +783,10 @@ void vs1053_SetBASS(int8_t _cHighAmp, uint16_t _usHighFreqCut, uint8_t _ucLowAmp
 
 /*
 *********************************************************************************************************
-*	º¯ Êý Ãû: ResetDecodeTime
-*	¹¦ÄÜËµÃ÷: ÖØÉè½âÂëÊ±¼ä
-*	ÐÎ    ²Î: ÎÞ
-*	·µ »Ø Öµ: ÎÞ
+*	å‡½ æ•° å: ResetDecodeTime
+*	åŠŸèƒ½è¯´æ˜Ž: é‡è®¾è§£ç æ—¶é—´
+*	å½¢    å‚: æ— 
+*	è¿” å›ž å€¼: æ— 
 *********************************************************************************************************
 */
 void ResetDecodeTime(void)
@@ -796,21 +796,21 @@ void ResetDecodeTime(void)
 
 /*
 *********************************************************************************************************
-*	ÏÂÃæµÄ´úÂë»¹Î´µ÷ÊÔ
+*	ä¸‹é¢çš„ä»£ç è¿˜æœªè°ƒè¯•
 *********************************************************************************************************
 */
 
 #if 0
 
-//ram ²âÊÔ
+//ram æµ‹è¯•
 void VsRamTest(void)
 {
 	uint16_t u16 regvalue ;
 
 	Mp3Reset();
- 	vs1053_CMD_Write(SPI_MODE,0x0820);// ½øÈëvs1053µÄ²âÊÔÄ£Ê½
-	while ((GPIOC->IDR&MP3_DREQ)==0); // µÈ´ýDREQÎª¸ß
- 	MP3_DCS_SET(0);	       			  // xDCS = 1£¬Ñ¡Ôñvs1053µÄÊý¾Ý½Ó¿Ú
+ 	vs1053_CMD_Write(SPI_MODE,0x0820);// è¿›å…¥vs1053çš„æµ‹è¯•æ¨¡å¼
+	while ((GPIOC->IDR&MP3_DREQ)==0); // ç­‰å¾…DREQä¸ºé«˜
+ 	MP3_DCS_SET(0);	       			  // xDCS = 1ï¼Œé€‰æ‹©vs1053çš„æ•°æ®æŽ¥å£
 	SPI1_ReadWriteByte(0x4d);
 	SPI1_ReadWriteByte(0xea);
 	SPI1_ReadWriteByte(0x6d);
@@ -821,23 +821,23 @@ void VsRamTest(void)
 	SPI1_ReadWriteByte(0x00);
 	delay_ms(50);
 	MP3_DCS_SET(1);
-	regvalue=vs1053_REG_Read(SPI_HDAT0); // Èç¹ûµÃµ½µÄÖµÎª0x807F£¬Ôò±íÃ÷ÍêºÃ¡£
-	printf("regvalueH:%x\n",regvalue>>8);//Êä³ö½á¹û
-	printf("regvalueL:%x\n",regvalue&0xff);//Êä³ö½á¹û
+	regvalue=vs1053_REG_Read(SPI_HDAT0); // å¦‚æžœå¾—åˆ°çš„å€¼ä¸º0x807Fï¼Œåˆ™è¡¨æ˜Žå®Œå¥½ã€‚
+	printf("regvalueH:%x\n",regvalue>>8);//è¾“å‡ºç»“æžœ
+	printf("regvalueL:%x\n",regvalue&0xff);//è¾“å‡ºç»“æžœ
 }
 
 //FOR WAV HEAD0 :0X7761 HEAD1:0X7665
 //FOR MIDI HEAD0 :other info HEAD1:0X4D54
 //FOR WMA HEAD0 :data speed HEAD1:0X574D
 //FOR MP3 HEAD0 :data speed HEAD1:ID
-//±ÈÌØÂÊÔ¤¶¨Öµ
+//æ¯”ç‰¹çŽ‡é¢„å®šå€¼
 const uint16_t bitrate[2][16]=
 {
 	{0,8,16,24,32,40,48,56,64,80,96,112,128,144,160,0},
 	{0,32,40,48,56,64,80,96,112,128,160,192,224,256,320,0}
 };
-//·µ»ØKbpsµÄ´óÐ¡
-//µÃµ½mp3&wmaµÄ²¨ÌØÂÊ
+//è¿”å›žKbpsçš„å¤§å°
+//å¾—åˆ°mp3&wmaçš„æ³¢ç‰¹çŽ‡
 uint16_t GetHeadInfo(void)
 {
 	unsigned int HEAD0;
@@ -847,15 +847,15 @@ uint16_t GetHeadInfo(void)
     HEAD1=vs1053_REG_Read(SPI_HDAT1);
     switch(HEAD1)
     {
-        case 0x7665:return 0;//WAV¸ñÊ½
-        case 0X4D54:return 1;//MIDI¸ñÊ½
-        case 0X574D://WMA¸ñÊ½
+        case 0x7665:return 0;//WAVæ ¼å¼
+        case 0X4D54:return 1;//MIDIæ ¼å¼
+        case 0X574D://WMAæ ¼å¼
         {
             HEAD1=HEAD0*2/25;
             if((HEAD1%10)>5)return HEAD1/10+1;
             else return HEAD1/10;
         }
-        default://MP3¸ñÊ½
+        default://MP3æ ¼å¼
         {
             HEAD1>>=3;
             HEAD1=HEAD1&0x03;
@@ -866,12 +866,12 @@ uint16_t GetHeadInfo(void)
     }
 }
 
-//µÃµ½mp3µÄ²¥·ÅÊ±¼än sec
+//å¾—åˆ°mp3çš„æ’­æ”¾æ—¶é—´n sec
 uint16_t GetDecodeTime(void)
 {
     return vs1053_REG_Read(SPI_DECODE_TIME);
 }
-//¼ÓÔØÆµÆ×·ÖÎöµÄ´úÂëµ½vs1053
+//åŠ è½½é¢‘è°±åˆ†æžçš„ä»£ç åˆ°vs1053
 void LoadPatch(void)
 {
 	uint16_t i;
@@ -879,7 +879,7 @@ void LoadPatch(void)
 	for (i=0;i<943;i++)vs1053_CMD_Write(atab[i],dtab[i]);
 	delay_ms(10);
 }
-//µÃµ½ÆµÆ×Êý¾Ý
+//å¾—åˆ°é¢‘è°±æ•°æ®
 void GetSpec(u8 *p)
 {
 	u8 byteIndex=0;
@@ -887,23 +887,23 @@ void GetSpec(u8 *p)
 	vs1053_CMD_Write(SPI_WRAMADDR,0x1804);
 	for (byteIndex=0;byteIndex<14;byteIndex++)
 	{
-		temp=vs1053_REG_Read(SPI_WRAM)&0x63;//È¡Ð¡ÓÚ100µÄÊý
+		temp=vs1053_REG_Read(SPI_WRAM)&0x63;//å–å°äºŽ100çš„æ•°
 		*p++=temp;
 	}
 }
 
-//Éè¶¨vs1053²¥·ÅµÄÒôÁ¿ºÍ¸ßµÍÒô
+//è®¾å®švs1053æ’­æ”¾çš„éŸ³é‡å’Œé«˜ä½ŽéŸ³
 void set1003(void)
 {
     uint8 t;
-    uint16_t bass=0; //ÔÝ´æÒôµ÷¼Ä´æÆ÷Öµ
-    uint16_t volt=0; //ÔÝ´æÒôÁ¿Öµ
-    uint8_t vset=0;  //ÔÝ´æÒôÁ¿Öµ
+    uint16_t bass=0; //æš‚å­˜éŸ³è°ƒå¯„å­˜å™¨å€¼
+    uint16_t volt=0; //æš‚å­˜éŸ³é‡å€¼
+    uint8_t vset=0;  //æš‚å­˜éŸ³é‡å€¼
 
-    vset=255-vs1053ram[4];//È¡·´Ò»ÏÂ,µÃµ½×î´óÖµ,±íÊ¾×î´óµÄ±íÊ¾
+    vset=255-vs1053ram[4];//å–åä¸€ä¸‹,å¾—åˆ°æœ€å¤§å€¼,è¡¨ç¤ºæœ€å¤§çš„è¡¨ç¤º
     volt=vset;
     volt<<=8;
-    volt+=vset;//µÃµ½ÒôÁ¿ÉèÖÃºó´óÐ¡
+    volt+=vset;//å¾—åˆ°éŸ³é‡è®¾ç½®åŽå¤§å°
      //0,henh.1,hfreq.2,lenh.3,lfreq
     for(t=0;t<4;t++)
     {
@@ -911,10 +911,10 @@ void set1003(void)
         bass+=vs1053ram[t];
     }
 	vs1053_CMD_Write(SPI_BASS, 0x0000);//BASS
-    vs1053_CMD_Write(SPI_VOL, 0x0000); //ÉèÒôÁ¿
+    vs1053_CMD_Write(SPI_VOL, 0x0000); //è®¾éŸ³é‡
 }
 
 #endif
 
 
-/***************************** °²¸»À³µç×Ó www.armfly.com (END OF FILE) *********************************/
+/***************************** å®‰å¯ŒèŽ±ç”µå­ www.armfly.com (END OF FILE) *********************************/

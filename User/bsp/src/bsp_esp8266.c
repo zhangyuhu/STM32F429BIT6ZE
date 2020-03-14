@@ -1,53 +1,53 @@
 /*
 *********************************************************************************************************
 *
-*	Ä£¿éÃû³Æ : ESP8266 ´®¿ÚWIFIÄ£¿éÇý¶¯³ÌÐò
-*	ÎÄ¼þÃû³Æ : bsp_esp8266.c
-*	°æ    ±¾ : V1.3
-*	Ëµ    Ã÷ : ·â×° ESP8266 Ä£¿éÏà¹ØµÄATÃüÁî
+*	æ¨¡å—åç§° : ESP8266 ä¸²å£WIFIæ¨¡å—é©±åŠ¨ç¨‹åº
+*	æ–‡ä»¶åç§° : bsp_esp8266.c
+*	ç‰ˆ    æœ¬ : V1.3
+*	è¯´    æ˜Ž : å°è£… ESP8266 æ¨¡å—ç›¸å…³çš„ATå‘½ä»¤
 *
-*	ÐÞ¸Ä¼ÇÂ¼ :
-*		°æ±¾ºÅ  ÈÕÆÚ        ×÷Õß     ËµÃ÷
-*		V1.0    2014-11-29  armfly  ÕýÊ½·¢²¼
-*		V1.1    2014-12-11  armfly  ÐÞ¸Ä ESP8266_WaitResponse() º¯Êý, ÊµÏÖÈÎÒâ×Ö·ûÅÐ¶Ï¡£Ôö¼ÓTCPÊý¾Ý·¢ËÍº¯Êý.
-*		V1.2    2014-12-22  armfly  Ôö¼ÓGPIO2£¬ GPIO0 Òý½ÅµÄÅäÖÃ¡£ÊÊÓ¦ÐÂ°æÓ²¼þ¡£
+*	ä¿®æ”¹è®°å½• :
+*		ç‰ˆæœ¬å·  æ—¥æœŸ        ä½œè€…     è¯´æ˜Ž
+*		V1.0    2014-11-29  armfly  æ­£å¼å‘å¸ƒ
+*		V1.1    2014-12-11  armfly  ä¿®æ”¹ ESP8266_WaitResponse() å‡½æ•°, å®žçŽ°ä»»æ„å­—ç¬¦åˆ¤æ–­ã€‚å¢žåŠ TCPæ•°æ®å‘é€å‡½æ•°.
+*		V1.2    2014-12-22  armfly  å¢žåŠ GPIO2ï¼Œ GPIO0 å¼•è„šçš„é…ç½®ã€‚é€‚åº”æ–°ç‰ˆç¡¬ä»¶ã€‚
 *		V1.3	2015-07-24  armfly	
-*					(1) Ôö¼Óº¯Êý uint8_t ESP8266_CreateTCPServer(void);
-*					(2) ÐÞ¸ÄESP8266_JoinAP() Ôö¼Ó·µ»ØÖµ
+*					(1) å¢žåŠ å‡½æ•° uint8_t ESP8266_CreateTCPServer(void);
+*					(2) ä¿®æ”¹ESP8266_JoinAP() å¢žåŠ è¿”å›žå€¼
 *
-*	Copyright (C), 2014-2015, °²¸»À³µç×Ó www.armfly.com
+*	Copyright (C), 2014-2015, å®‰å¯ŒèŽ±ç”µå­ www.armfly.com
 *
 *********************************************************************************************************
 */
 
 #include "bsp.h"
 
-/* ESP8266 Ä£¿é½ÓÏßÍ¼
-	ESP8266Ä£¿é    STM32-V5¿ª·¢°å
+/* ESP8266 æ¨¡å—æŽ¥çº¿å›¾
+	ESP8266æ¨¡å—    STM32-V5å¼€å‘æ¿
 
 		UTXD   ---  PC7/USART6_RX
 		GND    ---  GND
-		CH_PD  ---  PI0  (½Ó3.3V »ò IO¿ØÖÆÄ£¿éµôµç£¬ 0±íÊ¾µôµç  1±íÊ¾Õý³£ÉÏµç¹¤×÷£©
-		GPIO2  ---  PG15 (½Ó3.3V »ò IOÇý¶¯Îª¸ß, ²»ÓÃ)
-		GPIO16 ---  PB7  (½Ó3.3V »ò IO¿ØÖÆ wifi Ó²¼þ¸´Î»)
-		GPIO0  ---  PG8  (½Ó3.3V »ò IO¿ØÖÆÆô¶¯Ä£Ê½¡£0´ú±í½øÈëÏµÍ³Éý¼¶£¬1±íÊ¾Õý³£Òýµ¼ÓÃ»§³ÌÐò£¨ATÖ¸Áî£©)
-		VCC    ---  3.3  (¹©µç)
+		CH_PD  ---  PI0  (æŽ¥3.3V æˆ– IOæŽ§åˆ¶æ¨¡å—æŽ‰ç”µï¼Œ 0è¡¨ç¤ºæŽ‰ç”µ  1è¡¨ç¤ºæ­£å¸¸ä¸Šç”µå·¥ä½œï¼‰
+		GPIO2  ---  PG15 (æŽ¥3.3V æˆ– IOé©±åŠ¨ä¸ºé«˜, ä¸ç”¨)
+		GPIO16 ---  PB7  (æŽ¥3.3V æˆ– IOæŽ§åˆ¶ wifi ç¡¬ä»¶å¤ä½)
+		GPIO0  ---  PG8  (æŽ¥3.3V æˆ– IOæŽ§åˆ¶å¯åŠ¨æ¨¡å¼ã€‚0ä»£è¡¨è¿›å…¥ç³»ç»Ÿå‡çº§ï¼Œ1è¡¨ç¤ºæ­£å¸¸å¼•å¯¼ç”¨æˆ·ç¨‹åºï¼ˆATæŒ‡ä»¤ï¼‰)
+		VCC    ---  3.3  (ä¾›ç”µ)
 		URXD   ---  PG14/USART6_TX
 
-	ESP8266Ä£¿é    STM32-V6¿ª·¢°å £¨Ê¹ÓÃÀ©Õ¹IO£©
+	ESP8266æ¨¡å—    STM32-V6å¼€å‘æ¿ ï¼ˆä½¿ç”¨æ‰©å±•IOï¼‰
 		UTXD   ---  PC7/USART6_RX
 		GND    ---  GND
-		CH_PD  ---  GPRS_TERM_ON  (½Ó3.3V »ò IO¿ØÖÆÄ£¿éµôµç£¬ 0±íÊ¾µôµç  1±íÊ¾Õý³£ÉÏµç¹¤×÷£©
-		GPIO2  ---  ESP8266_G2 (½Ó3.3V »ò IOÇý¶¯Îª¸ß, ²»ÓÃ)
-		GPIO16 ---  GPRS_RESET  (½Ó3.3V »ò IO¿ØÖÆ wifi Ó²¼þ¸´Î»)
-		GPIO0  ---  ESP8266_G0  (½Ó3.3V »ò IO¿ØÖÆÆô¶¯Ä£Ê½¡£0´ú±í½øÈëÏµÍ³Éý¼¶£¬1±íÊ¾Õý³£Òýµ¼ÓÃ»§³ÌÐò£¨ATÖ¸Áî£©)
-		VCC    ---  3.3  (¹©µç)
+		CH_PD  ---  GPRS_TERM_ON  (æŽ¥3.3V æˆ– IOæŽ§åˆ¶æ¨¡å—æŽ‰ç”µï¼Œ 0è¡¨ç¤ºæŽ‰ç”µ  1è¡¨ç¤ºæ­£å¸¸ä¸Šç”µå·¥ä½œï¼‰
+		GPIO2  ---  ESP8266_G2 (æŽ¥3.3V æˆ– IOé©±åŠ¨ä¸ºé«˜, ä¸ç”¨)
+		GPIO16 ---  GPRS_RESET  (æŽ¥3.3V æˆ– IOæŽ§åˆ¶ wifi ç¡¬ä»¶å¤ä½)
+		GPIO0  ---  ESP8266_G0  (æŽ¥3.3V æˆ– IOæŽ§åˆ¶å¯åŠ¨æ¨¡å¼ã€‚0ä»£è¡¨è¿›å…¥ç³»ç»Ÿå‡çº§ï¼Œ1è¡¨ç¤ºæ­£å¸¸å¼•å¯¼ç”¨æˆ·ç¨‹åºï¼ˆATæŒ‡ä»¤ï¼‰)
+		VCC    ---  3.3  (ä¾›ç”µ)
 		URXD   ---  PG14/USART6_TX
 
-	Ä£¿éÈ±Ê¡²¨ÌØÂÊ 9600;  Ö§³ÖµÄ·¶Î§£º110~460800bps          ---- ±¾Àý×Ó»á½«Ä£¿é²¨ÌØÂÊÇÐ»»Îª 115200
-	ÔÚ°å×ÓÉÏµç³õÊ¼ÅÜboot romµÄÒ»¶Îlog£¬ÐèÒªÔÚ 74880 µÄ²¨ÌØÂÊÏÂÕý³£´òÓ¡¡£ÏÂÃæÊÇ´òÓ¡³öÀ´µÄÄÚÈÝ.
+	æ¨¡å—ç¼ºçœæ³¢ç‰¹çŽ‡ 9600;  æ”¯æŒçš„èŒƒå›´ï¼š110~460800bps          ---- æœ¬ä¾‹å­ä¼šå°†æ¨¡å—æ³¢ç‰¹çŽ‡åˆ‡æ¢ä¸º 115200
+	åœ¨æ¿å­ä¸Šç”µåˆå§‹è·‘boot romçš„ä¸€æ®µlogï¼Œéœ€è¦åœ¨ 74880 çš„æ³¢ç‰¹çŽ‡ä¸‹æ­£å¸¸æ‰“å°ã€‚ä¸‹é¢æ˜¯æ‰“å°å‡ºæ¥çš„å†…å®¹.
 
-	----------- PD = 1 Ö®ºó 74880bps ´òÓ¡ÈçÏÂÄÚÈÝ ----------
+	----------- PD = 1 ä¹‹åŽ 74880bps æ‰“å°å¦‚ä¸‹å†…å®¹ ----------
 
 	 ets Jan  8 2013,rst cause:1, boot mode:(3,6)
 
@@ -63,18 +63,18 @@
 	chksum 0x0d
 	csum 0x0d
 
-	----------- Ö®ºóÊÇ 9600bps ´òÓ¡ ---------------
+	----------- ä¹‹åŽæ˜¯ 9600bps æ‰“å° ---------------
 
 	[Vendor:www.ai-thinker.com Version:0.9.2.4]
 
 	ready
 
 
-	Ê¹ÓÃ´®¿Ú³¬¼¶ÖÕ¶ËÈí¼þÊ±£¬ÐèÒªÉèÖÃ ÖÕ¶Ë - ·ÂÕæ - Ä£Ê½ Ò³Ãæ¹´Ñ¡¡°ÐÂÐÐÄ£Ê½¡±.
+	ä½¿ç”¨ä¸²å£è¶…çº§ç»ˆç«¯è½¯ä»¶æ—¶ï¼Œéœ€è¦è®¾ç½® ç»ˆç«¯ - ä»¿çœŸ - æ¨¡å¼ é¡µé¢å‹¾é€‰â€œæ–°è¡Œæ¨¡å¼â€.
 
 
-	¡¾ÐÞ¸Ä²¨ÌØÂÊ¡¿
-	AT+CIOBAUD=?     ---- ²éÑ¯ÃüÁî²ÎÊý
+	ã€ä¿®æ”¹æ³¢ç‰¹çŽ‡ã€‘
+	AT+CIOBAUD=?     ---- æŸ¥è¯¢å‘½ä»¤å‚æ•°
 	+CIOBAUD:(9600-921600)
 
 	OK
@@ -82,17 +82,17 @@
 	AT+CIOBAUD=115200
 	BAUD->115200
 
-	¡¾Ñ¡Ôñ WIFI Ó¦ÓÃÄ£Ê½ ¡¿
+	ã€é€‰æ‹© WIFI åº”ç”¨æ¨¡å¼ ã€‘
 	AT+CWMODE=1
-		1   Station Ä£Ê½
-		2   AP Ä£Ê½
-		3   AP ¼æ Station Ä£Ê½
+		1   Station æ¨¡å¼
+		2   AP æ¨¡å¼
+		3   AP å…¼ Station æ¨¡å¼
 
-	¡¾ÁÐ³öµ±Ç°¿ÉÓÃ AP¡¿
+	ã€åˆ—å‡ºå½“å‰å¯ç”¨ APã€‘
 	AT+CWLAP=<ssid>,< mac >,<ch>
 	AT+CWLAP
 
-	¡¾AT+CWJAP¼ÓÈë AP¡¿
+	ã€AT+CWJAPåŠ å…¥ APã€‘
 	AT+CWJAP=<ssid>,< pwd >
 
 */
@@ -100,28 +100,28 @@
 #define AT_CR		'\r'
 #define AT_LF		'\n'
 
-/* ¶¨Òå´ËÐÐ£¬±íÊ¾Ê¹ÓÃÀ©Õ¹µÄIO */
+/* å®šä¹‰æ­¤è¡Œï¼Œè¡¨ç¤ºä½¿ç”¨æ‰©å±•çš„IO */
 #define USE_HC574
 
-#ifdef USE_HC574	/* Ê¹ÓÃÀ©Õ¹IO */
-	/* Ó²¼þµôµç¿ØÖÆÒý½Å -- ½Ó 3.3V ¿ªÊ¼¹¤×÷  */
+#ifdef USE_HC574	/* ä½¿ç”¨æ‰©å±•IO */
+	/* ç¡¬ä»¶æŽ‰ç”µæŽ§åˆ¶å¼•è„š -- æŽ¥ 3.3V å¼€å§‹å·¥ä½œ  */
 	#define ESP_CH_PD_0()	HC574_SetPin(GPRS_TERM_ON, 0);
 	#define ESP_CH_PD_1()	HC574_SetPin(GPRS_TERM_ON, 1);
 
-	/* Ó²¼þ¸´Î»Òý½Å -- ¿ÉÒÔ²»½Ó */
+	/* ç¡¬ä»¶å¤ä½å¼•è„š -- å¯ä»¥ä¸æŽ¥ */
 	#define ESP_RESET_0()	HC574_SetPin(GPRS_RESET, 0);
 	#define ESP_RESET_1()	HC574_SetPin(GPRS_RESET, 1);
 
-	/* 1±íÊ¾½øÈë¹Ì¼þÉý¼¶Ä£Ê½ 0±íÊ¾Õý³£ATÖ¸ÁîÄ£Ê½ */
+	/* 1è¡¨ç¤ºè¿›å…¥å›ºä»¶å‡çº§æ¨¡å¼ 0è¡¨ç¤ºæ­£å¸¸ATæŒ‡ä»¤æ¨¡å¼ */
 	#define ESP_GPIO0_0()	HC574_SetPin(ESP8266_G0, 0);
 	#define ESP_GPIO0_1()	HC574_SetPin(ESP8266_G0, 1);
-	#define ESP_ENTER_ISP()	ESP_GPIO0_0()  /* ½øÈë¹Ì¼þÉý¼¶Ä£Ê½ */
-	#define ESP_EXIT_ISP()	ESP_GPIO0_1()	/* ÍË³ö¹Ì¼þÉý¼¶Ä£Ê½ */
+	#define ESP_ENTER_ISP()	ESP_GPIO0_0()  /* è¿›å…¥å›ºä»¶å‡çº§æ¨¡å¼ */
+	#define ESP_EXIT_ISP()	ESP_GPIO0_1()	/* é€€å‡ºå›ºä»¶å‡çº§æ¨¡å¼ */
 
-	/* Çý¶¯Îª¸ß£¬ÎÞÆäËûÓÃÍ¾ */
+	/* é©±åŠ¨ä¸ºé«˜ï¼Œæ— å…¶ä»–ç”¨é€” */
 	#define ESP_GPIO2_0()	HC574_SetPin(ESP8266_G2, 0);
 	#define ESP_GPIO2_1()	HC574_SetPin(ESP8266_G2, 1);
-#else	/* Ê¹ÓÃCPU GPIO */
+#else	/* ä½¿ç”¨CPU GPIO */
 	#define RCC_CH_PD 		RCC_AHB1Periph_GPIOI
 	#define PORT_CH_PD		GPIOI
 	#define PIN_CH_PD		GPIO_Pin_0
@@ -138,49 +138,49 @@
 	#define PORT_GPIO0		GPIOG
 	#define PIN_GPIO0		GPIO_Pin_8
 
-	/* Ó²¼þµôµç¿ØÖÆÒý½Å -- ½Ó 3.3V ¿ªÊ¼¹¤×÷  */
+	/* ç¡¬ä»¶æŽ‰ç”µæŽ§åˆ¶å¼•è„š -- æŽ¥ 3.3V å¼€å§‹å·¥ä½œ  */
 	#define ESP_CH_PD_0()	GPIO_ResetBits(PORT_CH_PD, PIN_CH_PD);
 	#define ESP_CH_PD_1()	GPIO_SetBits(PORT_CH_PD, PIN_CH_PD);
 
-	/* Ó²¼þ¸´Î»Òý½Å -- ¿ÉÒÔ²»½Ó */
+	/* ç¡¬ä»¶å¤ä½å¼•è„š -- å¯ä»¥ä¸æŽ¥ */
 	#define ESP_RESET_0()	GPIO_ResetBits(PORT_RESET, PIN_RESET);
 	#define ESP_RESET_1()	GPIO_SetBits(PORT_RESET, PIN_RESET);
 
-	/* 1±íÊ¾½øÈë¹Ì¼þÉý¼¶Ä£Ê½ 0±íÊ¾Õý³£ATÖ¸ÁîÄ£Ê½ */
+	/* 1è¡¨ç¤ºè¿›å…¥å›ºä»¶å‡çº§æ¨¡å¼ 0è¡¨ç¤ºæ­£å¸¸ATæŒ‡ä»¤æ¨¡å¼ */
 	#define ESP_GPIO0_0()	GPIO_ResetBits(PORT_GPIO0, PIN_GPIO0);
 	#define ESP_GPIO0_1()	GPIO_SetBits(PORT_GPIO0, PIN_GPIO0);
-	#define ESP_ENTER_ISP()	ESP_GPIO0_0()  /* ½øÈë¹Ì¼þÉý¼¶Ä£Ê½ */
-	#define ESP_EXIT_ISP()	ESP_GPIO0_1()	/* ÍË³ö¹Ì¼þÉý¼¶Ä£Ê½ */
+	#define ESP_ENTER_ISP()	ESP_GPIO0_0()  /* è¿›å…¥å›ºä»¶å‡çº§æ¨¡å¼ */
+	#define ESP_EXIT_ISP()	ESP_GPIO0_1()	/* é€€å‡ºå›ºä»¶å‡çº§æ¨¡å¼ */
 
-	/* Çý¶¯Îª¸ß£¬ÎÞÆäËûÓÃÍ¾ */
+	/* é©±åŠ¨ä¸ºé«˜ï¼Œæ— å…¶ä»–ç”¨é€” */
 	#define ESP_GPIO2_0()	GPIO_ResetBits(PORT_GPIO2, PIN_GPIO2);
 	#define ESP_GPIO2_1()	GPIO_SetBits(PORT_GPIO2, PIN_GPIO2);
 #endif
 
-char g_EspBuf[2048];	/* ÓÃÓÚ½âÂë */
+char g_EspBuf[2048];	/* ç”¨äºŽè§£ç  */
 
 /*
 *********************************************************************************************************
-*	º¯ Êý Ãû: bsp_InitESP8266
-*	¹¦ÄÜËµÃ÷: ÅäÖÃÎÞÏßÄ£¿éÏà¹ØµÄGPIO,  ¸Ãº¯Êý±» bsp_Init() µ÷ÓÃ¡£
-*	ÐÎ    ²Î:  ÎÞ
-*	·µ »Ø Öµ: ÎÞ
+*	å‡½ æ•° å: bsp_InitESP8266
+*	åŠŸèƒ½è¯´æ˜Ž: é…ç½®æ— çº¿æ¨¡å—ç›¸å…³çš„GPIO,  è¯¥å‡½æ•°è¢« bsp_Init() è°ƒç”¨ã€‚
+*	å½¢    å‚:  æ— 
+*	è¿” å›ž å€¼: æ— 
 *********************************************************************************************************
 */
 void bsp_InitESP8266(void)
 {
-#ifdef USE_HC574	/* Ê¹ÓÃÀ©Õ¹IO */
+#ifdef USE_HC574	/* ä½¿ç”¨æ‰©å±•IO */
 	;
 #else	
 	GPIO_InitTypeDef GPIO_InitStructure;
 
-	/* ´ò¿ªGPIOÊ±ÖÓ */
+	/* æ‰“å¼€GPIOæ—¶é’Ÿ */
 	RCC_AHB1PeriphClockCmd(RCC_RESET | RCC_CH_PD | RCC_GPIO0 | RCC_GPIO2, ENABLE);
 
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;		/* ÉèÎªÊä³ö¿Ú */
-	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;		/* ÉèÎªÍÆÍìÄ£Ê½ */
-	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;	/* ÉÏÏÂÀ­µç×è²»Ê¹ÄÜ */
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;	/* IO¿Ú×î´óËÙ¶È */
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;		/* è®¾ä¸ºè¾“å‡ºå£ */
+	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;		/* è®¾ä¸ºæŽ¨æŒ½æ¨¡å¼ */
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;	/* ä¸Šä¸‹æ‹‰ç”µé˜»ä¸ä½¿èƒ½ */
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;	/* IOå£æœ€å¤§é€Ÿåº¦ */
 
 	GPIO_InitStructure.GPIO_Pin = PIN_CH_PD;
 	GPIO_Init(PORT_CH_PD, &GPIO_InitStructure);
@@ -197,7 +197,7 @@ void bsp_InitESP8266(void)
 
 	ESP_GPIO2_1();
 	
-	/* CPUµÄ´®¿ÚÅäÖÃÒÑ¾­ÓÉ bsp_uart_fifo.c ÖÐµÄ bsp_InitUart() ×öÁË */
+	/* CPUçš„ä¸²å£é…ç½®å·²ç»ç”± bsp_uart_fifo.c ä¸­çš„ bsp_InitUart() åšäº† */
 	ESP_CH_PD_0();
 
 	ESP_EXIT_ISP();
@@ -209,30 +209,30 @@ void bsp_InitESP8266(void)
 
 /*
 *********************************************************************************************************
-*	º¯ Êý Ãû: ESP8266_PrintRxData
-*	¹¦ÄÜËµÃ÷: ´òÓ¡STM32´ÓESP8266ÊÕµ½µÄÊý¾Ýµ½COM1´®¿Ú£¬Ö÷ÒªÓÃÓÚ¸ú×Ùµ÷ÊÔ
-*	ÐÎ    ²Î: _ch : ÊÕµ½µÄÊý¾Ý
-*	·µ »Ø Öµ: ÎÞ
+*	å‡½ æ•° å: ESP8266_PrintRxData
+*	åŠŸèƒ½è¯´æ˜Ž: æ‰“å°STM32ä»ŽESP8266æ”¶åˆ°çš„æ•°æ®åˆ°COM1ä¸²å£ï¼Œä¸»è¦ç”¨äºŽè·Ÿè¸ªè°ƒè¯•
+*	å½¢    å‚: _ch : æ”¶åˆ°çš„æ•°æ®
+*	è¿” å›ž å€¼: æ— 
 *********************************************************************************************************
 */
 void ESP8266_PrintRxData(uint8_t _ch)
 {
 	#ifdef ESP8266_TO_COM1_EN
-		comSendChar(COM1, _ch);		/* ½«½ÓÊÕµ½Êý¾Ý´òÓ¡µ½µ÷ÊÔ´®¿Ú1 */
+		comSendChar(COM1, _ch);		/* å°†æŽ¥æ”¶åˆ°æ•°æ®æ‰“å°åˆ°è°ƒè¯•ä¸²å£1 */
 	#endif
 }
 
 /*
 *********************************************************************************************************
-*	º¯ Êý Ãû: ESP8266_PowerOn
-*	¹¦ÄÜËµÃ÷: ¸øESP8266Ä£¿éÉÏµç
-*	ÐÎ    ²Î: ÎÞ
-*	·µ »Ø Öµ: ÎÞ
+*	å‡½ æ•° å: ESP8266_PowerOn
+*	åŠŸèƒ½è¯´æ˜Ž: ç»™ESP8266æ¨¡å—ä¸Šç”µ
+*	å½¢    å‚: æ— 
+*	è¿” å›ž å€¼: æ— 
 *********************************************************************************************************
 */
 void ESP8266_PowerOn(void)
 {
-	/* WIFIÄ£¿éÉÏµçÊ±£¬»áÒÔ74880²¨ÌØÂÊ´òÓ¡ÈçÏÂÐÅÏ¢:
+	/* WIFIæ¨¡å—ä¸Šç”µæ—¶ï¼Œä¼šä»¥74880æ³¢ç‰¹çŽ‡æ‰“å°å¦‚ä¸‹ä¿¡æ¯:
 		 ets Jan  8 2013,rst cause:1, boot mode:(3,6)
 
 		load 0x40100000, len 25052, room 16 
@@ -245,24 +245,24 @@ void ESP8266_PowerOn(void)
 		load 0x3ffe8cf0, len 6576, room 4 
 		tail 12
 		chksum 0x0d
-		csum 0x0d	    <-----  ³ÌÐòÊ¶±ð csum ºó£¬ÔÙ×Ô¶¯ÇÐ»»µ½Õý³£²¨ÌØÂÊ 
+		csum 0x0d	    <-----  ç¨‹åºè¯†åˆ« csum åŽï¼Œå†è‡ªåŠ¨åˆ‡æ¢åˆ°æ­£å¸¸æ³¢ç‰¹çŽ‡ 
 	*/
 
 	ESP_CH_PD_0();
 
-	comSetBaud(COM_ESP8266, 74880);	/* ÉèÖÃ¶Ë¿Ú²¨ÌØÂÊÎª 74880 */
+	comSetBaud(COM_ESP8266, 74880);	/* è®¾ç½®ç«¯å£æ³¢ç‰¹çŽ‡ä¸º 74880 */
 
 	ESP_CH_PD_1();
 
 	ESP8266_Reset();
 
-	/* µÈ´ýÄ£¿éÍê³ÉÉÏµç£¬³¬Ê±500ms ×Ô¶¯ÍË³ö */
-	ESP8266_WaitResponse("csum", 1000);	/* ÏÈµÈ´ý csum */
-	ESP8266_WaitResponse("\n", 1000);	/* ÔÙµÈ´ý»Ø³µ»»ÐÐ×Ö·û½áÊø */
+	/* ç­‰å¾…æ¨¡å—å®Œæˆä¸Šç”µï¼Œè¶…æ—¶500ms è‡ªåŠ¨é€€å‡º */
+	ESP8266_WaitResponse("csum", 1000);	/* å…ˆç­‰å¾… csum */
+	ESP8266_WaitResponse("\n", 1000);	/* å†ç­‰å¾…å›žè½¦æ¢è¡Œå­—ç¬¦ç»“æŸ */
 
-	comSetBaud(COM_ESP8266,115200);	/* 1±íÊ¾Ó²¼þÁ÷¿ØCRS RTSÓÐÐ§;  0±íÊ¾ÎÞÐèÓ²¼þÁ÷¿Ø */
+	comSetBaud(COM_ESP8266,115200);	/* 1è¡¨ç¤ºç¡¬ä»¶æµæŽ§CRS RTSæœ‰æ•ˆ;  0è¡¨ç¤ºæ— éœ€ç¡¬ä»¶æµæŽ§ */
 
-	/* µÈ´ýÄ£¿éÍê³ÉÉÏµç£¬ÅÐ¶ÏÊÇ·ñ½ÓÊÕµ½ ready */
+	/* ç­‰å¾…æ¨¡å—å®Œæˆä¸Šç”µï¼Œåˆ¤æ–­æ˜¯å¦æŽ¥æ”¶åˆ° ready */
 	ESP8266_WaitResponse("ready", 5000);
 	
 	// ESP8266_SendAT("AT+RST");
@@ -271,10 +271,10 @@ void ESP8266_PowerOn(void)
 
 /*
 *********************************************************************************************************
-*	º¯ Êý Ãû: ESP8266_PowerOff
-*	¹¦ÄÜËµÃ÷: ¿ØÖÆESP8266Ä£¿é¹Ø»ú
-*	ÐÎ    ²Î: ÎÞ
-*	·µ »Ø Öµ: ÎÞ
+*	å‡½ æ•° å: ESP8266_PowerOff
+*	åŠŸèƒ½è¯´æ˜Ž: æŽ§åˆ¶ESP8266æ¨¡å—å…³æœº
+*	å½¢    å‚: æ— 
+*	è¿” å›ž å€¼: æ— 
 *********************************************************************************************************
 */
 void ESP8266_PowerOff(void)
@@ -284,10 +284,10 @@ void ESP8266_PowerOff(void)
 
 /*
 *********************************************************************************************************
-*	º¯ Êý Ãû: ESP8266_PowerOn
-*	¹¦ÄÜËµÃ÷: ¸øESP8266Ä£¿éÉÏµç
-*	ÐÎ    ²Î: ÎÞ
-*	·µ »Ø Öµ: ÎÞ
+*	å‡½ æ•° å: ESP8266_PowerOn
+*	åŠŸèƒ½è¯´æ˜Ž: ç»™ESP8266æ¨¡å—ä¸Šç”µ
+*	å½¢    å‚: æ— 
+*	è¿” å›ž å€¼: æ— 
 *********************************************************************************************************
 */
 void ESP8266_Reset(void)
@@ -301,41 +301,41 @@ void ESP8266_Reset(void)
 
 /*
 *********************************************************************************************************
-*	º¯ Êý Ãû: ESP8266_EnterISP
-*	¹¦ÄÜËµÃ÷: ¿ØÖÆESP8266Ä£¿é½øÈë¹Ì¼þÉý¼¶Ä£Ê½
-*	ÐÎ    ²Î: ÎÞ
-*	·µ »Ø Öµ: ÎÞ
+*	å‡½ æ•° å: ESP8266_EnterISP
+*	åŠŸèƒ½è¯´æ˜Ž: æŽ§åˆ¶ESP8266æ¨¡å—è¿›å…¥å›ºä»¶å‡çº§æ¨¡å¼
+*	å½¢    å‚: æ— 
+*	è¿” å›ž å€¼: æ— 
 *********************************************************************************************************
 */
 void ESP8266_EnterISP(void)
 {
 	ESP_CH_PD_0();
-	ESP_GPIO0_0()  /* 0 ±íÊ¾½øÈë¹Ì¼þÉý¼¶Ä£Ê½ */
+	ESP_GPIO0_0()  /* 0 è¡¨ç¤ºè¿›å…¥å›ºä»¶å‡çº§æ¨¡å¼ */
 	ESP_CH_PD_1();
 }
 
 /*
 *********************************************************************************************************
-*	º¯ Êý Ãû: ESP8266_ExitISP
-*	¹¦ÄÜËµÃ÷: ¿ØÖÆESP8266Ä£¿éÍË³ö¹Ì¼þÉý¼¶Ä£Ê½
-*	ÐÎ    ²Î: ÎÞ
-*	·µ »Ø Öµ: ÎÞ
+*	å‡½ æ•° å: ESP8266_ExitISP
+*	åŠŸèƒ½è¯´æ˜Ž: æŽ§åˆ¶ESP8266æ¨¡å—é€€å‡ºå›ºä»¶å‡çº§æ¨¡å¼
+*	å½¢    å‚: æ— 
+*	è¿” å›ž å€¼: æ— 
 *********************************************************************************************************
 */
 void ESP8266_ExitISP(void)
 {
 	ESP_CH_PD_0();
-	ESP_GPIO0_1()  /* 1 ±íÊ¾½øÈëÓÃ»§³ÌÐò£¨ATÖ¸Áî£©Ä£Ê½ */
+	ESP_GPIO0_1()  /* 1 è¡¨ç¤ºè¿›å…¥ç”¨æˆ·ç¨‹åºï¼ˆATæŒ‡ä»¤ï¼‰æ¨¡å¼ */
 	ESP_CH_PD_1();
 }
 
 /*
 *********************************************************************************************************
-*	º¯ Êý Ãû: ESP8266_WaitResponse
-*	¹¦ÄÜËµÃ÷: µÈ´ýESP8266·µ»ØÖ¸¶¨µÄÓ¦´ð×Ö·û´®, ¿ÉÒÔ°üº¬ÈÎÒâ×Ö·û¡£Ö»Òª½ÓÊÕÆëÈ«¼´¿É·µ»Ø¡£
-*	ÐÎ    ²Î: _pAckStr : Ó¦´ðµÄ×Ö·û´®£¬ ³¤¶È²»µÃ³¬¹ý255
-*			 _usTimeOut : ÃüÁîÖ´ÐÐ³¬Ê±£¬0±íÊ¾Ò»Ö±µÈ´ý. >£°±íÊ¾³¬Ê±Ê±¼ä£¬µ¥Î»1ms
-*	·µ »Ø Öµ: 1 ±íÊ¾³É¹¦  0 ±íÊ¾Ê§°Ü
+*	å‡½ æ•° å: ESP8266_WaitResponse
+*	åŠŸèƒ½è¯´æ˜Ž: ç­‰å¾…ESP8266è¿”å›žæŒ‡å®šçš„åº”ç­”å­—ç¬¦ä¸², å¯ä»¥åŒ…å«ä»»æ„å­—ç¬¦ã€‚åªè¦æŽ¥æ”¶é½å…¨å³å¯è¿”å›žã€‚
+*	å½¢    å‚: _pAckStr : åº”ç­”çš„å­—ç¬¦ä¸²ï¼Œ é•¿åº¦ä¸å¾—è¶…è¿‡255
+*			 _usTimeOut : å‘½ä»¤æ‰§è¡Œè¶…æ—¶ï¼Œ0è¡¨ç¤ºä¸€ç›´ç­‰å¾…. >ï¼è¡¨ç¤ºè¶…æ—¶æ—¶é—´ï¼Œå•ä½1ms
+*	è¿” å›ž å€¼: 1 è¡¨ç¤ºæˆåŠŸ  0 è¡¨ç¤ºå¤±è´¥
 *********************************************************************************************************
 */
 uint8_t ESP8266_WaitResponse(char *_pAckStr, uint16_t _usTimeOut)
@@ -351,27 +351,27 @@ uint8_t ESP8266_WaitResponse(char *_pAckStr, uint16_t _usTimeOut)
 		return 0;
 	}
 
-	/* _usTimeOut == 0 ±íÊ¾ÎÞÏÞµÈ´ý */
+	/* _usTimeOut == 0 è¡¨ç¤ºæ— é™ç­‰å¾… */
 	if (_usTimeOut > 0)
 	{
-		bsp_StartTimer(ESP8266_TMR_ID, _usTimeOut);		/* Ê¹ÓÃÈí¼þ¶¨Ê±Æ÷3£¬×÷Îª³¬Ê±¿ØÖÆ */
+		bsp_StartTimer(ESP8266_TMR_ID, _usTimeOut);		/* ä½¿ç”¨è½¯ä»¶å®šæ—¶å™¨3ï¼Œä½œä¸ºè¶…æ—¶æŽ§åˆ¶ */
 	}
 	while (1)
 	{
-		bsp_Idle();				/* CPU¿ÕÏÐÖ´ÐÐµÄ²Ù×÷£¬ ¼û bsp.c ºÍ bsp.h ÎÄ¼þ */
+		bsp_Idle();				/* CPUç©ºé—²æ‰§è¡Œçš„æ“ä½œï¼Œ è§ bsp.c å’Œ bsp.h æ–‡ä»¶ */
 
 		if (_usTimeOut > 0)
 		{
 			if (bsp_CheckTimer(ESP8266_TMR_ID))
 			{
-				ret = 0;	/* ³¬Ê± */
+				ret = 0;	/* è¶…æ—¶ */
 				break;
 			}
 		}
 
 		if (comGetChar(COM_ESP8266, &ucData))
 		{
-			ESP8266_PrintRxData(ucData);		/* ½«½ÓÊÕµ½Êý¾Ý´òÓ¡µ½µ÷ÊÔ´®¿Ú1 */
+			ESP8266_PrintRxData(ucData);		/* å°†æŽ¥æ”¶åˆ°æ•°æ®æ‰“å°åˆ°è°ƒè¯•ä¸²å£1 */
 
 			if (ucData == _pAckStr[pos])
 			{
@@ -379,7 +379,7 @@ uint8_t ESP8266_WaitResponse(char *_pAckStr, uint16_t _usTimeOut)
 				
 				if (pos == len)
 				{
-					ret = 1;	/* ÊÕµ½Ö¸¶¨µÄÓ¦´ðÊý¾Ý£¬·µ»Ø³É¹¦ */
+					ret = 1;	/* æ”¶åˆ°æŒ‡å®šçš„åº”ç­”æ•°æ®ï¼Œè¿”å›žæˆåŠŸ */
 					break;
 				}
 			}
@@ -394,12 +394,12 @@ uint8_t ESP8266_WaitResponse(char *_pAckStr, uint16_t _usTimeOut)
 
 /*
 *********************************************************************************************************
-*	º¯ Êý Ãû: ESP8266_ReadLine
-*	¹¦ÄÜËµÃ÷: ¶ÁÈ¡ESP8266·µ»ØµÄÒ»ÐÐÓ¦´ð×Ö·û´®(0x0D 0x0A½áÊø)¡£¸Ãº¯Êý¸ù¾Ý×Ö·û¼ä³¬Ê±ÅÐ¶Ï½áÊø¡£ ±¾º¯ÊýÐèÒª½ô¸úATÃüÁî·¢ËÍº¯Êý¡£
-*	ÐÎ    ²Î: _pBuf : ´æ·ÅÄ£¿é·µ»ØµÄÍêÕû×Ö·û´®
-*			  _usBufSize : »º³åÇø×î´ó³¤¶È
-*			 _usTimeOut : ÃüÁîÖ´ÐÐ³¬Ê±£¬0±íÊ¾Ò»Ö±µÈ´ý. >0 ±íÊ¾³¬Ê±Ê±¼ä£¬µ¥Î»1ms
-*	·µ »Ø Öµ: 0 ±íÊ¾´íÎó£¨³¬Ê±£©  > 0 ±íÊ¾Ó¦´ðµÄÊý¾Ý³¤¶È
+*	å‡½ æ•° å: ESP8266_ReadLine
+*	åŠŸèƒ½è¯´æ˜Ž: è¯»å–ESP8266è¿”å›žçš„ä¸€è¡Œåº”ç­”å­—ç¬¦ä¸²(0x0D 0x0Aç»“æŸ)ã€‚è¯¥å‡½æ•°æ ¹æ®å­—ç¬¦é—´è¶…æ—¶åˆ¤æ–­ç»“æŸã€‚ æœ¬å‡½æ•°éœ€è¦ç´§è·ŸATå‘½ä»¤å‘é€å‡½æ•°ã€‚
+*	å½¢    å‚: _pBuf : å­˜æ”¾æ¨¡å—è¿”å›žçš„å®Œæ•´å­—ç¬¦ä¸²
+*			  _usBufSize : ç¼“å†²åŒºæœ€å¤§é•¿åº¦
+*			 _usTimeOut : å‘½ä»¤æ‰§è¡Œè¶…æ—¶ï¼Œ0è¡¨ç¤ºä¸€ç›´ç­‰å¾…. >0 è¡¨ç¤ºè¶…æ—¶æ—¶é—´ï¼Œå•ä½1ms
+*	è¿” å›ž å€¼: 0 è¡¨ç¤ºé”™è¯¯ï¼ˆè¶…æ—¶ï¼‰  > 0 è¡¨ç¤ºåº”ç­”çš„æ•°æ®é•¿åº¦
 *********************************************************************************************************
 */
 uint16_t ESP8266_ReadLine(char *_pBuf, uint16_t _usBufSize, uint16_t _usTimeOut)
@@ -408,32 +408,32 @@ uint16_t ESP8266_ReadLine(char *_pBuf, uint16_t _usBufSize, uint16_t _usTimeOut)
 	uint16_t pos = 0;
 	uint8_t ret;
 
-	/* _usTimeOut == 0 ±íÊ¾ÎÞÏÞµÈ´ý */
+	/* _usTimeOut == 0 è¡¨ç¤ºæ— é™ç­‰å¾… */
 	if (_usTimeOut > 0)
 	{
-		bsp_StartTimer(ESP8266_TMR_ID, _usTimeOut);		/* Ê¹ÓÃÈí¼þ¶¨Ê±Æ÷×÷Îª³¬Ê±¿ØÖÆ */
+		bsp_StartTimer(ESP8266_TMR_ID, _usTimeOut);		/* ä½¿ç”¨è½¯ä»¶å®šæ—¶å™¨ä½œä¸ºè¶…æ—¶æŽ§åˆ¶ */
 	}
 	while (1)
 	{
-		bsp_Idle();				/* CPU¿ÕÏÐÖ´ÐÐµÄ²Ù×÷£¬ ¼û bsp.c ºÍ bsp.h ÎÄ¼þ */
+		bsp_Idle();				/* CPUç©ºé—²æ‰§è¡Œçš„æ“ä½œï¼Œ è§ bsp.c å’Œ bsp.h æ–‡ä»¶ */
 
 		if (bsp_CheckTimer(ESP8266_TMR_ID))
 		{
-			_pBuf[pos] = 0;	/* ½áÎ²¼Ó0£¬ ±ãÓÚº¯Êýµ÷ÓÃÕßÊ¶±ð×Ö·û´®½áÊø */
-			ret = pos;		/* ³É¹¦¡£ ·µ»ØÊý¾Ý³¤¶È */
+			_pBuf[pos] = 0;	/* ç»“å°¾åŠ 0ï¼Œ ä¾¿äºŽå‡½æ•°è°ƒç”¨è€…è¯†åˆ«å­—ç¬¦ä¸²ç»“æŸ */
+			ret = pos;		/* æˆåŠŸã€‚ è¿”å›žæ•°æ®é•¿åº¦ */
 			break;
 		}
 
 		if (comGetChar(COM_ESP8266, &ucData))
 		{
-			ESP8266_PrintRxData(ucData);		/* ½«½ÓÊÕµ½Êý¾Ý´òÓ¡µ½µ÷ÊÔ´®¿Ú1 */
+			ESP8266_PrintRxData(ucData);		/* å°†æŽ¥æ”¶åˆ°æ•°æ®æ‰“å°åˆ°è°ƒè¯•ä¸²å£1 */
 
 			bsp_StartTimer(ESP8266_TMR_ID, 500);
-			_pBuf[pos++] = ucData;		/* ±£´æ½ÓÊÕµ½µÄÊý¾Ý */
+			_pBuf[pos++] = ucData;		/* ä¿å­˜æŽ¥æ”¶åˆ°çš„æ•°æ® */
 			if (ucData == 0x0A)
 			{
 				_pBuf[pos] = 0;
-				ret = pos;		/* ³É¹¦¡£ ·µ»ØÊý¾Ý³¤¶È */
+				ret = pos;		/* æˆåŠŸã€‚ è¿”å›žæ•°æ®é•¿åº¦ */
 				break;
 			}
 		}
@@ -443,10 +443,10 @@ uint16_t ESP8266_ReadLine(char *_pBuf, uint16_t _usBufSize, uint16_t _usTimeOut)
 
 /*
 *********************************************************************************************************
-*	º¯ Êý Ãû: ESP8266_SendAT
-*	¹¦ÄÜËµÃ÷: ÏòÄ£¿é·¢ËÍATÃüÁî¡£ ±¾º¯Êý×Ô¶¯ÔÚAT×Ö·û´®¿ÚÔö¼Ó<CR>×Ö·û
-*	ÐÎ    ²Î: _Str : ATÃüÁî×Ö·û´®£¬²»°üÀ¨Ä©Î²µÄ»Ø³µ<CR>. ÒÔ×Ö·û0½áÊø
-*	·µ »Ø Öµ: ÎÞ
+*	å‡½ æ•° å: ESP8266_SendAT
+*	åŠŸèƒ½è¯´æ˜Ž: å‘æ¨¡å—å‘é€ATå‘½ä»¤ã€‚ æœ¬å‡½æ•°è‡ªåŠ¨åœ¨ATå­—ç¬¦ä¸²å£å¢žåŠ <CR>å­—ç¬¦
+*	å½¢    å‚: _Str : ATå‘½ä»¤å­—ç¬¦ä¸²ï¼Œä¸åŒ…æ‹¬æœ«å°¾çš„å›žè½¦<CR>. ä»¥å­—ç¬¦0ç»“æŸ
+*	è¿” å›ž å€¼: æ— 
 *********************************************************************************************************
 */
 void ESP8266_SendAT(char *_Cmd)
@@ -457,23 +457,23 @@ void ESP8266_SendAT(char *_Cmd)
 
 /*
 *********************************************************************************************************
-*	º¯ Êý Ãû: ESP8266_CreateTCPServer
-*	¹¦ÄÜËµÃ÷: ´´½¨Ò»¸öTCP·þÎñ¶Ë¡£ ±ØÐëÔÚÁ¬½Óµ½APÖ®ºó²ÅÐÐ¡£
-*	ÐÎ    ²Î£º_TcpPort : TCP ¶Ë¿ÚºÅ
-*	·µ »Ø Öµ: 0 ±íÊ¾Ê§°Ü¡£ 1±íÊ¾´´½¨TCP³É¹¦
+*	å‡½ æ•° å: ESP8266_CreateTCPServer
+*	åŠŸèƒ½è¯´æ˜Ž: åˆ›å»ºä¸€ä¸ªTCPæœåŠ¡ç«¯ã€‚ å¿…é¡»åœ¨è¿žæŽ¥åˆ°APä¹‹åŽæ‰è¡Œã€‚
+*	å½¢    å‚ï¼š_TcpPort : TCP ç«¯å£å·
+*	è¿” å›ž å€¼: 0 è¡¨ç¤ºå¤±è´¥ã€‚ 1è¡¨ç¤ºåˆ›å»ºTCPæˆåŠŸ
 *********************************************************************************************************
 */
 uint8_t ESP8266_CreateTCPServer(uint16_t _TcpPort)
 {
 	char cmd_buf[30];
 	
-	ESP8266_SendAT("AT+CIPMUX=1");	/* Æô¶¯¶àÁ¬½Ó */
+	ESP8266_SendAT("AT+CIPMUX=1");	/* å¯åŠ¨å¤šè¿žæŽ¥ */
 	if (ESP8266_WaitResponse("OK", 2000) == 0)
 	{
 		return 0;
 	}
 	
-	/* ¿ªÆôTCP server, ¶Ë¿ÚÎª _TcpPort */
+	/* å¼€å¯TCP server, ç«¯å£ä¸º _TcpPort */
 	sprintf(cmd_buf, "AT+CIPSERVER=1,%d", _TcpPort);
 	ESP8266_SendAT(cmd_buf);	
 	if (ESP8266_WaitResponse("OK", 2000) == 0)
@@ -481,7 +481,7 @@ uint8_t ESP8266_CreateTCPServer(uint16_t _TcpPort)
 		return 0;
 	}
 
-	ESP8266_SendAT("ATE0");		/* ¹Ø±Õ»ØÏÔ¹¦ÄÜ£¬Ö÷»ú·¢ËÍµÄ×Ö·û£¬Ä£¿éÎÞÐè·µ»Ø */
+	ESP8266_SendAT("ATE0");		/* å…³é—­å›žæ˜¾åŠŸèƒ½ï¼Œä¸»æœºå‘é€çš„å­—ç¬¦ï¼Œæ¨¡å—æ— éœ€è¿”å›ž */
 	if (ESP8266_WaitResponse("OK", 10000) == 0)
 	{
 		return 0;
@@ -493,11 +493,11 @@ uint8_t ESP8266_CreateTCPServer(uint16_t _TcpPort)
 
 /*
 *********************************************************************************************************
-*	º¯ Êý Ãû: ESP8266_SendTcpUdp
-*	¹¦ÄÜËµÃ÷: ·¢ËÍTCP»òUDPÊý¾Ý°ü
-*	ÐÎ    ²Î: _databuf Êý¾Ý
-*			 _len Êý¾Ý³¤¶È
-*	·µ »Ø Öµ: ÎÞ
+*	å‡½ æ•° å: ESP8266_SendTcpUdp
+*	åŠŸèƒ½è¯´æ˜Ž: å‘é€TCPæˆ–UDPæ•°æ®åŒ…
+*	å½¢    å‚: _databuf æ•°æ®
+*			 _len æ•°æ®é•¿åº¦
+*	è¿” å›ž å€¼: æ— 
 *********************************************************************************************************
 */
 void ESP8266_SendTcpUdp(uint8_t *_databuf, uint16_t _len)
@@ -520,18 +520,18 @@ void ESP8266_SendTcpUdp(uint8_t *_databuf, uint16_t _len)
 
 /*
 *********************************************************************************************************
-*	º¯ Êý Ãû: ESP8266_CloseTcpUdp
-*	¹¦ÄÜËµÃ÷: ¹Ø±ÕTCP»òUDPÁ¬½Ó. ÓÃÓÚ¶àÂ·Á¬½Ó
-*	ÐÎ    ²Î: _databuf Êý¾Ý
-*			 _len Êý¾Ý³¤¶È
-*	·µ »Ø Öµ: ÎÞ
+*	å‡½ æ•° å: ESP8266_CloseTcpUdp
+*	åŠŸèƒ½è¯´æ˜Ž: å…³é—­TCPæˆ–UDPè¿žæŽ¥. ç”¨äºŽå¤šè·¯è¿žæŽ¥
+*	å½¢    å‚: _databuf æ•°æ®
+*			 _len æ•°æ®é•¿åº¦
+*	è¿” å›ž å€¼: æ— 
 *********************************************************************************************************
 */
 void ESP8266_CloseTcpUdp(uint8_t _id)
 {
 	char buf[32];
 
-	ESP8266_SendAT("ATE0");		/* ´ò¿ª»ØÏÔ¹¦ÄÜ */
+	ESP8266_SendAT("ATE0");		/* æ‰“å¼€å›žæ˜¾åŠŸèƒ½ */
 	ESP8266_WaitResponse("SEND OK", 50);
 	
 	sprintf(buf, "AT+CIPCLOSE=%d", _id);
@@ -540,11 +540,11 @@ void ESP8266_CloseTcpUdp(uint8_t _id)
 
 /*
 *********************************************************************************************************
-*	º¯ Êý Ãû: ESP8266_GetLocalIP
-*	¹¦ÄÜËµÃ÷: ²éÑ¯±¾»úIPµØÖ·ºÍMAC
-*	ÐÎ    ²Î: _ssid : APÃû×Ö×Ö·û´®
-*			  _pwd : ÃÜÂë×Ö·û´®
-*	·µ »Ø Öµ: 1 ±íÊ¾OK£¬ 0 ±íÊ¾Î´Öª
+*	å‡½ æ•° å: ESP8266_GetLocalIP
+*	åŠŸèƒ½è¯´æ˜Ž: æŸ¥è¯¢æœ¬æœºIPåœ°å€å’ŒMAC
+*	å½¢    å‚: _ssid : APåå­—å­—ç¬¦ä¸²
+*			  _pwd : å¯†ç å­—ç¬¦ä¸²
+*	è¿” å›ž å€¼: 1 è¡¨ç¤ºOKï¼Œ 0 è¡¨ç¤ºæœªçŸ¥
 *********************************************************************************************************
 */
 uint8_t ESP8266_GetLocalIP(char *_ip, char *_mac)
@@ -556,7 +556,7 @@ uint8_t ESP8266_GetLocalIP(char *_ip, char *_mac)
 	
 	ESP8266_SendAT("AT+CIFSR");
 	
-	/*¡¡Ä£¿é½«Ó¦´ð:
+	/*ã€€æ¨¡å—å°†åº”ç­”:
 		
 	+CIFSR:STAIP,"192.168.1.18"
 	+CIFSR:STAMAC,"18:fe:34:a6:44:75"
@@ -607,11 +607,11 @@ uint8_t ESP8266_GetLocalIP(char *_ip, char *_mac)
 
 /*
 *********************************************************************************************************
-*	º¯ Êý Ãû: ESP8266_JoinAP
-*	¹¦ÄÜËµÃ÷: ¼ÓÈëAP
-*	ÐÎ    ²Î: _ssid : APÃû×Ö×Ö·û´®
-*			  _pwd : ÃÜÂë×Ö·û´®
-*	·µ »Ø Öµ: 1 ±íÊ¾ 0K  0 ±íÊ¾Ê§°Ü
+*	å‡½ æ•° å: ESP8266_JoinAP
+*	åŠŸèƒ½è¯´æ˜Ž: åŠ å…¥AP
+*	å½¢    å‚: _ssid : APåå­—å­—ç¬¦ä¸²
+*			  _pwd : å¯†ç å­—ç¬¦ä¸²
+*	è¿” å›ž å€¼: 1 è¡¨ç¤º 0K  0 è¡¨ç¤ºå¤±è´¥
 *********************************************************************************************************
 */
 uint8_t ESP8266_JoinAP(char *_ssid, char *_pwd, uint16_t _timeout)
@@ -623,10 +623,10 @@ uint8_t ESP8266_JoinAP(char *_ssid, char *_pwd, uint16_t _timeout)
 	
 	if (ESP8266_ReadLine(buf, 64, _timeout))
 	{
-		if (memcmp(buf, "AT+CWJAP", 8) == 0)		/* µÚ1´Î¶Áµ½µÄÊÇ ÃüÁî±¾Éí */
+		if (memcmp(buf, "AT+CWJAP", 8) == 0)		/* ç¬¬1æ¬¡è¯»åˆ°çš„æ˜¯ å‘½ä»¤æœ¬èº« */
 		{
-			ESP8266_ReadLine(buf, 64, _timeout);	/* Õâ¸öÊÇ»Ø³µ */
-			ESP8266_ReadLine(buf, 64, _timeout);	/* Õâ´ÎÊÇ¶ÁÓ¦´ðµÄOK */
+			ESP8266_ReadLine(buf, 64, _timeout);	/* è¿™ä¸ªæ˜¯å›žè½¦ */
+			ESP8266_ReadLine(buf, 64, _timeout);	/* è¿™æ¬¡æ˜¯è¯»åº”ç­”çš„OK */
 		}		
 		if (memcmp(buf, "OK", 2) == 0)
 		{
@@ -638,10 +638,10 @@ uint8_t ESP8266_JoinAP(char *_ssid, char *_pwd, uint16_t _timeout)
 
 /*
 *********************************************************************************************************
-*	º¯ Êý Ãû: ESP8266_QuitAP
-*	¹¦ÄÜËµÃ÷: ÍË³öµ±Ç°µÄAPÁ¬½Ó
-*	ÐÎ    ²Î: ÎÞ
-*	·µ »Ø Öµ: ÎÞ
+*	å‡½ æ•° å: ESP8266_QuitAP
+*	åŠŸèƒ½è¯´æ˜Ž: é€€å‡ºå½“å‰çš„APè¿žæŽ¥
+*	å½¢    å‚: æ— 
+*	è¿” å›ž å€¼: æ— 
 *********************************************************************************************************
 */
 void ESP8266_QuitAP(void)
@@ -651,11 +651,11 @@ void ESP8266_QuitAP(void)
 
 /*
 *********************************************************************************************************
-*	º¯ Êý Ãû: ESP8266_ScanAP
-*	¹¦ÄÜËµÃ÷: É¨ÃèAP¡£½á¹û´æ·ÅÔÚ_pList ½á¹¹ÌåÊý×é. ´Ëº¯Êý»áÕ¼ÓÃ×î³¤5ÃëÊ±¼ä¡£Ö±µ½ÊÕµ½OK»òERROR¡£
-*	ÐÎ    ²Î: _pList : APÁÐ±íÊý×é;  
-*			  _MaxNum : ËÑË÷µÄ×î´óAP¸öÊý¡£Ö÷ÒªÊÇ·ÀÖ¹»º³åÇøÒç³ö¡£
-*	·µ »Ø Öµ: -1 ±íÊ¾Ê§°Ü; 0 ±íÊ¾ËÑË÷µ½0¸ö; 1±íÊ¾1¸ö¡£
+*	å‡½ æ•° å: ESP8266_ScanAP
+*	åŠŸèƒ½è¯´æ˜Ž: æ‰«æAPã€‚ç»“æžœå­˜æ”¾åœ¨_pList ç»“æž„ä½“æ•°ç»„. æ­¤å‡½æ•°ä¼šå ç”¨æœ€é•¿5ç§’æ—¶é—´ã€‚ç›´åˆ°æ”¶åˆ°OKæˆ–ERRORã€‚
+*	å½¢    å‚: _pList : APåˆ—è¡¨æ•°ç»„;  
+*			  _MaxNum : æœç´¢çš„æœ€å¤§APä¸ªæ•°ã€‚ä¸»è¦æ˜¯é˜²æ­¢ç¼“å†²åŒºæº¢å‡ºã€‚
+*	è¿” å›ž å€¼: -1 è¡¨ç¤ºå¤±è´¥; 0 è¡¨ç¤ºæœç´¢åˆ°0ä¸ª; 1è¡¨ç¤º1ä¸ªã€‚
 *********************************************************************************************************
 */
 int16_t ESP8266_ScanAP(WIFI_AP_T *_pList, uint16_t _MaxNum)
@@ -689,36 +689,36 @@ int16_t ESP8266_ScanAP(WIFI_AP_T *_pList, uint16_t _MaxNum)
 			p1 = buf;
 			
 			/* +CWLAP:(4,"BaiTu",-87,"9c:21:6a:3c:89:52",1) */
-			/* ½âÎö¼ÓÃÜ·½Ê½ */
-			p1 = strchr(p1, '(');	/* ËÑË÷µ½(*/
+			/* è§£æžåŠ å¯†æ–¹å¼ */
+			p1 = strchr(p1, '(');	/* æœç´¢åˆ°(*/
 			p1++;
 			p->ecn = str_to_int(p1);
 			
-			/* ½âÎössid */
-			p1 = strchr(p1, '"');	/* ËÑË÷µ½µÚ1¸ö·ÖºÅ */
+			/* è§£æžssid */
+			p1 = strchr(p1, '"');	/* æœç´¢åˆ°ç¬¬1ä¸ªåˆ†å· */
 			p1++;
-			p2 = strchr(p1, '"');	/* ËÑË÷µ½µÚ2¸ö·ÖºÅ */
+			p2 = strchr(p1, '"');	/* æœç´¢åˆ°ç¬¬2ä¸ªåˆ†å· */
 			memcpy(p->ssid, p1, p2 - p1);
 			p->ssid[p2 - p1] = 0;
 			
-			/* ½âÎö rssi */
-			p1 = strchr(p2, ',');	/* ËÑË÷µ½¶ººÅ*/
+			/* è§£æž rssi */
+			p1 = strchr(p2, ',');	/* æœç´¢åˆ°é€—å·*/
 			p1++;
 			p->rssi = str_to_int(p1);
 			
-			/* ½âÎömac */
-			p1 = strchr(p1, '"');	/* ËÑË÷µ½·ÖºÅ*/
+			/* è§£æžmac */
+			p1 = strchr(p1, '"');	/* æœç´¢åˆ°åˆ†å·*/
 			p1++;
-			p2 = strchr(p1, '"');	/* ËÑË÷µ½·ÖºÅ*/
+			p2 = strchr(p1, '"');	/* æœç´¢åˆ°åˆ†å·*/
 			memcpy(p->mac, p1, p2 - p1);
 			p->mac[p2 - p1] = 0;
 			
-			/* ½âÎöch */
-			p1 = strchr(p2, ',');	/* ËÑË÷µ½¶ººÅ*/
+			/* è§£æžch */
+			p1 = strchr(p2, ',');	/* æœç´¢åˆ°é€—å·*/
 			p1++;
 			p->ch = str_to_int(p1);
 			
-			/* ÓÐÐ§µÄAPÃû×Ö */
+			/* æœ‰æ•ˆçš„APåå­— */
 			count++;
 			
 			p++;
@@ -732,16 +732,16 @@ int16_t ESP8266_ScanAP(WIFI_AP_T *_pList, uint16_t _MaxNum)
 
 /*
 *********************************************************************************************************
-*	º¯ Êý Ãû: ESP8266_RxNew
-*	¹¦ÄÜËµÃ÷: ½ÓÊÕÐÂÊý¾ÝÖ¡ +IPD
-*	ÐÎ    ²Î: _pRxBuf : ½ÓÊÕµ½µÄÊý¾Ý´æ·ÅÔÚ´Ë»º³åÇø
-*	·µ »Ø Öµ: ½ÓÊÕµ½µÄÊý¾Ý³¤¶È. 0 ±íÊ¾ÎÞÊý¾Ý
+*	å‡½ æ•° å: ESP8266_RxNew
+*	åŠŸèƒ½è¯´æ˜Ž: æŽ¥æ”¶æ–°æ•°æ®å¸§ +IPD
+*	å½¢    å‚: _pRxBuf : æŽ¥æ”¶åˆ°çš„æ•°æ®å­˜æ”¾åœ¨æ­¤ç¼“å†²åŒº
+*	è¿” å›ž å€¼: æŽ¥æ”¶åˆ°çš„æ•°æ®é•¿åº¦. 0 è¡¨ç¤ºæ— æ•°æ®
 *********************************************************************************************************
 */
 uint16_t ESP8266_RxNew(uint8_t *_pRxBuf)
 {
 	uint8_t ucData;
-	static uint8_t s_buf[512];	/* Ô¼¶¨×î³¤256 */
+	static uint8_t s_buf[512];	/* çº¦å®šæœ€é•¿256 */
 	static uint16_t s_len = 0;
 	static uint8_t s_flag = 0;
 	static uint16_t s_data_len = 0;
@@ -751,13 +751,13 @@ uint16_t ESP8266_RxNew(uint8_t *_pRxBuf)
 
 	if (comGetChar(COM_ESP8266, &ucData))
 	{
-		ESP8266_PrintRxData(ucData);		/* ½«½ÓÊÕµ½Êý¾Ý´òÓ¡µ½µ÷ÊÔ´®¿Ú1 */
+		ESP8266_PrintRxData(ucData);		/* å°†æŽ¥æ”¶åˆ°æ•°æ®æ‰“å°åˆ°è°ƒè¯•ä¸²å£1 */
 
 		if (s_flag == 0)
 		{
 			if (s_len < sizeof(s_buf))
 			{
-				s_buf[s_len++] = ucData;		/* ±£´æ½ÓÊÕµ½µÄÊý¾Ý */
+				s_buf[s_len++] = ucData;		/* ä¿å­˜æŽ¥æ”¶åˆ°çš„æ•°æ® */
 			}			
 			if (ucData == '+')
 			{
@@ -777,7 +777,7 @@ uint16_t ESP8266_RxNew(uint8_t *_pRxBuf)
 		{
 			if (s_len < sizeof(s_buf))
 			{
-				s_buf[s_len++] = ucData;		/* ±£´æ½ÓÊÕµ½µÄÊý¾Ý */
+				s_buf[s_len++] = ucData;		/* ä¿å­˜æŽ¥æ”¶åˆ°çš„æ•°æ® */
 				
 				if (s_len == s_data_len)
 				{
@@ -799,4 +799,4 @@ uint16_t ESP8266_RxNew(uint8_t *_pRxBuf)
 	return 0;
 }
 
-/***************************** °²¸»À³µç×Ó www.armfly.com (END OF FILE) *********************************/
+/***************************** å®‰å¯ŒèŽ±ç”µå­ www.armfly.com (END OF FILE) *********************************/

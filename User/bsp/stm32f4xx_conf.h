@@ -1,16 +1,16 @@
 /*
 *********************************************************************************************************
 *
-*	Ä£¿éÃû³Æ : STM32¹Ì¼þ¿âÅäÖÃÎÄ¼þ¡£
-*	ÎÄ¼þÃû³Æ : stm32f4xx_conf.h
-*	°æ    ±¾ : V1.3.0
-*	Ëµ    Ã÷ :	ÕâÊÇST¹Ì¼þ¿âÌá¹©µÄÎÄ¼þ¡£ÓÃ»§¿ÉÒÔ¸ù¾ÝÐèÒª°üº¬ST¹Ì¼þ¿âµÄÍâÉèÄ£¿é¡£ÎªÁË·½±ãÎÒÃÇ°üº¬ÁËËùÓÐ¹Ì¼þ
-*				¿âÄ£¿é¡£
+*	æ¨¡å—åç§° : STM32å›ºä»¶åº“é…ç½®æ–‡ä»¶ã€‚
+*	æ–‡ä»¶åç§° : stm32f4xx_conf.h
+*	ç‰ˆ    æœ¬ : V1.3.0
+*	è¯´    æ˜Ž :	è¿™æ˜¯STå›ºä»¶åº“æä¾›çš„æ–‡ä»¶ã€‚ç”¨æˆ·å¯ä»¥æ ¹æ®éœ€è¦åŒ…å«STå›ºä»¶åº“çš„å¤–è®¾æ¨¡å—ã€‚ä¸ºäº†æ–¹ä¾¿æˆ‘ä»¬åŒ…å«äº†æ‰€æœ‰å›ºä»¶
+*				åº“æ¨¡å—ã€‚
 *
-*			   Õâ¸öÎÄ¼þ±» stm32f4xx.h °üº¬£¬Òò´ËÔÚ.cÎÄ¼þÖÐÖ»ÐèÒª include "stm32f10x.h"¼´¿É£¬²»±Øµ¥¶À
-* 			   #include stm32f10x_conf.hÎÄ¼þ
+*			   è¿™ä¸ªæ–‡ä»¶è¢« stm32f4xx.h åŒ…å«ï¼Œå› æ­¤åœ¨.cæ–‡ä»¶ä¸­åªéœ€è¦ include "stm32f10x.h"å³å¯ï¼Œä¸å¿…å•ç‹¬
+* 			   #include stm32f10x_conf.hæ–‡ä»¶
 *
-*	Copyright (C), 2013-2014, °²¸»À³µç×Ó www.armfly.com
+*	Copyright (C), 2013-2014, å®‰å¯ŒèŽ±ç”µå­ www.armfly.com
 *
 *********************************************************************************************************
 */
@@ -119,19 +119,19 @@
 
 
 /*
-	ÓÃ»§¿ÉÒÔÑ¡ÔñÊÇ·ñÊ¹ÄÜST¹Ì¼þ¿âµÄ¶ÏÑÔ¹©ÄÜ¡£Ê¹ÄÜ¶ÏÑÔµÄ·½·¨ÓÐÁ½ÖÖ£º
-	(1) ÔÚC±àÒëÆ÷µÄÔ¤¶¨ÒåºêÑ¡ÏîÖÐ¶¨ÒåUSE_FULL_ASSERT¡£
-	(2) ÔÚ±¾ÎÄ¼þÈ¡Ïû"#define USE_FULL_ASSERT    1"ÐÐµÄ×¢ÊÍ¡£
+	ç”¨æˆ·å¯ä»¥é€‰æ‹©æ˜¯å¦ä½¿èƒ½STå›ºä»¶åº“çš„æ–­è¨€ä¾›èƒ½ã€‚ä½¿èƒ½æ–­è¨€çš„æ–¹æ³•æœ‰ä¸¤ç§ï¼š
+	(1) åœ¨Cç¼–è¯‘å™¨çš„é¢„å®šä¹‰å®é€‰é¡¹ä¸­å®šä¹‰USE_FULL_ASSERTã€‚
+	(2) åœ¨æœ¬æ–‡ä»¶å–æ¶ˆ"#define USE_FULL_ASSERT    1"è¡Œçš„æ³¨é‡Šã€‚
 */
-/* È¡ÏûÏÂÃæ´úÂëÐÐµÄ×¢ÊÍÔò¹Ì¼þ¿â´úÂë»áÕ¹¿ªassert_paramºê½øÐÐ¶ÏÑÔ */
+/* å–æ¶ˆä¸‹é¢ä»£ç è¡Œçš„æ³¨é‡Šåˆ™å›ºä»¶åº“ä»£ç ä¼šå±•å¼€assert_paramå®è¿›è¡Œæ–­è¨€ */
 /* #define USE_FULL_ASSERT    1 */
 
 #ifdef  USE_FULL_ASSERT
 	/*
-		assert_paramºêÓÃÓÚº¯ÊýÐÎ²Î¼ì²é¡£Èç¹ûexprÊÇfalse£¬Ëü½«µ÷ÓÃassert_failed()º¯Êý±¨¸æ·¢Éú´íÎóµÄÔ´ÎÄ¼þ
-		ºÍÐÐºÅ¡£Èç¹ûexprÊÇtrue£¬½«²»Ö´ÐÐÈÎºÎ²Ù×÷¡£
+		assert_paramå®ç”¨äºŽå‡½æ•°å½¢å‚æ£€æŸ¥ã€‚å¦‚æžœexpræ˜¯falseï¼Œå®ƒå°†è°ƒç”¨assert_failed()å‡½æ•°æŠ¥å‘Šå‘ç”Ÿé”™è¯¯çš„æºæ–‡ä»¶
+		å’Œè¡Œå·ã€‚å¦‚æžœexpræ˜¯trueï¼Œå°†ä¸æ‰§è¡Œä»»ä½•æ“ä½œã€‚
 
-		assert_failed() º¯ÊýÔÚstm32f10x_assert.cÎÄ¼þ(ÕâÊÇ°²¸»À³½¨Á¢µÄÎÄ¼þ)
+		assert_failed() å‡½æ•°åœ¨stm32f10x_assert.cæ–‡ä»¶(è¿™æ˜¯å®‰å¯ŒèŽ±å»ºç«‹çš„æ–‡ä»¶)
 	*/
 	#define assert_param(expr) ((expr) ? (void)0 : assert_failed((uint8_t *)__FILE__, __LINE__))
 
@@ -142,6 +142,6 @@
 
 #endif /* __STM32F4xx_CONF_H */
 
-/***************************** °²¸»À³µç×Ó www.armfly.com (END OF FILE) *********************************/
+/***************************** å®‰å¯ŒèŽ±ç”µå­ www.armfly.com (END OF FILE) *********************************/
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

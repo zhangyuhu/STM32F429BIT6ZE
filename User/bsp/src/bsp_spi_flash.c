@@ -1,45 +1,45 @@
 /*
 *********************************************************************************************************
 *
-*	Ä£¿éÃû³Æ : SPI½Ó¿Ú´®ĞĞFLASH ¶ÁĞ´Ä£¿é
-*	ÎÄ¼şÃû³Æ : bsp_spi_flash.c
-*	°æ    ±¾ : V1.0
-*	Ëµ    Ã÷ : Ö§³Ö SST25VF016B¡¢MX25L1606E ºÍ W25Q64BVSSIG
-*			   SST25VF016B µÄĞ´²Ù×÷²ÉÓÃAAIÖ¸Áî£¬¿ÉÒÔÌá¸ßĞ´ÈëĞ§ÂÊ¡£
+*	æ¨¡å—åç§° : SPIæ¥å£ä¸²è¡ŒFLASH è¯»å†™æ¨¡å—
+*	æ–‡ä»¶åç§° : bsp_spi_flash.c
+*	ç‰ˆ    æœ¬ : V1.0
+*	è¯´    æ˜ : æ”¯æŒ SST25VF016Bã€MX25L1606E å’Œ W25Q64BVSSIG
+*			   SST25VF016B çš„å†™æ“ä½œé‡‡ç”¨AAIæŒ‡ä»¤ï¼Œå¯ä»¥æé«˜å†™å…¥æ•ˆç‡ã€‚
 *
-*			   È±Ê¡Ê¹ÓÃSTM32F4µÄÓ²¼şSPI1½Ó¿Ú£¬Ê±ÖÓÆµÂÊ×î¸ßÎª 42MHz £¨³¬ÆµÊ¹ÓÃ£©
+*			   ç¼ºçœä½¿ç”¨STM32F4çš„ç¡¬ä»¶SPI1æ¥å£ï¼Œæ—¶é’Ÿé¢‘ç‡æœ€é«˜ä¸º 42MHz ï¼ˆè¶…é¢‘ä½¿ç”¨ï¼‰
 *
-*	ĞŞ¸Ä¼ÇÂ¼ :
-*		°æ±¾ºÅ  ÈÕÆÚ        ×÷Õß     ËµÃ÷
-*		V1.0    2013-02-01 armfly  ÕıÊ½·¢²¼
+*	ä¿®æ”¹è®°å½• :
+*		ç‰ˆæœ¬å·  æ—¥æœŸ        ä½œè€…     è¯´æ˜
+*		V1.0    2013-02-01 armfly  æ­£å¼å‘å¸ƒ
 *
-*	Copyright (C), 2013-2014, °²¸»À³µç×Ó www.armfly.com
+*	Copyright (C), 2013-2014, å®‰å¯Œè±ç”µå­ www.armfly.com
 *
 *********************************************************************************************************
 */
 
 #include "bsp.h"
 
-/* ´®ĞĞFlshµÄÆ¬Ñ¡GPIO¶Ë¿Ú  */
+/* ä¸²è¡ŒFlshçš„ç‰‡é€‰GPIOç«¯å£  */
 #define SF_RCC_CS 			RCC_AHB1Periph_GPIOD
 #define SF_PORT_CS			GPIOD
 #define SF_PIN_CS			GPIO_Pin_13
 #define SF_CS_0()			SF_PORT_CS->BSRRH = SF_PIN_CS
 #define SF_CS_1()			SF_PORT_CS->BSRRL = SF_PIN_CS
 
-#define CMD_AAI       0xAD  	/* AAI Á¬Ğø±à³ÌÖ¸Áî(FOR SST25VF016B) */
-#define CMD_DISWR	  0x04		/* ½ûÖ¹Ğ´, ÍË³öAAI×´Ì¬ */
-#define CMD_EWRSR	  0x50		/* ÔÊĞíĞ´×´Ì¬¼Ä´æÆ÷µÄÃüÁî */
-#define CMD_WRSR      0x01  	/* Ğ´×´Ì¬¼Ä´æÆ÷ÃüÁî */
-#define CMD_WREN      0x06		/* Ğ´Ê¹ÄÜÃüÁî */
-#define CMD_READ      0x03  	/* ¶ÁÊı¾İÇøÃüÁî */
-#define CMD_RDSR      0x05		/* ¶Á×´Ì¬¼Ä´æÆ÷ÃüÁî */
-#define CMD_RDID      0x9F		/* ¶ÁÆ÷¼şIDÃüÁî */
-#define CMD_SE        0x20		/* ²Á³ıÉÈÇøÃüÁî */
-#define CMD_BE        0xC7		/* ÅúÁ¿²Á³ıÃüÁî */
-#define DUMMY_BYTE    0xA5		/* ÑÆÃüÁî£¬¿ÉÒÔÎªÈÎÒâÖµ£¬ÓÃÓÚ¶Á²Ù×÷ */
+#define CMD_AAI       0xAD  	/* AAI è¿ç»­ç¼–ç¨‹æŒ‡ä»¤(FOR SST25VF016B) */
+#define CMD_DISWR	  0x04		/* ç¦æ­¢å†™, é€€å‡ºAAIçŠ¶æ€ */
+#define CMD_EWRSR	  0x50		/* å…è®¸å†™çŠ¶æ€å¯„å­˜å™¨çš„å‘½ä»¤ */
+#define CMD_WRSR      0x01  	/* å†™çŠ¶æ€å¯„å­˜å™¨å‘½ä»¤ */
+#define CMD_WREN      0x06		/* å†™ä½¿èƒ½å‘½ä»¤ */
+#define CMD_READ      0x03  	/* è¯»æ•°æ®åŒºå‘½ä»¤ */
+#define CMD_RDSR      0x05		/* è¯»çŠ¶æ€å¯„å­˜å™¨å‘½ä»¤ */
+#define CMD_RDID      0x9F		/* è¯»å™¨ä»¶IDå‘½ä»¤ */
+#define CMD_SE        0x20		/* æ“¦é™¤æ‰‡åŒºå‘½ä»¤ */
+#define CMD_BE        0xC7		/* æ‰¹é‡æ“¦é™¤å‘½ä»¤ */
+#define DUMMY_BYTE    0xA5		/* å“‘å‘½ä»¤ï¼Œå¯ä»¥ä¸ºä»»æ„å€¼ï¼Œç”¨äºè¯»æ“ä½œ */
 
-#define WIP_FLAG      0x01		/* ×´Ì¬¼Ä´æÆ÷ÖĞµÄÕıÔÚ±à³Ì±êÖ¾£¨WIP) */
+#define WIP_FLAG      0x01		/* çŠ¶æ€å¯„å­˜å™¨ä¸­çš„æ­£åœ¨ç¼–ç¨‹æ ‡å¿—ï¼ˆWIP) */
 
 SFLASH_T g_tSF;
 
@@ -49,7 +49,7 @@ static void sf_WaitForWriteEnd(void);
 static uint8_t sf_NeedErase(uint8_t * _ucpOldBuf, uint8_t *_ucpNewBuf, uint16_t _uiLen);
 static uint8_t sf_CmpData(uint32_t _uiSrcAddr, uint8_t *_ucpTar, uint32_t _uiSize);
 static uint8_t sf_AutoWritePage(uint8_t *_ucpSrc, uint32_t _uiWrAddr, uint16_t _usWrLen);
-static uint8_t s_spiBuf[4*1024];	/* ÓÃÓÚĞ´º¯Êı£¬ÏÈ¶Á³öÕû¸öpage£¬ĞŞ¸Ä»º³åÇøºó£¬ÔÙÕû¸öpage»ØĞ´ */
+static uint8_t s_spiBuf[4*1024];	/* ç”¨äºå†™å‡½æ•°ï¼Œå…ˆè¯»å‡ºæ•´ä¸ªpageï¼Œä¿®æ”¹ç¼“å†²åŒºåï¼Œå†æ•´ä¸ªpageå›å†™ */
 
 static void sf_CfgSpiHard(void);
 static void sf_ConfigGPIO(void);
@@ -57,25 +57,25 @@ static void sf_SetCS(uint8_t _level);
 
 /*
 *********************************************************************************************************
-*	º¯ Êı Ãû: sf_ConfigGPIO
-*	¹¦ÄÜËµÃ÷: ÅäÖÃ´®ĞĞFlashµÄÆ¬Ñ¡GPIO¡£ ÉèÖÃÎªÍÆÍìÊä³ö
-*	ĞÎ    ²Î: ÎŞ
-*	·µ »Ø Öµ: ÎŞ
+*	å‡½ æ•° å: sf_ConfigGPIO
+*	åŠŸèƒ½è¯´æ˜: é…ç½®ä¸²è¡ŒFlashçš„ç‰‡é€‰GPIOã€‚ è®¾ç½®ä¸ºæ¨æŒ½è¾“å‡º
+*	å½¢    å‚: æ— 
+*	è¿” å› å€¼: æ— 
 *********************************************************************************************************
 */
 static void sf_ConfigGPIO(void)
 {
 	/*
-		°²¸»À³STM32-V5 ¿ª·¢°å¿ÚÏß·ÖÅä£º  ´®ĞĞFlashĞÍºÅÎª W25Q64BVSSIG (80MHz)
+		å®‰å¯Œè±STM32-V5 å¼€å‘æ¿å£çº¿åˆ†é…ï¼š  ä¸²è¡ŒFlashå‹å·ä¸º W25Q64BVSSIG (80MHz)
 		PF8/SF_CS
 	*/
 	GPIO_InitTypeDef GPIO_InitStructure;
 
-	/* Ê¹ÄÜGPIO Ê±ÖÓ */
+	/* ä½¿èƒ½GPIO æ—¶é’Ÿ */
 	RCC_AHB1PeriphClockCmd(SF_RCC_CS, ENABLE);
 
-	/* ÅäÖÃÆ¬Ñ¡¿ÚÏßÎªÍÆÍìÊä³öÄ£Ê½ */
-	sf_SetCS(1);		/* Æ¬Ñ¡ÖÃ¸ß£¬²»Ñ¡ÖĞ */
+	/* é…ç½®ç‰‡é€‰å£çº¿ä¸ºæ¨æŒ½è¾“å‡ºæ¨¡å¼ */
+	sf_SetCS(1);		/* ç‰‡é€‰ç½®é«˜ï¼Œä¸é€‰ä¸­ */
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
 	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
@@ -86,57 +86,57 @@ static void sf_ConfigGPIO(void)
 
 /*
 *********************************************************************************************************
-*	º¯ Êı Ãû: sf_CfgSpiHard
-*	¹¦ÄÜËµÃ÷: ÅäÖÃSTM32ÄÚ²¿SPIÓ²¼şµÄ¹¤×÷Ä£Ê½¡¢ËÙ¶ÈµÈ²ÎÊı£¬ÓÃÓÚ·ÃÎÊSPI½Ó¿ÚµÄ´®ĞĞFlash¡£
-*	ĞÎ    ²Î: ÎŞ
-*	·µ »Ø Öµ: ÎŞ
+*	å‡½ æ•° å: sf_CfgSpiHard
+*	åŠŸèƒ½è¯´æ˜: é…ç½®STM32å†…éƒ¨SPIç¡¬ä»¶çš„å·¥ä½œæ¨¡å¼ã€é€Ÿåº¦ç­‰å‚æ•°ï¼Œç”¨äºè®¿é—®SPIæ¥å£çš„ä¸²è¡ŒFlashã€‚
+*	å½¢    å‚: æ— 
+*	è¿” å› å€¼: æ— 
 *********************************************************************************************************
 */
 static void sf_CfgSpiHard(void)
 {
 	SPI_InitTypeDef  SPI_InitStructure;
 
-	/* ÅäÖÃSPIÓ²¼ş²ÎÊı */
-	SPI_InitStructure.SPI_Direction = SPI_Direction_2Lines_FullDuplex;	/* Êı¾İ·½Ïò£º2ÏßÈ«Ë«¹¤ */
-	SPI_InitStructure.SPI_Mode = SPI_Mode_Master;		/* STM32µÄSPI¹¤×÷Ä£Ê½ £ºÖ÷»úÄ£Ê½ */
-	SPI_InitStructure.SPI_DataSize = SPI_DataSize_8b;	/* Êı¾İÎ»³¤¶È £º 8Î» */
-	/* SPI_CPOLºÍSPI_CPHA½áºÏÊ¹ÓÃ¾ö¶¨Ê±ÖÓºÍÊı¾İ²ÉÑùµãµÄÏàÎ»¹ØÏµ¡¢
-	   ±¾ÀıÅäÖÃ: ×ÜÏß¿ÕÏĞÊÇ¸ßµçÆ½,µÚ2¸ö±ßÑØ£¨ÉÏÉıÑØ²ÉÑùÊı¾İ)
+	/* é…ç½®SPIç¡¬ä»¶å‚æ•° */
+	SPI_InitStructure.SPI_Direction = SPI_Direction_2Lines_FullDuplex;	/* æ•°æ®æ–¹å‘ï¼š2çº¿å…¨åŒå·¥ */
+	SPI_InitStructure.SPI_Mode = SPI_Mode_Master;		/* STM32çš„SPIå·¥ä½œæ¨¡å¼ ï¼šä¸»æœºæ¨¡å¼ */
+	SPI_InitStructure.SPI_DataSize = SPI_DataSize_8b;	/* æ•°æ®ä½é•¿åº¦ ï¼š 8ä½ */
+	/* SPI_CPOLå’ŒSPI_CPHAç»“åˆä½¿ç”¨å†³å®šæ—¶é’Ÿå’Œæ•°æ®é‡‡æ ·ç‚¹çš„ç›¸ä½å…³ç³»ã€
+	   æœ¬ä¾‹é…ç½®: æ€»çº¿ç©ºé—²æ˜¯é«˜ç”µå¹³,ç¬¬2ä¸ªè¾¹æ²¿ï¼ˆä¸Šå‡æ²¿é‡‡æ ·æ•°æ®)
 	*/
-	SPI_InitStructure.SPI_CPOL = SPI_CPOL_High;			/* Ê±ÖÓÉÏÉıÑØ²ÉÑùÊı¾İ */
-	SPI_InitStructure.SPI_CPHA = SPI_CPHA_2Edge;		/* Ê±ÖÓµÄµÚ2¸ö±ßÑØ²ÉÑùÊı¾İ */
-	SPI_InitStructure.SPI_NSS = SPI_NSS_Soft;			/* Æ¬Ñ¡¿ØÖÆ·½Ê½£ºÈí¼ş¿ØÖÆ */
+	SPI_InitStructure.SPI_CPOL = SPI_CPOL_High;			/* æ—¶é’Ÿä¸Šå‡æ²¿é‡‡æ ·æ•°æ® */
+	SPI_InitStructure.SPI_CPHA = SPI_CPHA_2Edge;		/* æ—¶é’Ÿçš„ç¬¬2ä¸ªè¾¹æ²¿é‡‡æ ·æ•°æ® */
+	SPI_InitStructure.SPI_NSS = SPI_NSS_Soft;			/* ç‰‡é€‰æ§åˆ¶æ–¹å¼ï¼šè½¯ä»¶æ§åˆ¶ */
 
-	/* ÉèÖÃ²¨ÌØÂÊÔ¤·ÖÆµÏµÊı SPI_BaudRatePrescaler_8 £¬Êµ²âSCKÖÜÆÚ 96ns, 10.4MHz */
+	/* è®¾ç½®æ³¢ç‰¹ç‡é¢„åˆ†é¢‘ç³»æ•° SPI_BaudRatePrescaler_8 ï¼Œå®æµ‹SCKå‘¨æœŸ 96ns, 10.4MHz */
 	SPI_InitStructure.SPI_BaudRatePrescaler = SPI_BaudRatePrescaler_8;
 
-	SPI_InitStructure.SPI_FirstBit = SPI_FirstBit_MSB;	/* Êı¾İÎ»´«Êä´ÎĞò£º¸ßÎ»ÏÈ´« */
-	SPI_InitStructure.SPI_CRCPolynomial = 7;			/* CRC¶àÏîÊ½¼Ä´æÆ÷£¬¸´Î»ºóÎª7¡£±¾Àı³Ì²»ÓÃ */
+	SPI_InitStructure.SPI_FirstBit = SPI_FirstBit_MSB;	/* æ•°æ®ä½ä¼ è¾“æ¬¡åºï¼šé«˜ä½å…ˆä¼  */
+	SPI_InitStructure.SPI_CRCPolynomial = 7;			/* CRCå¤šé¡¹å¼å¯„å­˜å™¨ï¼Œå¤ä½åä¸º7ã€‚æœ¬ä¾‹ç¨‹ä¸ç”¨ */
 	SPI_Init(SPI1, &SPI_InitStructure);
 
-	SPI_Cmd(SPI1, ENABLE);				/* Ê¹ÄÜSPI  */
+	SPI_Cmd(SPI1, ENABLE);				/* ä½¿èƒ½SPI  */
 }
 
 /*
 *********************************************************************************************************
-*	º¯ Êı Ãû: sf_SetCS(0)
-*	¹¦ÄÜËµÃ÷: ÉèÖÃCS¡£ ÓÃÓÚÔËĞĞÖĞSPI¹²Ïí¡£
-*	ĞÎ    ²Î: ÎŞ
-	·µ »Ø Öµ: ÎŞ
+*	å‡½ æ•° å: sf_SetCS(0)
+*	åŠŸèƒ½è¯´æ˜: è®¾ç½®CSã€‚ ç”¨äºè¿è¡Œä¸­SPIå…±äº«ã€‚
+*	å½¢    å‚: æ— 
+	è¿” å› å€¼: æ— 
 *********************************************************************************************************
 */
 static void sf_SetCS(uint8_t _level)
 {
 	if (_level == 0)
 	{
-		bsp_SpiBusEnter();	/* Õ¼ÓÃSPI×ÜÏß£¬ ÓÃÓÚ×ÜÏß¹²Ïí */
+		bsp_SpiBusEnter();	/* å ç”¨SPIæ€»çº¿ï¼Œ ç”¨äºæ€»çº¿å…±äº« */
 
-		#ifdef SOFT_SPI		/* Èí¼şSPI */
+		#ifdef SOFT_SPI		/* è½¯ä»¶SPI */
 			bsp_SetSpiSck(1);
 			SF_CS_0();
 		#endif
 
-		#ifdef HARD_SPI		/* Ó²¼şSPI */
+		#ifdef HARD_SPI		/* ç¡¬ä»¶SPI */
 
 			bsp_SPI_Init(SPI_Direction_2Lines_FullDuplex | SPI_Mode_Master | SPI_DataSize_8b
 				| SPI_CPOL_High | SPI_CPHA_2Edge | SPI_NSS_Soft | SPI_BaudRatePrescaler_8 | SPI_FirstBit_MSB);
@@ -148,85 +148,85 @@ static void sf_SetCS(uint8_t _level)
 	{
 		SF_CS_1();
 
-		bsp_SpiBusExit();	/* ÊÍ·ÅSPI×ÜÏß£¬ ÓÃÓÚ×ÜÏß¹²Ïí */
+		bsp_SpiBusExit();	/* é‡Šæ”¾SPIæ€»çº¿ï¼Œ ç”¨äºæ€»çº¿å…±äº« */
 	}
 }
 
 /*
 *********************************************************************************************************
-*	º¯ Êı Ãû: bsp_InitSpiFlash
-*	¹¦ÄÜËµÃ÷: ³õÊ¼»¯´®ĞĞFlashÓ²¼ş½Ó¿Ú£¨ÅäÖÃSTM32µÄSPIÊ±ÖÓ¡¢GPIO)
-*	ĞÎ    ²Î:  ÎŞ
-*	·µ »Ø Öµ: ÎŞ
+*	å‡½ æ•° å: bsp_InitSpiFlash
+*	åŠŸèƒ½è¯´æ˜: åˆå§‹åŒ–ä¸²è¡ŒFlashç¡¬ä»¶æ¥å£ï¼ˆé…ç½®STM32çš„SPIæ—¶é’Ÿã€GPIO)
+*	å½¢    å‚:  æ— 
+*	è¿” å› å€¼: æ— 
 *********************************************************************************************************
 */
 void bsp_InitSFlash(void)
 {
-	sf_ConfigGPIO();			/* ÅäÖÃGPIO */
+	sf_ConfigGPIO();			/* é…ç½®GPIO */
 	sf_CfgSpiHard();
 
-	sf_ReadInfo();				/* ×Ô¶¯Ê¶±ğĞ¾Æ¬ĞÍºÅ */
+	sf_ReadInfo();				/* è‡ªåŠ¨è¯†åˆ«èŠ¯ç‰‡å‹å· */
 
-	sf_SetCS(0);				/* Èí¼ş·½Ê½£¬Ê¹ÄÜ´®ĞĞFlashÆ¬Ñ¡ */
-	bsp_spiWrite1(CMD_DISWR);		/* ·¢ËÍ½ûÖ¹Ğ´ÈëµÄÃüÁî,¼´Ê¹ÄÜÈí¼şĞ´±£»¤ */
-	sf_SetCS(1);				/* Èí¼ş·½Ê½£¬½ûÄÜ´®ĞĞFlashÆ¬Ñ¡ */
+	sf_SetCS(0);				/* è½¯ä»¶æ–¹å¼ï¼Œä½¿èƒ½ä¸²è¡ŒFlashç‰‡é€‰ */
+	bsp_spiWrite1(CMD_DISWR);		/* å‘é€ç¦æ­¢å†™å…¥çš„å‘½ä»¤,å³ä½¿èƒ½è½¯ä»¶å†™ä¿æŠ¤ */
+	sf_SetCS(1);				/* è½¯ä»¶æ–¹å¼ï¼Œç¦èƒ½ä¸²è¡ŒFlashç‰‡é€‰ */
 
-	sf_WaitForWriteEnd();		/* µÈ´ı´®ĞĞFlashÄÚ²¿²Ù×÷Íê³É */
+	sf_WaitForWriteEnd();		/* ç­‰å¾…ä¸²è¡ŒFlashå†…éƒ¨æ“ä½œå®Œæˆ */
 
-	sf_WriteStatus(0);			/* ½â³ıËùÓĞBLOCKµÄĞ´±£»¤ */
+	sf_WriteStatus(0);			/* è§£é™¤æ‰€æœ‰BLOCKçš„å†™ä¿æŠ¤ */
 }
 
 /*
 *********************************************************************************************************
-*	º¯ Êı Ãû: sf_EraseSector
-*	¹¦ÄÜËµÃ÷: ²Á³ıÖ¸¶¨µÄÉÈÇø
-*	ĞÎ    ²Î:  _uiSectorAddr : ÉÈÇøµØÖ·
-*	·µ »Ø Öµ: ÎŞ
+*	å‡½ æ•° å: sf_EraseSector
+*	åŠŸèƒ½è¯´æ˜: æ“¦é™¤æŒ‡å®šçš„æ‰‡åŒº
+*	å½¢    å‚:  _uiSectorAddr : æ‰‡åŒºåœ°å€
+*	è¿” å› å€¼: æ— 
 *********************************************************************************************************
 */
 void sf_EraseSector(uint32_t _uiSectorAddr)
 {
-	sf_WriteEnable();								/* ·¢ËÍĞ´Ê¹ÄÜÃüÁî */
+	sf_WriteEnable();								/* å‘é€å†™ä½¿èƒ½å‘½ä»¤ */
 
-	/* ²Á³ıÉÈÇø²Ù×÷ */
-	sf_SetCS(0);									/* Ê¹ÄÜÆ¬Ñ¡ */
-	bsp_spiWrite1(CMD_SE);								/* ·¢ËÍ²Á³ıÃüÁî */
-	bsp_spiWrite1((_uiSectorAddr & 0xFF0000) >> 16);	/* ·¢ËÍÉÈÇøµØÖ·µÄ¸ß8bit */
-	bsp_spiWrite1((_uiSectorAddr & 0xFF00) >> 8);		/* ·¢ËÍÉÈÇøµØÖ·ÖĞ¼ä8bit */
-	bsp_spiWrite1(_uiSectorAddr & 0xFF);				/* ·¢ËÍÉÈÇøµØÖ·µÍ8bit */
-	sf_SetCS(1);									/* ½ûÄÜÆ¬Ñ¡ */
+	/* æ“¦é™¤æ‰‡åŒºæ“ä½œ */
+	sf_SetCS(0);									/* ä½¿èƒ½ç‰‡é€‰ */
+	bsp_spiWrite1(CMD_SE);								/* å‘é€æ“¦é™¤å‘½ä»¤ */
+	bsp_spiWrite1((_uiSectorAddr & 0xFF0000) >> 16);	/* å‘é€æ‰‡åŒºåœ°å€çš„é«˜8bit */
+	bsp_spiWrite1((_uiSectorAddr & 0xFF00) >> 8);		/* å‘é€æ‰‡åŒºåœ°å€ä¸­é—´8bit */
+	bsp_spiWrite1(_uiSectorAddr & 0xFF);				/* å‘é€æ‰‡åŒºåœ°å€ä½8bit */
+	sf_SetCS(1);									/* ç¦èƒ½ç‰‡é€‰ */
 
-	sf_WaitForWriteEnd();							/* µÈ´ı´®ĞĞFlashÄÚ²¿Ğ´²Ù×÷Íê³É */
+	sf_WaitForWriteEnd();							/* ç­‰å¾…ä¸²è¡ŒFlashå†…éƒ¨å†™æ“ä½œå®Œæˆ */
 }
 
 /*
 *********************************************************************************************************
-*	º¯ Êı Ãû: sf_EraseChip
-*	¹¦ÄÜËµÃ÷: ²Á³ıÕû¸öĞ¾Æ¬
-*	ĞÎ    ²Î:  ÎŞ
-*	·µ »Ø Öµ: ÎŞ
+*	å‡½ æ•° å: sf_EraseChip
+*	åŠŸèƒ½è¯´æ˜: æ“¦é™¤æ•´ä¸ªèŠ¯ç‰‡
+*	å½¢    å‚:  æ— 
+*	è¿” å› å€¼: æ— 
 *********************************************************************************************************
 */
 void sf_EraseChip(void)
 {
-	sf_WriteEnable();								/* ·¢ËÍĞ´Ê¹ÄÜÃüÁî */
+	sf_WriteEnable();								/* å‘é€å†™ä½¿èƒ½å‘½ä»¤ */
 
-	/* ²Á³ıÉÈÇø²Ù×÷ */
-	sf_SetCS(0);									/* Ê¹ÄÜÆ¬Ñ¡ */
-	bsp_spiWrite1(CMD_BE);							/* ·¢ËÍÕûÆ¬²Á³ıÃüÁî */
-	sf_SetCS(1);									/* ½ûÄÜÆ¬Ñ¡ */
+	/* æ“¦é™¤æ‰‡åŒºæ“ä½œ */
+	sf_SetCS(0);									/* ä½¿èƒ½ç‰‡é€‰ */
+	bsp_spiWrite1(CMD_BE);							/* å‘é€æ•´ç‰‡æ“¦é™¤å‘½ä»¤ */
+	sf_SetCS(1);									/* ç¦èƒ½ç‰‡é€‰ */
 
-	sf_WaitForWriteEnd();							/* µÈ´ı´®ĞĞFlashÄÚ²¿Ğ´²Ù×÷Íê³É */
+	sf_WaitForWriteEnd();							/* ç­‰å¾…ä¸²è¡ŒFlashå†…éƒ¨å†™æ“ä½œå®Œæˆ */
 }
 
 /*
 *********************************************************************************************************
-*	º¯ Êı Ãû: sf_PageWrite
-*	¹¦ÄÜËµÃ÷: ÏòÒ»¸öpageÄÚĞ´ÈëÈô¸É×Ö½Ú¡£×Ö½Ú¸öÊı²»ÄÜ³¬³öÒ³Ãæ´óĞ¡£¨4K)
-*	ĞÎ    ²Î:  	_pBuf : Êı¾İÔ´»º³åÇø£»
-*				_uiWriteAddr £ºÄ¿±êÇøÓòÊ×µØÖ·
-*				_usSize £ºÊı¾İ¸öÊı£¬²»ÄÜ³¬¹ıÒ³Ãæ´óĞ¡
-*	·µ »Ø Öµ: ÎŞ
+*	å‡½ æ•° å: sf_PageWrite
+*	åŠŸèƒ½è¯´æ˜: å‘ä¸€ä¸ªpageå†…å†™å…¥è‹¥å¹²å­—èŠ‚ã€‚å­—èŠ‚ä¸ªæ•°ä¸èƒ½è¶…å‡ºé¡µé¢å¤§å°ï¼ˆ4K)
+*	å½¢    å‚:  	_pBuf : æ•°æ®æºç¼“å†²åŒºï¼›
+*				_uiWriteAddr ï¼šç›®æ ‡åŒºåŸŸé¦–åœ°å€
+*				_usSize ï¼šæ•°æ®ä¸ªæ•°ï¼Œä¸èƒ½è¶…è¿‡é¡µé¢å¤§å°
+*	è¿” å› å€¼: æ— 
 *********************************************************************************************************
 */
 void sf_PageWrite(uint8_t * _pBuf, uint32_t _uiWriteAddr, uint16_t _usSize)
@@ -235,123 +235,123 @@ void sf_PageWrite(uint8_t * _pBuf, uint32_t _uiWriteAddr, uint16_t _usSize)
 
 	if (g_tSF.ChipID == SST25VF016B_ID)
 	{
-		/* AAIÖ¸ÁîÒªÇó´«ÈëµÄÊı¾İ¸öÊıÊÇÅ¼Êı */
+		/* AAIæŒ‡ä»¤è¦æ±‚ä¼ å…¥çš„æ•°æ®ä¸ªæ•°æ˜¯å¶æ•° */
 		if ((_usSize < 2) && (_usSize % 2))
 		{
 			return ;
 		}
 
-		sf_WriteEnable();								/* ·¢ËÍĞ´Ê¹ÄÜÃüÁî */
+		sf_WriteEnable();								/* å‘é€å†™ä½¿èƒ½å‘½ä»¤ */
 
-		sf_SetCS(0);									/* Ê¹ÄÜÆ¬Ñ¡ */
-		bsp_spiWrite1(CMD_AAI);							/* ·¢ËÍAAIÃüÁî(µØÖ·×Ô¶¯Ôö¼Ó±à³Ì) */
-		bsp_spiWrite1((_uiWriteAddr & 0xFF0000) >> 16);	/* ·¢ËÍÉÈÇøµØÖ·µÄ¸ß8bit */
-		bsp_spiWrite1((_uiWriteAddr & 0xFF00) >> 8);		/* ·¢ËÍÉÈÇøµØÖ·ÖĞ¼ä8bit */
-		bsp_spiWrite1(_uiWriteAddr & 0xFF);				/* ·¢ËÍÉÈÇøµØÖ·µÍ8bit */
-		bsp_spiWrite1(*_pBuf++);							/* ·¢ËÍµÚ1¸öÊı¾İ */
-		bsp_spiWrite1(*_pBuf++);							/* ·¢ËÍµÚ2¸öÊı¾İ */
-		sf_SetCS(1);									/* ½ûÄÜÆ¬Ñ¡ */
+		sf_SetCS(0);									/* ä½¿èƒ½ç‰‡é€‰ */
+		bsp_spiWrite1(CMD_AAI);							/* å‘é€AAIå‘½ä»¤(åœ°å€è‡ªåŠ¨å¢åŠ ç¼–ç¨‹) */
+		bsp_spiWrite1((_uiWriteAddr & 0xFF0000) >> 16);	/* å‘é€æ‰‡åŒºåœ°å€çš„é«˜8bit */
+		bsp_spiWrite1((_uiWriteAddr & 0xFF00) >> 8);		/* å‘é€æ‰‡åŒºåœ°å€ä¸­é—´8bit */
+		bsp_spiWrite1(_uiWriteAddr & 0xFF);				/* å‘é€æ‰‡åŒºåœ°å€ä½8bit */
+		bsp_spiWrite1(*_pBuf++);							/* å‘é€ç¬¬1ä¸ªæ•°æ® */
+		bsp_spiWrite1(*_pBuf++);							/* å‘é€ç¬¬2ä¸ªæ•°æ® */
+		sf_SetCS(1);									/* ç¦èƒ½ç‰‡é€‰ */
 
-		sf_WaitForWriteEnd();							/* µÈ´ı´®ĞĞFlashÄÚ²¿Ğ´²Ù×÷Íê³É */
+		sf_WaitForWriteEnd();							/* ç­‰å¾…ä¸²è¡ŒFlashå†…éƒ¨å†™æ“ä½œå®Œæˆ */
 
-		_usSize -= 2;									/* ¼ÆËãÊ£Óà×Ö½ÚÊı */
+		_usSize -= 2;									/* è®¡ç®—å‰©ä½™å­—èŠ‚æ•° */
 
 		for (i = 0; i < _usSize / 2; i++)
 		{
-			sf_SetCS(0);								/* Ê¹ÄÜÆ¬Ñ¡ */
-			bsp_spiWrite1(CMD_AAI);						/* ·¢ËÍAAIÃüÁî(µØÖ·×Ô¶¯Ôö¼Ó±à³Ì) */
-			bsp_spiWrite1(*_pBuf++);						/* ·¢ËÍÊı¾İ */
-			bsp_spiWrite1(*_pBuf++);						/* ·¢ËÍÊı¾İ */
-			sf_SetCS(1);								/* ½ûÄÜÆ¬Ñ¡ */
-			sf_WaitForWriteEnd();						/* µÈ´ı´®ĞĞFlashÄÚ²¿Ğ´²Ù×÷Íê³É */
+			sf_SetCS(0);								/* ä½¿èƒ½ç‰‡é€‰ */
+			bsp_spiWrite1(CMD_AAI);						/* å‘é€AAIå‘½ä»¤(åœ°å€è‡ªåŠ¨å¢åŠ ç¼–ç¨‹) */
+			bsp_spiWrite1(*_pBuf++);						/* å‘é€æ•°æ® */
+			bsp_spiWrite1(*_pBuf++);						/* å‘é€æ•°æ® */
+			sf_SetCS(1);								/* ç¦èƒ½ç‰‡é€‰ */
+			sf_WaitForWriteEnd();						/* ç­‰å¾…ä¸²è¡ŒFlashå†…éƒ¨å†™æ“ä½œå®Œæˆ */
 		}
 
-		/* ½øÈëĞ´±£»¤×´Ì¬ */
+		/* è¿›å…¥å†™ä¿æŠ¤çŠ¶æ€ */
 		sf_SetCS(0);
 		bsp_spiWrite1(CMD_DISWR);
 		sf_SetCS(1);
 
-		sf_WaitForWriteEnd();							/* µÈ´ı´®ĞĞFlashÄÚ²¿Ğ´²Ù×÷Íê³É */
+		sf_WaitForWriteEnd();							/* ç­‰å¾…ä¸²è¡ŒFlashå†…éƒ¨å†™æ“ä½œå®Œæˆ */
 	}
-	else	/* for MX25L1606E ¡¢ W25Q64BV */
+	else	/* for MX25L1606E ã€ W25Q64BV */
 	{
 		for (j = 0; j < _usSize / 256; j++)
 		{
-			sf_WriteEnable();								/* ·¢ËÍĞ´Ê¹ÄÜÃüÁî */
+			sf_WriteEnable();								/* å‘é€å†™ä½¿èƒ½å‘½ä»¤ */
 
-			sf_SetCS(0);									/* Ê¹ÄÜÆ¬Ñ¡ */
-			bsp_spiWrite1(0x02);								/* ·¢ËÍAAIÃüÁî(µØÖ·×Ô¶¯Ôö¼Ó±à³Ì) */
-			bsp_spiWrite1((_uiWriteAddr & 0xFF0000) >> 16);	/* ·¢ËÍÉÈÇøµØÖ·µÄ¸ß8bit */
-			bsp_spiWrite1((_uiWriteAddr & 0xFF00) >> 8);		/* ·¢ËÍÉÈÇøµØÖ·ÖĞ¼ä8bit */
-			bsp_spiWrite1(_uiWriteAddr & 0xFF);				/* ·¢ËÍÉÈÇøµØÖ·µÍ8bit */
+			sf_SetCS(0);									/* ä½¿èƒ½ç‰‡é€‰ */
+			bsp_spiWrite1(0x02);								/* å‘é€AAIå‘½ä»¤(åœ°å€è‡ªåŠ¨å¢åŠ ç¼–ç¨‹) */
+			bsp_spiWrite1((_uiWriteAddr & 0xFF0000) >> 16);	/* å‘é€æ‰‡åŒºåœ°å€çš„é«˜8bit */
+			bsp_spiWrite1((_uiWriteAddr & 0xFF00) >> 8);		/* å‘é€æ‰‡åŒºåœ°å€ä¸­é—´8bit */
+			bsp_spiWrite1(_uiWriteAddr & 0xFF);				/* å‘é€æ‰‡åŒºåœ°å€ä½8bit */
 
 			for (i = 0; i < 256; i++)
 			{
-				bsp_spiWrite1(*_pBuf++);					/* ·¢ËÍÊı¾İ */
+				bsp_spiWrite1(*_pBuf++);					/* å‘é€æ•°æ® */
 			}
 
-			sf_SetCS(1);								/* ½ûÖ¹Æ¬Ñ¡ */
+			sf_SetCS(1);								/* ç¦æ­¢ç‰‡é€‰ */
 
-			sf_WaitForWriteEnd();						/* µÈ´ı´®ĞĞFlashÄÚ²¿Ğ´²Ù×÷Íê³É */
+			sf_WaitForWriteEnd();						/* ç­‰å¾…ä¸²è¡ŒFlashå†…éƒ¨å†™æ“ä½œå®Œæˆ */
 
 			_uiWriteAddr += 256;
 		}
 
-		/* ½øÈëĞ´±£»¤×´Ì¬ */
+		/* è¿›å…¥å†™ä¿æŠ¤çŠ¶æ€ */
 		sf_SetCS(0);
 		bsp_spiWrite1(CMD_DISWR);
 		sf_SetCS(1);
 
-		sf_WaitForWriteEnd();							/* µÈ´ı´®ĞĞFlashÄÚ²¿Ğ´²Ù×÷Íê³É */
+		sf_WaitForWriteEnd();							/* ç­‰å¾…ä¸²è¡ŒFlashå†…éƒ¨å†™æ“ä½œå®Œæˆ */
 	}
 }
 
 /*
 *********************************************************************************************************
-*	º¯ Êı Ãû: sf_ReadBuffer
-*	¹¦ÄÜËµÃ÷: Á¬Ğø¶ÁÈ¡Èô¸É×Ö½Ú¡£×Ö½Ú¸öÊı²»ÄÜ³¬³öĞ¾Æ¬ÈİÁ¿¡£
-*	ĞÎ    ²Î:  	_pBuf : Êı¾İÔ´»º³åÇø£»
-*				_uiReadAddr £ºÊ×µØÖ·
-*				_usSize £ºÊı¾İ¸öÊı, ¿ÉÒÔ´óÓÚPAGE_SIZE,µ«ÊÇ²»ÄÜ³¬³öĞ¾Æ¬×ÜÈİÁ¿
-*	·µ »Ø Öµ: ÎŞ
+*	å‡½ æ•° å: sf_ReadBuffer
+*	åŠŸèƒ½è¯´æ˜: è¿ç»­è¯»å–è‹¥å¹²å­—èŠ‚ã€‚å­—èŠ‚ä¸ªæ•°ä¸èƒ½è¶…å‡ºèŠ¯ç‰‡å®¹é‡ã€‚
+*	å½¢    å‚:  	_pBuf : æ•°æ®æºç¼“å†²åŒºï¼›
+*				_uiReadAddr ï¼šé¦–åœ°å€
+*				_usSize ï¼šæ•°æ®ä¸ªæ•°, å¯ä»¥å¤§äºPAGE_SIZE,ä½†æ˜¯ä¸èƒ½è¶…å‡ºèŠ¯ç‰‡æ€»å®¹é‡
+*	è¿” å› å€¼: æ— 
 *********************************************************************************************************
 */
 void sf_ReadBuffer(uint8_t * _pBuf, uint32_t _uiReadAddr, uint32_t _uiSize)
 {
-	/* Èç¹û¶ÁÈ¡µÄÊı¾İ³¤¶ÈÎª0»òÕß³¬³ö´®ĞĞFlashµØÖ·¿Õ¼ä£¬ÔòÖ±½Ó·µ»Ø */
+	/* å¦‚æœè¯»å–çš„æ•°æ®é•¿åº¦ä¸º0æˆ–è€…è¶…å‡ºä¸²è¡ŒFlashåœ°å€ç©ºé—´ï¼Œåˆ™ç›´æ¥è¿”å› */
 	if ((_uiSize == 0) ||(_uiReadAddr + _uiSize) > g_tSF.TotalSize)
 	{
 		return;
 	}
 
-	/* ²Á³ıÉÈÇø²Ù×÷ */
-	sf_SetCS(0);									/* Ê¹ÄÜÆ¬Ñ¡ */
-	bsp_spiWrite1(CMD_READ);							/* ·¢ËÍ¶ÁÃüÁî */
-	bsp_spiWrite1((_uiReadAddr & 0xFF0000) >> 16);	/* ·¢ËÍÉÈÇøµØÖ·µÄ¸ß8bit */
-	bsp_spiWrite1((_uiReadAddr & 0xFF00) >> 8);		/* ·¢ËÍÉÈÇøµØÖ·ÖĞ¼ä8bit */
-	bsp_spiWrite1(_uiReadAddr & 0xFF);				/* ·¢ËÍÉÈÇøµØÖ·µÍ8bit */
+	/* æ“¦é™¤æ‰‡åŒºæ“ä½œ */
+	sf_SetCS(0);									/* ä½¿èƒ½ç‰‡é€‰ */
+	bsp_spiWrite1(CMD_READ);							/* å‘é€è¯»å‘½ä»¤ */
+	bsp_spiWrite1((_uiReadAddr & 0xFF0000) >> 16);	/* å‘é€æ‰‡åŒºåœ°å€çš„é«˜8bit */
+	bsp_spiWrite1((_uiReadAddr & 0xFF00) >> 8);		/* å‘é€æ‰‡åŒºåœ°å€ä¸­é—´8bit */
+	bsp_spiWrite1(_uiReadAddr & 0xFF);				/* å‘é€æ‰‡åŒºåœ°å€ä½8bit */
 	while (_uiSize--)
 	{
-		*_pBuf++ = bsp_spiRead1();			/* ¶ÁÒ»¸ö×Ö½Ú²¢´æ´¢µ½pBuf£¬¶ÁÍêºóÖ¸Õë×Ô¼Ó1 */
+		*_pBuf++ = bsp_spiRead1();			/* è¯»ä¸€ä¸ªå­—èŠ‚å¹¶å­˜å‚¨åˆ°pBufï¼Œè¯»å®ŒåæŒ‡é’ˆè‡ªåŠ 1 */
 	}
-	sf_SetCS(1);									/* ½ûÄÜÆ¬Ñ¡ */
+	sf_SetCS(1);									/* ç¦èƒ½ç‰‡é€‰ */
 }
 
 /*
 *********************************************************************************************************
-*	º¯ Êı Ãû: sf_CmpData
-*	¹¦ÄÜËµÃ÷: ±È½ÏFlashµÄÊı¾İ.
-*	ĞÎ    ²Î:  	_ucpTar : Êı¾İ»º³åÇø
-*				_uiSrcAddr £ºFlashµØÖ·
-*				_uiSize £ºÊı¾İ¸öÊı, ¿ÉÒÔ´óÓÚPAGE_SIZE,µ«ÊÇ²»ÄÜ³¬³öĞ¾Æ¬×ÜÈİÁ¿
-*	·µ »Ø Öµ: 0 = ÏàµÈ, 1 = ²»µÈ
+*	å‡½ æ•° å: sf_CmpData
+*	åŠŸèƒ½è¯´æ˜: æ¯”è¾ƒFlashçš„æ•°æ®.
+*	å½¢    å‚:  	_ucpTar : æ•°æ®ç¼“å†²åŒº
+*				_uiSrcAddr ï¼šFlashåœ°å€
+*				_uiSize ï¼šæ•°æ®ä¸ªæ•°, å¯ä»¥å¤§äºPAGE_SIZE,ä½†æ˜¯ä¸èƒ½è¶…å‡ºèŠ¯ç‰‡æ€»å®¹é‡
+*	è¿” å› å€¼: 0 = ç›¸ç­‰, 1 = ä¸ç­‰
 *********************************************************************************************************
 */
 static uint8_t sf_CmpData(uint32_t _uiSrcAddr, uint8_t *_ucpTar, uint32_t _uiSize)
 {
 	uint8_t ucValue;
 
-	/* Èç¹û¶ÁÈ¡µÄÊı¾İ³¤¶ÈÎª0»òÕß³¬³ö´®ĞĞFlashµØÖ·¿Õ¼ä£¬ÔòÖ±½Ó·µ»Ø */
+	/* å¦‚æœè¯»å–çš„æ•°æ®é•¿åº¦ä¸º0æˆ–è€…è¶…å‡ºä¸²è¡ŒFlashåœ°å€ç©ºé—´ï¼Œåˆ™ç›´æ¥è¿”å› */
 	if ((_uiSrcAddr + _uiSize) > g_tSF.TotalSize)
 	{
 		return 1;
@@ -362,14 +362,14 @@ static uint8_t sf_CmpData(uint32_t _uiSrcAddr, uint8_t *_ucpTar, uint32_t _uiSiz
 		return 0;
 	}
 
-	sf_SetCS(0);									/* Ê¹ÄÜÆ¬Ñ¡ */
-	bsp_spiWrite1(CMD_READ);							/* ·¢ËÍ¶ÁÃüÁî */
-	bsp_spiWrite1((_uiSrcAddr & 0xFF0000) >> 16);		/* ·¢ËÍÉÈÇøµØÖ·µÄ¸ß8bit */
-	bsp_spiWrite1((_uiSrcAddr & 0xFF00) >> 8);		/* ·¢ËÍÉÈÇøµØÖ·ÖĞ¼ä8bit */
-	bsp_spiWrite1(_uiSrcAddr & 0xFF);					/* ·¢ËÍÉÈÇøµØÖ·µÍ8bit */
+	sf_SetCS(0);									/* ä½¿èƒ½ç‰‡é€‰ */
+	bsp_spiWrite1(CMD_READ);							/* å‘é€è¯»å‘½ä»¤ */
+	bsp_spiWrite1((_uiSrcAddr & 0xFF0000) >> 16);		/* å‘é€æ‰‡åŒºåœ°å€çš„é«˜8bit */
+	bsp_spiWrite1((_uiSrcAddr & 0xFF00) >> 8);		/* å‘é€æ‰‡åŒºåœ°å€ä¸­é—´8bit */
+	bsp_spiWrite1(_uiSrcAddr & 0xFF);					/* å‘é€æ‰‡åŒºåœ°å€ä½8bit */
 	while (_uiSize--)
 	{
-		/* ¶ÁÒ»¸ö×Ö½Ú */
+		/* è¯»ä¸€ä¸ªå­—èŠ‚ */
 		ucValue = bsp_spiRead1();
 		if (*_ucpTar++ != ucValue)
 		{
@@ -383,12 +383,12 @@ static uint8_t sf_CmpData(uint32_t _uiSrcAddr, uint8_t *_ucpTar, uint32_t _uiSiz
 
 /*
 *********************************************************************************************************
-*	º¯ Êı Ãû: sf_NeedErase
-*	¹¦ÄÜËµÃ÷: ÅĞ¶ÏĞ´PAGEÇ°ÊÇ·ñĞèÒªÏÈ²Á³ı¡£
-*	ĞÎ    ²Î:   _ucpOldBuf £º ¾ÉÊı¾İ
-*			   _ucpNewBuf £º ĞÂÊı¾İ
-*			   _uiLen £ºÊı¾İ¸öÊı£¬²»ÄÜ³¬¹ıÒ³Ãæ´óĞ¡
-*	·µ »Ø Öµ: 0 : ²»ĞèÒª²Á³ı£¬ 1 £ºĞèÒª²Á³ı
+*	å‡½ æ•° å: sf_NeedErase
+*	åŠŸèƒ½è¯´æ˜: åˆ¤æ–­å†™PAGEå‰æ˜¯å¦éœ€è¦å…ˆæ“¦é™¤ã€‚
+*	å½¢    å‚:   _ucpOldBuf ï¼š æ—§æ•°æ®
+*			   _ucpNewBuf ï¼š æ–°æ•°æ®
+*			   _uiLen ï¼šæ•°æ®ä¸ªæ•°ï¼Œä¸èƒ½è¶…è¿‡é¡µé¢å¤§å°
+*	è¿” å› å€¼: 0 : ä¸éœ€è¦æ“¦é™¤ï¼Œ 1 ï¼šéœ€è¦æ“¦é™¤
 *********************************************************************************************************
 */
 static uint8_t sf_NeedErase(uint8_t * _ucpOldBuf, uint8_t *_ucpNewBuf, uint16_t _usLen)
@@ -397,18 +397,18 @@ static uint8_t sf_NeedErase(uint8_t * _ucpOldBuf, uint8_t *_ucpNewBuf, uint16_t 
 	uint8_t ucOld;
 
 	/*
-	Ëã·¨µÚ1²½£ºold Çó·´, new ²»±ä
+	ç®—æ³•ç¬¬1æ­¥ï¼šold æ±‚å, new ä¸å˜
 	      old    new
 		  1101   0101
 	~     1111
 		= 0010   0101
 
-	Ëã·¨µÚ2²½: old Çó·´µÄ½á¹ûÓë new Î»Óë
+	ç®—æ³•ç¬¬2æ­¥: old æ±‚åçš„ç»“æœä¸ new ä½ä¸
 		  0010   old
 	&	  0101   new
 		 =0000
 
-	Ëã·¨µÚ3²½: ½á¹ûÎª0,Ôò±íÊ¾ÎŞĞè²Á³ı. ·ñÔò±íÊ¾ĞèÒª²Á³ı
+	ç®—æ³•ç¬¬3æ­¥: ç»“æœä¸º0,åˆ™è¡¨ç¤ºæ— éœ€æ“¦é™¤. å¦åˆ™è¡¨ç¤ºéœ€è¦æ“¦é™¤
 	*/
 
 	for (i = 0; i < _usLen; i++)
@@ -416,7 +416,7 @@ static uint8_t sf_NeedErase(uint8_t * _ucpOldBuf, uint8_t *_ucpNewBuf, uint16_t 
 		ucOld = *_ucpOldBuf++;
 		ucOld = ~ucOld;
 
-		/* ×¢Òâ´íÎóµÄĞ´·¨: if (ucOld & (*_ucpNewBuf++) != 0) */
+		/* æ³¨æ„é”™è¯¯çš„å†™æ³•: if (ucOld & (*_ucpNewBuf++) != 0) */
 		if ((ucOld & (*_ucpNewBuf++)) != 0)
 		{
 			return 1;
@@ -427,49 +427,49 @@ static uint8_t sf_NeedErase(uint8_t * _ucpOldBuf, uint8_t *_ucpNewBuf, uint16_t 
 
 /*
 *********************************************************************************************************
-*	º¯ Êı Ãû: sf_AutoWritePage
-*	¹¦ÄÜËµÃ÷: Ğ´1¸öPAGE²¢Ğ£Ñé,Èç¹û²»ÕıÈ·ÔòÔÙÖØĞ´Á½´Î¡£±¾º¯Êı×Ô¶¯Íê³É²Á³ı²Ù×÷¡£
-*	ĞÎ    ²Î:  	_pBuf : Êı¾İÔ´»º³åÇø£»
-*				_uiWriteAddr £ºÄ¿±êÇøÓòÊ×µØÖ·
-*				_usSize £ºÊı¾İ¸öÊı£¬²»ÄÜ³¬¹ıÒ³Ãæ´óĞ¡
-*	·µ »Ø Öµ: 0 : ´íÎó£¬ 1 £º ³É¹¦
+*	å‡½ æ•° å: sf_AutoWritePage
+*	åŠŸèƒ½è¯´æ˜: å†™1ä¸ªPAGEå¹¶æ ¡éªŒ,å¦‚æœä¸æ­£ç¡®åˆ™å†é‡å†™ä¸¤æ¬¡ã€‚æœ¬å‡½æ•°è‡ªåŠ¨å®Œæˆæ“¦é™¤æ“ä½œã€‚
+*	å½¢    å‚:  	_pBuf : æ•°æ®æºç¼“å†²åŒºï¼›
+*				_uiWriteAddr ï¼šç›®æ ‡åŒºåŸŸé¦–åœ°å€
+*				_usSize ï¼šæ•°æ®ä¸ªæ•°ï¼Œä¸èƒ½è¶…è¿‡é¡µé¢å¤§å°
+*	è¿” å› å€¼: 0 : é”™è¯¯ï¼Œ 1 ï¼š æˆåŠŸ
 *********************************************************************************************************
 */
 static uint8_t sf_AutoWritePage(uint8_t *_ucpSrc, uint32_t _uiWrAddr, uint16_t _usWrLen)
 {
 	uint16_t i;
-	uint16_t j;					/* ÓÃÓÚÑÓÊ± */
-	uint32_t uiFirstAddr;		/* ÉÈÇøÊ×Ö· */
-	uint8_t ucNeedErase;		/* 1±íÊ¾ĞèÒª²Á³ı */
+	uint16_t j;					/* ç”¨äºå»¶æ—¶ */
+	uint32_t uiFirstAddr;		/* æ‰‡åŒºé¦–å€ */
+	uint8_t ucNeedErase;		/* 1è¡¨ç¤ºéœ€è¦æ“¦é™¤ */
 	uint8_t cRet;
 
-	/* ³¤¶ÈÎª0Ê±²»¼ÌĞø²Ù×÷,Ö±½ÓÈÏÎª³É¹¦ */
+	/* é•¿åº¦ä¸º0æ—¶ä¸ç»§ç»­æ“ä½œ,ç›´æ¥è®¤ä¸ºæˆåŠŸ */
 	if (_usWrLen == 0)
 	{
 		return 1;
 	}
 
-	/* Èç¹ûÆ«ÒÆµØÖ·³¬¹ıĞ¾Æ¬ÈİÁ¿ÔòÍË³ö */
+	/* å¦‚æœåç§»åœ°å€è¶…è¿‡èŠ¯ç‰‡å®¹é‡åˆ™é€€å‡º */
 	if (_uiWrAddr >= g_tSF.TotalSize)
 	{
 		return 0;
 	}
 
-	/* Èç¹ûÊı¾İ³¤¶È´óÓÚÉÈÇøÈİÁ¿£¬ÔòÍË³ö */
+	/* å¦‚æœæ•°æ®é•¿åº¦å¤§äºæ‰‡åŒºå®¹é‡ï¼Œåˆ™é€€å‡º */
 	if (_usWrLen > g_tSF.PageSize)
 	{
 		return 0;
 	}
 
-	/* Èç¹ûFLASHÖĞµÄÊı¾İÃ»ÓĞ±ä»¯,Ôò²»Ğ´FLASH */
+	/* å¦‚æœFLASHä¸­çš„æ•°æ®æ²¡æœ‰å˜åŒ–,åˆ™ä¸å†™FLASH */
 	sf_ReadBuffer(s_spiBuf, _uiWrAddr, _usWrLen);
 	if (memcmp(s_spiBuf, _ucpSrc, _usWrLen) == 0)
 	{
 		return 1;
 	}
 
-	/* ÅĞ¶ÏÊÇ·ñĞèÒªÏÈ²Á³ıÉÈÇø */
-	/* Èç¹û¾ÉÊı¾İĞŞ¸ÄÎªĞÂÊı¾İ£¬ËùÓĞÎ»¾ùÊÇ 1->0 »òÕß 0->0, ÔòÎŞĞè²Á³ı,Ìá¸ßFlashÊÙÃü */
+	/* åˆ¤æ–­æ˜¯å¦éœ€è¦å…ˆæ“¦é™¤æ‰‡åŒº */
+	/* å¦‚æœæ—§æ•°æ®ä¿®æ”¹ä¸ºæ–°æ•°æ®ï¼Œæ‰€æœ‰ä½å‡æ˜¯ 1->0 æˆ–è€… 0->0, åˆ™æ— éœ€æ“¦é™¤,æé«˜Flashå¯¿å‘½ */
 	ucNeedErase = 0;
 	if (sf_NeedErase(s_spiBuf, _ucpSrc, _usWrLen))
 	{
@@ -478,35 +478,35 @@ static uint8_t sf_AutoWritePage(uint8_t *_ucpSrc, uint32_t _uiWrAddr, uint16_t _
 
 	uiFirstAddr = _uiWrAddr & (~(g_tSF.PageSize - 1));
 
-	if (_usWrLen == g_tSF.PageSize)		/* Õû¸öÉÈÇø¶¼¸ÄĞ´ */
+	if (_usWrLen == g_tSF.PageSize)		/* æ•´ä¸ªæ‰‡åŒºéƒ½æ”¹å†™ */
 	{
 		for	(i = 0; i < g_tSF.PageSize; i++)
 		{
 			s_spiBuf[i] = _ucpSrc[i];
 		}
 	}
-	else						/* ¸ÄĞ´²¿·ÖÊı¾İ */
+	else						/* æ”¹å†™éƒ¨åˆ†æ•°æ® */
 	{
-		/* ÏÈ½«Õû¸öÉÈÇøµÄÊı¾İ¶Á³ö */
+		/* å…ˆå°†æ•´ä¸ªæ‰‡åŒºçš„æ•°æ®è¯»å‡º */
 		sf_ReadBuffer(s_spiBuf, uiFirstAddr, g_tSF.PageSize);
 
-		/* ÔÙÓÃĞÂÊı¾İ¸²¸Ç */
+		/* å†ç”¨æ–°æ•°æ®è¦†ç›– */
 		i = _uiWrAddr & (g_tSF.PageSize - 1);
 		memcpy(&s_spiBuf[i], _ucpSrc, _usWrLen);
 	}
 
-	/* Ğ´ÍêÖ®ºó½øĞĞĞ£Ñé£¬Èç¹û²»ÕıÈ·ÔòÖØĞ´£¬×î¶à3´Î */
+	/* å†™å®Œä¹‹åè¿›è¡Œæ ¡éªŒï¼Œå¦‚æœä¸æ­£ç¡®åˆ™é‡å†™ï¼Œæœ€å¤š3æ¬¡ */
 	cRet = 0;
 	for (i = 0; i < 3; i++)
 	{
 
-		/* Èç¹û¾ÉÊı¾İĞŞ¸ÄÎªĞÂÊı¾İ£¬ËùÓĞÎ»¾ùÊÇ 1->0 »òÕß 0->0, ÔòÎŞĞè²Á³ı,Ìá¸ßFlashÊÙÃü */
+		/* å¦‚æœæ—§æ•°æ®ä¿®æ”¹ä¸ºæ–°æ•°æ®ï¼Œæ‰€æœ‰ä½å‡æ˜¯ 1->0 æˆ–è€… 0->0, åˆ™æ— éœ€æ“¦é™¤,æé«˜Flashå¯¿å‘½ */
 		if (ucNeedErase == 1)
 		{
-			sf_EraseSector(uiFirstAddr);		/* ²Á³ı1¸öÉÈÇø */
+			sf_EraseSector(uiFirstAddr);		/* æ“¦é™¤1ä¸ªæ‰‡åŒº */
 		}
 
-		/* ±à³ÌÒ»¸öPAGE */
+		/* ç¼–ç¨‹ä¸€ä¸ªPAGE */
 		sf_PageWrite(s_spiBuf, uiFirstAddr, g_tSF.PageSize);
 
 		if (sf_CmpData(_uiWrAddr, _ucpSrc, _usWrLen) == 0)
@@ -522,7 +522,7 @@ static uint8_t sf_AutoWritePage(uint8_t *_ucpSrc, uint32_t _uiWrAddr, uint16_t _
 				break;
 			}
 
-			/* Ê§°ÜºóÑÓ³ÙÒ»¶ÎÊ±¼äÔÙÖØÊÔ */
+			/* å¤±è´¥åå»¶è¿Ÿä¸€æ®µæ—¶é—´å†é‡è¯• */
 			for (j = 0; j < 10000; j++);
 		}
 	}
@@ -532,12 +532,12 @@ static uint8_t sf_AutoWritePage(uint8_t *_ucpSrc, uint32_t _uiWrAddr, uint16_t _
 
 /*
 *********************************************************************************************************
-*	º¯ Êı Ãû: sf_WriteBuffer
-*	¹¦ÄÜËµÃ÷: Ğ´1¸öÉÈÇø²¢Ğ£Ñé,Èç¹û²»ÕıÈ·ÔòÔÙÖØĞ´Á½´Î¡£±¾º¯Êı×Ô¶¯Íê³É²Á³ı²Ù×÷¡£
-*	ĞÎ    ²Î:  	_pBuf : Êı¾İÔ´»º³åÇø£»
-*				_uiWrAddr £ºÄ¿±êÇøÓòÊ×µØÖ·
-*				_usSize £ºÊı¾İ¸öÊı£¬²»ÄÜ³¬¹ıÒ³Ãæ´óĞ¡
-*	·µ »Ø Öµ: 1 : ³É¹¦£¬ 0 £º Ê§°Ü
+*	å‡½ æ•° å: sf_WriteBuffer
+*	åŠŸèƒ½è¯´æ˜: å†™1ä¸ªæ‰‡åŒºå¹¶æ ¡éªŒ,å¦‚æœä¸æ­£ç¡®åˆ™å†é‡å†™ä¸¤æ¬¡ã€‚æœ¬å‡½æ•°è‡ªåŠ¨å®Œæˆæ“¦é™¤æ“ä½œã€‚
+*	å½¢    å‚:  	_pBuf : æ•°æ®æºç¼“å†²åŒºï¼›
+*				_uiWrAddr ï¼šç›®æ ‡åŒºåŸŸé¦–åœ°å€
+*				_usSize ï¼šæ•°æ®ä¸ªæ•°ï¼Œä¸èƒ½è¶…è¿‡é¡µé¢å¤§å°
+*	è¿” å› å€¼: 1 : æˆåŠŸï¼Œ 0 ï¼š å¤±è´¥
 *********************************************************************************************************
 */
 uint8_t sf_WriteBuffer(uint8_t* _pBuf, uint32_t _uiWriteAddr, uint16_t _usWriteSize)
@@ -549,16 +549,16 @@ uint8_t sf_WriteBuffer(uint8_t* _pBuf, uint32_t _uiWriteAddr, uint16_t _usWriteS
 	NumOfPage =  _usWriteSize / g_tSF.PageSize;
 	NumOfSingle = _usWriteSize % g_tSF.PageSize;
 
-	if (Addr == 0) /* ÆğÊ¼µØÖ·ÊÇÒ³ÃæÊ×µØÖ·  */
+	if (Addr == 0) /* èµ·å§‹åœ°å€æ˜¯é¡µé¢é¦–åœ°å€  */
 	{
-		if (NumOfPage == 0) /* Êı¾İ³¤¶ÈĞ¡ÓÚÒ³Ãæ´óĞ¡ */
+		if (NumOfPage == 0) /* æ•°æ®é•¿åº¦å°äºé¡µé¢å¤§å° */
 		{
 			if (sf_AutoWritePage(_pBuf, _uiWriteAddr, _usWriteSize) == 0)
 			{
 				return 0;
 			}
 		}
-		else 	/* Êı¾İ³¤¶È´óÓÚµÈÓÚÒ³Ãæ´óĞ¡ */
+		else 	/* æ•°æ®é•¿åº¦å¤§äºç­‰äºé¡µé¢å¤§å° */
 		{
 			while (NumOfPage--)
 			{
@@ -575,9 +575,9 @@ uint8_t sf_WriteBuffer(uint8_t* _pBuf, uint32_t _uiWriteAddr, uint16_t _usWriteS
 			}
 		}
 	}
-	else  /* ÆğÊ¼µØÖ·²»ÊÇÒ³ÃæÊ×µØÖ·  */
+	else  /* èµ·å§‹åœ°å€ä¸æ˜¯é¡µé¢é¦–åœ°å€  */
 	{
-		if (NumOfPage == 0) /* Êı¾İ³¤¶ÈĞ¡ÓÚÒ³Ãæ´óĞ¡ */
+		if (NumOfPage == 0) /* æ•°æ®é•¿åº¦å°äºé¡µé¢å¤§å° */
 		{
 			if (NumOfSingle > count) /* (_usWriteSize + _uiWriteAddr) > SPI_FLASH_PAGESIZE */
 			{
@@ -604,7 +604,7 @@ uint8_t sf_WriteBuffer(uint8_t* _pBuf, uint32_t _uiWriteAddr, uint16_t _usWriteS
 				}
 			}
 		}
-		else	/* Êı¾İ³¤¶È´óÓÚµÈÓÚÒ³Ãæ´óĞ¡ */
+		else	/* æ•°æ®é•¿åº¦å¤§äºç­‰äºé¡µé¢å¤§å° */
 		{
 			_usWriteSize -= count;
 			NumOfPage =  _usWriteSize / g_tSF.PageSize;
@@ -637,15 +637,15 @@ uint8_t sf_WriteBuffer(uint8_t* _pBuf, uint32_t _uiWriteAddr, uint16_t _usWriteS
 			}
 		}
 	}
-	return 1;	/* ³É¹¦ */
+	return 1;	/* æˆåŠŸ */
 }
 
 /*
 *********************************************************************************************************
-*	º¯ Êı Ãû: sf_ReadID
-*	¹¦ÄÜËµÃ÷: ¶ÁÈ¡Æ÷¼şID
-*	ĞÎ    ²Î:  ÎŞ
-*	·µ »Ø Öµ: 32bitµÄÆ÷¼şID (×î¸ß8bitÌî0£¬ÓĞĞ§IDÎ»ÊıÎª24bit£©
+*	å‡½ æ•° å: sf_ReadID
+*	åŠŸèƒ½è¯´æ˜: è¯»å–å™¨ä»¶ID
+*	å½¢    å‚:  æ— 
+*	è¿” å› å€¼: 32bitçš„å™¨ä»¶ID (æœ€é«˜8bitå¡«0ï¼Œæœ‰æ•ˆIDä½æ•°ä¸º24bitï¼‰
 *********************************************************************************************************
 */
 uint32_t sf_ReadID(void)
@@ -653,12 +653,12 @@ uint32_t sf_ReadID(void)
 	uint32_t uiID;
 	uint8_t id1, id2, id3;
 
-	sf_SetCS(0);									/* Ê¹ÄÜÆ¬Ñ¡ */
-	bsp_spiWrite1(CMD_RDID);								/* ·¢ËÍ¶ÁIDÃüÁî */
-	id1 = bsp_spiRead1();					/* ¶ÁIDµÄµÚ1¸ö×Ö½Ú */
-	id2 = bsp_spiRead1();					/* ¶ÁIDµÄµÚ2¸ö×Ö½Ú */
-	id3 = bsp_spiRead1();					/* ¶ÁIDµÄµÚ3¸ö×Ö½Ú */
-	sf_SetCS(1);									/* ½ûÄÜÆ¬Ñ¡ */
+	sf_SetCS(0);									/* ä½¿èƒ½ç‰‡é€‰ */
+	bsp_spiWrite1(CMD_RDID);								/* å‘é€è¯»IDå‘½ä»¤ */
+	id1 = bsp_spiRead1();					/* è¯»IDçš„ç¬¬1ä¸ªå­—èŠ‚ */
+	id2 = bsp_spiRead1();					/* è¯»IDçš„ç¬¬2ä¸ªå­—èŠ‚ */
+	id3 = bsp_spiRead1();					/* è¯»IDçš„ç¬¬3ä¸ªå­—èŠ‚ */
+	sf_SetCS(1);									/* ç¦èƒ½ç‰‡é€‰ */
 
 	uiID = ((uint32_t)id1 << 16) | ((uint32_t)id2 << 8) | id3;
 
@@ -667,36 +667,36 @@ uint32_t sf_ReadID(void)
 
 /*
 *********************************************************************************************************
-*	º¯ Êı Ãû: sf_ReadInfo
-*	¹¦ÄÜËµÃ÷: ¶ÁÈ¡Æ÷¼şID,²¢Ìî³äÆ÷¼ş²ÎÊı
-*	ĞÎ    ²Î:  ÎŞ
-*	·µ »Ø Öµ: ÎŞ
+*	å‡½ æ•° å: sf_ReadInfo
+*	åŠŸèƒ½è¯´æ˜: è¯»å–å™¨ä»¶ID,å¹¶å¡«å……å™¨ä»¶å‚æ•°
+*	å½¢    å‚:  æ— 
+*	è¿” å› å€¼: æ— 
 *********************************************************************************************************
 */
 void sf_ReadInfo(void)
 {
-	/* ×Ô¶¯Ê¶±ğ´®ĞĞFlashĞÍºÅ */
+	/* è‡ªåŠ¨è¯†åˆ«ä¸²è¡ŒFlashå‹å· */
 	{
-		g_tSF.ChipID = sf_ReadID();	/* Ğ¾Æ¬ID */
+		g_tSF.ChipID = sf_ReadID();	/* èŠ¯ç‰‡ID */
 
 		switch (g_tSF.ChipID)
 		{
 			case SST25VF016B_ID:
 				strcpy(g_tSF.ChipName, "SST25VF016B");
-				g_tSF.TotalSize = 2 * 1024 * 1024;	/* ×ÜÈİÁ¿ = 2M */
-				g_tSF.PageSize = 4 * 1024;			/* Ò³Ãæ´óĞ¡ = 4K */
+				g_tSF.TotalSize = 2 * 1024 * 1024;	/* æ€»å®¹é‡ = 2M */
+				g_tSF.PageSize = 4 * 1024;			/* é¡µé¢å¤§å° = 4K */
 				break;
 
 			case MX25L1606E_ID:
 				strcpy(g_tSF.ChipName, "MX25L1606E");
-				g_tSF.TotalSize = 2 * 1024 * 1024;	/* ×ÜÈİÁ¿ = 2M */
-				g_tSF.PageSize = 4 * 1024;			/* Ò³Ãæ´óĞ¡ = 4K */
+				g_tSF.TotalSize = 2 * 1024 * 1024;	/* æ€»å®¹é‡ = 2M */
+				g_tSF.PageSize = 4 * 1024;			/* é¡µé¢å¤§å° = 4K */
 				break;
 
 			case W25Q64BV_ID:
 				strcpy(g_tSF.ChipName, "W25Q64BV");
-				g_tSF.TotalSize = 8 * 1024 * 1024;	/* ×ÜÈİÁ¿ = 8M */
-				g_tSF.PageSize = 4 * 1024;			/* Ò³Ãæ´óĞ¡ = 4K */
+				g_tSF.TotalSize = 8 * 1024 * 1024;	/* æ€»å®¹é‡ = 8M */
+				g_tSF.PageSize = 4 * 1024;			/* é¡µé¢å¤§å° = 4K */
 				break;
 
 			default:
@@ -710,25 +710,25 @@ void sf_ReadInfo(void)
 
 /*
 *********************************************************************************************************
-*	º¯ Êı Ãû: sf_WriteEnable
-*	¹¦ÄÜËµÃ÷: ÏòÆ÷¼ş·¢ËÍĞ´Ê¹ÄÜÃüÁî
-*	ĞÎ    ²Î:  ÎŞ
-*	·µ »Ø Öµ: ÎŞ
+*	å‡½ æ•° å: sf_WriteEnable
+*	åŠŸèƒ½è¯´æ˜: å‘å™¨ä»¶å‘é€å†™ä½¿èƒ½å‘½ä»¤
+*	å½¢    å‚:  æ— 
+*	è¿” å› å€¼: æ— 
 *********************************************************************************************************
 */
 static void sf_WriteEnable(void)
 {
-	sf_SetCS(0);									/* Ê¹ÄÜÆ¬Ñ¡ */
-	bsp_spiWrite1(CMD_WREN);								/* ·¢ËÍÃüÁî */
-	sf_SetCS(1);									/* ½ûÄÜÆ¬Ñ¡ */
+	sf_SetCS(0);									/* ä½¿èƒ½ç‰‡é€‰ */
+	bsp_spiWrite1(CMD_WREN);								/* å‘é€å‘½ä»¤ */
+	sf_SetCS(1);									/* ç¦èƒ½ç‰‡é€‰ */
 }
 
 /*
 *********************************************************************************************************
-*	º¯ Êı Ãû: sf_WriteStatus
-*	¹¦ÄÜËµÃ÷: Ğ´×´Ì¬¼Ä´æÆ÷
-*	ĞÎ    ²Î:  _ucValue : ×´Ì¬¼Ä´æÆ÷µÄÖµ
-*	·µ »Ø Öµ: ÎŞ
+*	å‡½ æ•° å: sf_WriteStatus
+*	åŠŸèƒ½è¯´æ˜: å†™çŠ¶æ€å¯„å­˜å™¨
+*	å½¢    å‚:  _ucValue : çŠ¶æ€å¯„å­˜å™¨çš„å€¼
+*	è¿” å› å€¼: æ— 
 *********************************************************************************************************
 */
 static void sf_WriteStatus(uint8_t _ucValue)
@@ -736,40 +736,40 @@ static void sf_WriteStatus(uint8_t _ucValue)
 
 	if (g_tSF.ChipID == SST25VF016B_ID)
 	{
-		/* µÚ1²½£ºÏÈÊ¹ÄÜĞ´×´Ì¬¼Ä´æÆ÷ */
-		sf_SetCS(0);									/* Ê¹ÄÜÆ¬Ñ¡ */
-		bsp_spiWrite1(CMD_EWRSR);							/* ·¢ËÍÃüÁî£¬ ÔÊĞíĞ´×´Ì¬¼Ä´æÆ÷ */
-		sf_SetCS(1);									/* ½ûÄÜÆ¬Ñ¡ */
+		/* ç¬¬1æ­¥ï¼šå…ˆä½¿èƒ½å†™çŠ¶æ€å¯„å­˜å™¨ */
+		sf_SetCS(0);									/* ä½¿èƒ½ç‰‡é€‰ */
+		bsp_spiWrite1(CMD_EWRSR);							/* å‘é€å‘½ä»¤ï¼Œ å…è®¸å†™çŠ¶æ€å¯„å­˜å™¨ */
+		sf_SetCS(1);									/* ç¦èƒ½ç‰‡é€‰ */
 
-		/* µÚ2²½£ºÔÙĞ´×´Ì¬¼Ä´æÆ÷ */
-		sf_SetCS(0);									/* Ê¹ÄÜÆ¬Ñ¡ */
-		bsp_spiWrite1(CMD_WRSR);							/* ·¢ËÍÃüÁî£¬ Ğ´×´Ì¬¼Ä´æÆ÷ */
-		bsp_spiWrite1(_ucValue);							/* ·¢ËÍÊı¾İ£º×´Ì¬¼Ä´æÆ÷µÄÖµ */
-		sf_SetCS(1);									/* ½ûÄÜÆ¬Ñ¡ */
+		/* ç¬¬2æ­¥ï¼šå†å†™çŠ¶æ€å¯„å­˜å™¨ */
+		sf_SetCS(0);									/* ä½¿èƒ½ç‰‡é€‰ */
+		bsp_spiWrite1(CMD_WRSR);							/* å‘é€å‘½ä»¤ï¼Œ å†™çŠ¶æ€å¯„å­˜å™¨ */
+		bsp_spiWrite1(_ucValue);							/* å‘é€æ•°æ®ï¼šçŠ¶æ€å¯„å­˜å™¨çš„å€¼ */
+		sf_SetCS(1);									/* ç¦èƒ½ç‰‡é€‰ */
 	}
 	else
 	{
-		sf_SetCS(0);									/* Ê¹ÄÜÆ¬Ñ¡ */
-		bsp_spiWrite1(CMD_WRSR);							/* ·¢ËÍÃüÁî£¬ Ğ´×´Ì¬¼Ä´æÆ÷ */
-		bsp_spiWrite1(_ucValue);							/* ·¢ËÍÊı¾İ£º×´Ì¬¼Ä´æÆ÷µÄÖµ */
-		sf_SetCS(1);									/* ½ûÄÜÆ¬Ñ¡ */
+		sf_SetCS(0);									/* ä½¿èƒ½ç‰‡é€‰ */
+		bsp_spiWrite1(CMD_WRSR);							/* å‘é€å‘½ä»¤ï¼Œ å†™çŠ¶æ€å¯„å­˜å™¨ */
+		bsp_spiWrite1(_ucValue);							/* å‘é€æ•°æ®ï¼šçŠ¶æ€å¯„å­˜å™¨çš„å€¼ */
+		sf_SetCS(1);									/* ç¦èƒ½ç‰‡é€‰ */
 	}
 }
 
 /*
 *********************************************************************************************************
-*	º¯ Êı Ãû: sf_WaitForWriteEnd
-*	¹¦ÄÜËµÃ÷: ²ÉÓÃÑ­»·²éÑ¯µÄ·½Ê½µÈ´ıÆ÷¼şÄÚ²¿Ğ´²Ù×÷Íê³É
-*	ĞÎ    ²Î:  ÎŞ
-*	·µ »Ø Öµ: ÎŞ
+*	å‡½ æ•° å: sf_WaitForWriteEnd
+*	åŠŸèƒ½è¯´æ˜: é‡‡ç”¨å¾ªç¯æŸ¥è¯¢çš„æ–¹å¼ç­‰å¾…å™¨ä»¶å†…éƒ¨å†™æ“ä½œå®Œæˆ
+*	å½¢    å‚:  æ— 
+*	è¿” å› å€¼: æ— 
 *********************************************************************************************************
 */
 static void sf_WaitForWriteEnd(void)
 {
-	sf_SetCS(0);									/* Ê¹ÄÜÆ¬Ñ¡ */
-	bsp_spiWrite1(CMD_RDSR);							/* ·¢ËÍÃüÁî£¬ ¶Á×´Ì¬¼Ä´æÆ÷ */
-	while((bsp_spiRead1() & WIP_FLAG) == SET);	/* ÅĞ¶Ï×´Ì¬¼Ä´æÆ÷µÄÃ¦±êÖ¾Î» */
-	sf_SetCS(1);									/* ½ûÄÜÆ¬Ñ¡ */
+	sf_SetCS(0);									/* ä½¿èƒ½ç‰‡é€‰ */
+	bsp_spiWrite1(CMD_RDSR);							/* å‘é€å‘½ä»¤ï¼Œ è¯»çŠ¶æ€å¯„å­˜å™¨ */
+	while((bsp_spiRead1() & WIP_FLAG) == SET);	/* åˆ¤æ–­çŠ¶æ€å¯„å­˜å™¨çš„å¿™æ ‡å¿—ä½ */
+	sf_SetCS(1);									/* ç¦èƒ½ç‰‡é€‰ */
 }
 
-/***************************** °²¸»À³µç×Ó www.armfly.com (END OF FILE) *********************************/
+/***************************** å®‰å¯Œè±ç”µå­ www.armfly.com (END OF FILE) *********************************/

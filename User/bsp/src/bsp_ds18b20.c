@@ -1,16 +1,16 @@
 /*
 *********************************************************************************************************
 *
-*	Ä£¿éÃû³Æ : DS18B20 Çý¶¯Ä£¿é(1-wire Êý×ÖÎÂ¶È´«¸ÐÆ÷£©
-*	ÎÄ¼þÃû³Æ : bsp_ds18b20.c
-*	°æ    ±¾ : V1.0
-*	Ëµ    Ã÷ : DS18B20ºÍCPUÖ®¼ä²ÉÓÃ1¸öGPIO½Ó¿Ú¡£
+*	æ¨¡å—åç§° : DS18B20 é©±åŠ¨æ¨¡å—(1-wire æ•°å­—æ¸©åº¦ä¼ æ„Ÿå™¨ï¼‰
+*	æ–‡ä»¶åç§° : bsp_ds18b20.c
+*	ç‰ˆ    æœ¬ : V1.0
+*	è¯´    æ˜Ž : DS18B20å’ŒCPUä¹‹é—´é‡‡ç”¨1ä¸ªGPIOæŽ¥å£ã€‚
 *
-*	ÐÞ¸Ä¼ÇÂ¼ :
-*		°æ±¾ºÅ  ÈÕÆÚ         ×÷Õß     ËµÃ÷
-*		V1.0    2014-01-24  armfly  ÕýÊ½·¢²¼
+*	ä¿®æ”¹è®°å½• :
+*		ç‰ˆæœ¬å·  æ—¥æœŸ         ä½œè€…     è¯´æ˜Ž
+*		V1.0    2014-01-24  armfly  æ­£å¼å‘å¸ƒ
 *
-*	Copyright (C), 2013-2014, °²¸»À³µç×Ó www.armfly.com
+*	Copyright (C), 2013-2014, å®‰å¯ŒèŽ±ç”µå­ www.armfly.com
 *
 *********************************************************************************************************
 */
@@ -18,55 +18,55 @@
 #include "bsp.h"
 
 /*
-	DS18B20 ¿ÉÒÔÖ±½Ó²éµ½STM32-V5¿ª·¢°åµÄU16 (3P) ²å×ù.
+	DS18B20 å¯ä»¥ç›´æŽ¥æŸ¥åˆ°STM32-V5å¼€å‘æ¿çš„U16 (3P) æ’åº§.
 
-    DS18B20     STM32F407¿ª·¢°å
+    DS18B20     STM32F407å¼€å‘æ¿
 	  VCC   ------  3.3V
-	  DQ    ------  PB1   (¿ª·¢°åÉÏÓÐ 4.7K ÉÏÀ­µç×è)
+	  DQ    ------  PB1   (å¼€å‘æ¿ä¸Šæœ‰ 4.7K ä¸Šæ‹‰ç”µé˜»)
 	  GND   ------  GND
 */
 
-/* ¶¨ÒåGPIO¶Ë¿Ú */
+/* å®šä¹‰GPIOç«¯å£ */
 #define RCC_DQ		RCC_AHB1Periph_GPIOB
 #define PORT_DQ		GPIOB
 #define PIN_DQ		GPIO_Pin_1
 
-#if 0 /* ¿âº¯Êý·½Ê½ */
+#if 0 /* åº“å‡½æ•°æ–¹å¼ */
 	#define DQ_0()		GPIO_ResetBits(PORT_DQ, PIN_DQ)
 	#define DQ_1()		GPIO_SetBits(PORT_DQ, PIN_DQ)
 
-	/* ÅÐ¶ÏDQÊäÈëÊÇ·ñÎªµÍ */
+	/* åˆ¤æ–­DQè¾“å…¥æ˜¯å¦ä¸ºä½Ž */
 	#define DQ_IS_LOW()	(GPIO_ReadInputDataBit(PORT_DQ, PIN_DQ) == Bit_RESET)
-#else	/* Ö±½Ó²Ù×÷¼Ä´æÆ÷£¬Ìá¸ßËÙ¶È */
+#else	/* ç›´æŽ¥æ“ä½œå¯„å­˜å™¨ï¼Œæé«˜é€Ÿåº¦ */
 	#define DQ_0()		PORT_DQ->BSRRH = PIN_DQ
 	#define DQ_1()		PORT_DQ->BSRRL = PIN_DQ
 
-	/* ÅÐ¶ÏDQÊäÈëÊÇ·ñÎªµÍ */
+	/* åˆ¤æ–­DQè¾“å…¥æ˜¯å¦ä¸ºä½Ž */
 	#define DQ_IS_LOW()	((PORT_DQ->IDR & PIN_DQ) == 0)
 #endif
 
 /*
 *********************************************************************************************************
-*	º¯ Êý Ãû: bsp_InitDS18B20
-*	¹¦ÄÜËµÃ÷: ÅäÖÃSTM32µÄGPIOºÍSPI½Ó¿Ú£¬ÓÃÓÚÁ¬½Ó DS18B20
-*	ÐÎ    ²Î: ÎÞ
-*	·µ »Ø Öµ: ÎÞ
+*	å‡½ æ•° å: bsp_InitDS18B20
+*	åŠŸèƒ½è¯´æ˜Ž: é…ç½®STM32çš„GPIOå’ŒSPIæŽ¥å£ï¼Œç”¨äºŽè¿žæŽ¥ DS18B20
+*	å½¢    å‚: æ— 
+*	è¿” å›ž å€¼: æ— 
 *********************************************************************************************************
 */
 void bsp_InitDS18B20(void)
 {
 	GPIO_InitTypeDef GPIO_InitStructure;
 
-	/* ´ò¿ªGPIOÊ±ÖÓ */
+	/* æ‰“å¼€GPIOæ—¶é’Ÿ */
 	RCC_AHB1PeriphClockCmd(RCC_DQ, ENABLE);
 
 	DQ_1();
 
-	/* ÅäÖÃDQÎª¿ªÂ©Êä³ö */
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;		/* ÉèÎªÊä³ö¿Ú */
-	GPIO_InitStructure.GPIO_OType = GPIO_OType_OD;		/* ÉèÎª¿ªÂ©Ä£Ê½ */
-	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;	/* ÉÏÏÂÀ­µç×è²»Ê¹ÄÜ */
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;	/* IO¿Ú×î´óËÙ¶È */
+	/* é…ç½®DQä¸ºå¼€æ¼è¾“å‡º */
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;		/* è®¾ä¸ºè¾“å‡ºå£ */
+	GPIO_InitStructure.GPIO_OType = GPIO_OType_OD;		/* è®¾ä¸ºå¼€æ¼æ¨¡å¼ */
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;	/* ä¸Šä¸‹æ‹‰ç”µé˜»ä¸ä½¿èƒ½ */
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;	/* IOå£æœ€å¤§é€Ÿåº¦ */
 
 	GPIO_InitStructure.GPIO_Pin = PIN_DQ;
 	GPIO_Init(PORT_DQ, &GPIO_InitStructure);
@@ -74,69 +74,69 @@ void bsp_InitDS18B20(void)
 
 /*
 *********************************************************************************************************
-*	º¯ Êý Ãû: DS18B20_Reset
-*	¹¦ÄÜËµÃ÷: ¸´Î»DS18B20¡£ À­µÍDQÎªµÍ£¬³ÖÐø×îÉÙ480us£¬È»ºóµÈ´ý
-*	ÐÎ    ²Î: ÎÞ
-*	·µ »Ø Öµ: 0 Ê§°Ü£» 1 ±íÊ¾³É¹¦
+*	å‡½ æ•° å: DS18B20_Reset
+*	åŠŸèƒ½è¯´æ˜Ž: å¤ä½DS18B20ã€‚ æ‹‰ä½ŽDQä¸ºä½Žï¼ŒæŒç»­æœ€å°‘480usï¼Œç„¶åŽç­‰å¾…
+*	å½¢    å‚: æ— 
+*	è¿” å›ž å€¼: 0 å¤±è´¥ï¼› 1 è¡¨ç¤ºæˆåŠŸ
 *********************************************************************************************************
 */
 uint8_t DS18B20_Reset(void)
 {
 	/*
-		¸´Î»Ê±Ðò, ¼ûDS18B20 page 15
+		å¤ä½æ—¶åº, è§DS18B20 page 15
 
-		Ê×ÏÈÖ÷»úÀ­µÍDQ£¬³ÖÐø×îÉÙ 480us
-		È»ºóÊÍ·ÅDQ£¬µÈ´ýDQ±»ÉÏÀ­µç×èÀ­¸ß£¬Ô¼ 15-60us
-		DS18B20 ½«Çý¶¯DQÎªµÍ 60-240us£¬ Õâ¸öÐÅºÅ½Ð presence pulse  (ÔÚÎ»Âö³å,±íÊ¾DS18B20×¼±¸¾ÍÐ÷ ¿ÉÒÔ½ÓÊÜÃüÁî)
-		Èç¹ûÖ÷»ú¼ì²âµ½Õâ¸öµÍÓ¦´ðÐÅºÅ£¬±íÊ¾DS18B20¸´Î»³É¹¦
+		é¦–å…ˆä¸»æœºæ‹‰ä½ŽDQï¼ŒæŒç»­æœ€å°‘ 480us
+		ç„¶åŽé‡Šæ”¾DQï¼Œç­‰å¾…DQè¢«ä¸Šæ‹‰ç”µé˜»æ‹‰é«˜ï¼Œçº¦ 15-60us
+		DS18B20 å°†é©±åŠ¨DQä¸ºä½Ž 60-240usï¼Œ è¿™ä¸ªä¿¡å·å« presence pulse  (åœ¨ä½è„‰å†²,è¡¨ç¤ºDS18B20å‡†å¤‡å°±ç»ª å¯ä»¥æŽ¥å—å‘½ä»¤)
+		å¦‚æžœä¸»æœºæ£€æµ‹åˆ°è¿™ä¸ªä½Žåº”ç­”ä¿¡å·ï¼Œè¡¨ç¤ºDS18B20å¤ä½æˆåŠŸ
 	*/
 
 	uint8_t i;
 	uint16_t k;
 
-	DISABLE_INT();/* ½ûÖ¹È«¾ÖÖÐ¶Ï */
+	DISABLE_INT();/* ç¦æ­¢å…¨å±€ä¸­æ–­ */
 
-	/* ¸´Î»£¬Èç¹ûÊ§°ÜÔò·µ»Ø0 */
+	/* å¤ä½ï¼Œå¦‚æžœå¤±è´¥åˆ™è¿”å›ž0 */
 	for (i = 0; i < 1; i++)
 	{
-		DQ_0();				/* À­µÍDQ */
-		bsp_DelayUS(520);	/* ÑÓ³Ù 520uS£¬ ÒªÇóÕâ¸öÑÓ³Ù´óÓÚ 480us */
-		DQ_1();				/* ÊÍ·ÅDQ */
+		DQ_0();				/* æ‹‰ä½ŽDQ */
+		bsp_DelayUS(520);	/* å»¶è¿Ÿ 520uSï¼Œ è¦æ±‚è¿™ä¸ªå»¶è¿Ÿå¤§äºŽ 480us */
+		DQ_1();				/* é‡Šæ”¾DQ */
 
-		bsp_DelayUS(15);	/* µÈ´ý15us */
+		bsp_DelayUS(15);	/* ç­‰å¾…15us */
 
-		/* ¼ì²âDQµçÆ½ÊÇ·ñÎªµÍ */
+		/* æ£€æµ‹DQç”µå¹³æ˜¯å¦ä¸ºä½Ž */
 		for (k = 0; k < 10; k++)
 		{
 			if (DQ_IS_LOW())
 			{
 				break;
 			}
-			bsp_DelayUS(10);	/* µÈ´ý65us */
+			bsp_DelayUS(10);	/* ç­‰å¾…65us */
 		}
 		if (k >= 10)
 		{
-			continue;		/* Ê§°Ü */
+			continue;		/* å¤±è´¥ */
 		}
 
-		/* µÈ´ýDS18B20ÊÍ·ÅDQ */
+		/* ç­‰å¾…DS18B20é‡Šæ”¾DQ */
 		for (k = 0; k < 30; k++)
 		{
 			if (!DQ_IS_LOW())
 			{
 				break;
 			}
-			bsp_DelayUS(10);	/* µÈ´ý65us */
+			bsp_DelayUS(10);	/* ç­‰å¾…65us */
 		}
 		if (k >= 30)
 		{
-			continue;		/* Ê§°Ü */
+			continue;		/* å¤±è´¥ */
 		}
 
 		break;
 	}
 
-	ENABLE_INT();	/* Ê¹ÄÜÈ«¾ÖÖÐ¶Ï */
+	ENABLE_INT();	/* ä½¿èƒ½å…¨å±€ä¸­æ–­ */
 
 	bsp_DelayUS(5);
 
@@ -150,16 +150,16 @@ uint8_t DS18B20_Reset(void)
 
 /*
 *********************************************************************************************************
-*	º¯ Êý Ãû: DS18B20_WriteByte
-*	¹¦ÄÜËµÃ÷: ÏòDS18B20Ð´Èë1×Ö½ÚÊý¾Ý
-*	ÐÎ    ²Î: ÎÞ
-*	·µ »Ø Öµ: ÎÞ
+*	å‡½ æ•° å: DS18B20_WriteByte
+*	åŠŸèƒ½è¯´æ˜Ž: å‘DS18B20å†™å…¥1å­—èŠ‚æ•°æ®
+*	å½¢    å‚: æ— 
+*	è¿” å›ž å€¼: æ— 
 *********************************************************************************************************
 */
 static void DS18B20_WriteByte(uint8_t _val)
 {
 	/*
-		Ð´Êý¾ÝÊ±Ðò, ¼ûDS18B20 page 16
+		å†™æ•°æ®æ—¶åº, è§DS18B20 page 16
 	*/
 	uint8_t i;
 
@@ -185,16 +185,16 @@ static void DS18B20_WriteByte(uint8_t _val)
 
 /*
 *********************************************************************************************************
-*	º¯ Êý Ãû: DS18B20_ReadByte
-*	¹¦ÄÜËµÃ÷: ÏòDS18B20¶ÁÈ¡1×Ö½ÚÊý¾Ý
-*	ÐÎ    ²Î: ÎÞ
-*	·µ »Ø Öµ: ÎÞ
+*	å‡½ æ•° å: DS18B20_ReadByte
+*	åŠŸèƒ½è¯´æ˜Ž: å‘DS18B20è¯»å–1å­—èŠ‚æ•°æ®
+*	å½¢    å‚: æ— 
+*	è¿” å›ž å€¼: æ— 
 *********************************************************************************************************
 */
 static uint8_t DS18B20_ReadByte(void)
 {
 	/*
-		Ð´Êý¾ÝÊ±Ðò, ¼ûDS18B20 page 16
+		å†™æ•°æ®æ—¶åº, è§DS18B20 page 16
 	*/
 	uint8_t i;
 	uint8_t read = 0;
@@ -224,71 +224,71 @@ static uint8_t DS18B20_ReadByte(void)
 
 /*
 *********************************************************************************************************
-*	º¯ Êý Ãû: DS18B20_ReadTempReg
-*	¹¦ÄÜËµÃ÷: ¶ÁÎÂ¶È¼Ä´æÆ÷µÄÖµ£¨Ô­Ê¼Êý¾Ý£©
-*	ÐÎ    ²Î: ÎÞ
-*	·µ »Ø Öµ: ÎÂ¶È¼Ä´æÆ÷Êý¾Ý £¨³ýÒÔ16µÃµ½ 1ÉãÊÏ¶Èµ¥Î», Ò²¾ÍÊÇÐ¡ÊýµãÇ°ÃæµÄÊý×Ö)
+*	å‡½ æ•° å: DS18B20_ReadTempReg
+*	åŠŸèƒ½è¯´æ˜Ž: è¯»æ¸©åº¦å¯„å­˜å™¨çš„å€¼ï¼ˆåŽŸå§‹æ•°æ®ï¼‰
+*	å½¢    å‚: æ— 
+*	è¿” å›ž å€¼: æ¸©åº¦å¯„å­˜å™¨æ•°æ® ï¼ˆé™¤ä»¥16å¾—åˆ° 1æ‘„æ°åº¦å•ä½, ä¹Ÿå°±æ˜¯å°æ•°ç‚¹å‰é¢çš„æ•°å­—)
 *********************************************************************************************************
 */
 int16_t DS18B20_ReadTempReg(void)
 {
 	uint8_t temp1, temp2;
 
-	/* ×ÜÏß¸´Î» */
+	/* æ€»çº¿å¤ä½ */
 	if (DS18B20_Reset() == 0)
 	{
 		return 0;
 	}		
 
-	DS18B20_WriteByte(0xcc);	/* ·¢ÃüÁî */
-	DS18B20_WriteByte(0x44);	/* ·¢×ª»»ÃüÁî */
+	DS18B20_WriteByte(0xcc);	/* å‘å‘½ä»¤ */
+	DS18B20_WriteByte(0x44);	/* å‘è½¬æ¢å‘½ä»¤ */
 
-	DS18B20_Reset();		/* ×ÜÏß¸´Î» */
+	DS18B20_Reset();		/* æ€»çº¿å¤ä½ */
 
-	DS18B20_WriteByte(0xcc);	/* ·¢ÃüÁî */
+	DS18B20_WriteByte(0xcc);	/* å‘å‘½ä»¤ */
 	DS18B20_WriteByte(0xbe);
 
-	temp1 = DS18B20_ReadByte();	/* ¶ÁÎÂ¶ÈÖµµÍ×Ö½Ú */
-	temp2 = DS18B20_ReadByte();	/* ¶ÁÎÂ¶ÈÖµ¸ß×Ö½Ú */
+	temp1 = DS18B20_ReadByte();	/* è¯»æ¸©åº¦å€¼ä½Žå­—èŠ‚ */
+	temp2 = DS18B20_ReadByte();	/* è¯»æ¸©åº¦å€¼é«˜å­—èŠ‚ */
 
-	return ((temp2 << 8) | temp1);	/* ·µ»Ø16Î»¼Ä´æÆ÷Öµ */
+	return ((temp2 << 8) | temp1);	/* è¿”å›ž16ä½å¯„å­˜å™¨å€¼ */
 }
 
 /*
 *********************************************************************************************************
-*	º¯ Êý Ãû: DS18B20_ReadID
-*	¹¦ÄÜËµÃ÷: ¶ÁDS18B20µÄROM ID£¬ ×ÜÏßÉÏ±ØÐëÖ»ÓÐ1¸öÐ¾Æ¬
-*	ÐÎ    ²Î: _id ´æ´¢ID
-*	·µ »Ø Öµ: 0 ±íÊ¾Ê§°Ü£¬ 1±íÊ¾¼ì²âµ½ÕýÈ·ID
+*	å‡½ æ•° å: DS18B20_ReadID
+*	åŠŸèƒ½è¯´æ˜Ž: è¯»DS18B20çš„ROM IDï¼Œ æ€»çº¿ä¸Šå¿…é¡»åªæœ‰1ä¸ªèŠ¯ç‰‡
+*	å½¢    å‚: _id å­˜å‚¨ID
+*	è¿” å›ž å€¼: 0 è¡¨ç¤ºå¤±è´¥ï¼Œ 1è¡¨ç¤ºæ£€æµ‹åˆ°æ­£ç¡®ID
 *********************************************************************************************************
 */
 uint8_t DS18B20_ReadID(uint8_t *_id)
 {
 	uint8_t i;
 
-	/* ×ÜÏß¸´Î» */
+	/* æ€»çº¿å¤ä½ */
 	if (DS18B20_Reset() == 0)
 	{
 		return 0;
 	}
 
-	DS18B20_WriteByte(0x33);	/* ·¢ÃüÁî */
+	DS18B20_WriteByte(0x33);	/* å‘å‘½ä»¤ */
 	for (i = 0; i < 8; i++)
 	{
 		_id[i] = DS18B20_ReadByte();
 	}
 
-	DS18B20_Reset();		/* ×ÜÏß¸´Î» */
+	DS18B20_Reset();		/* æ€»çº¿å¤ä½ */
 	
 	return 1;
 }
 
 /*
 *********************************************************************************************************
-*	º¯ Êý Ãû: DS18B20_ReadTempByID
-*	¹¦ÄÜËµÃ÷: ¶ÁÖ¸¶¨IDµÄÎÂ¶È¼Ä´æÆ÷µÄÖµ£¨Ô­Ê¼Êý¾Ý£©
-*	ÐÎ    ²Î: ÎÞ
-*	·µ »Ø Öµ: ÎÂ¶È¼Ä´æÆ÷Êý¾Ý £¨³ýÒÔ16µÃµ½ 1ÉãÊÏ¶Èµ¥Î», Ò²¾ÍÊÇÐ¡ÊýµãÇ°ÃæµÄÊý×Ö)
+*	å‡½ æ•° å: DS18B20_ReadTempByID
+*	åŠŸèƒ½è¯´æ˜Ž: è¯»æŒ‡å®šIDçš„æ¸©åº¦å¯„å­˜å™¨çš„å€¼ï¼ˆåŽŸå§‹æ•°æ®ï¼‰
+*	å½¢    å‚: æ— 
+*	è¿” å›ž å€¼: æ¸©åº¦å¯„å­˜å™¨æ•°æ® ï¼ˆé™¤ä»¥16å¾—åˆ° 1æ‘„æ°åº¦å•ä½, ä¹Ÿå°±æ˜¯å°æ•°ç‚¹å‰é¢çš„æ•°å­—)
 *********************************************************************************************************
 */
 int16_t DS18B20_ReadTempByID(uint8_t *_id)
@@ -296,28 +296,28 @@ int16_t DS18B20_ReadTempByID(uint8_t *_id)
 	uint8_t temp1, temp2;
 	uint8_t i;
 
-	DS18B20_Reset();		/* ×ÜÏß¸´Î» */
+	DS18B20_Reset();		/* æ€»çº¿å¤ä½ */
 
-	DS18B20_WriteByte(0x55);	/* ·¢ÃüÁî */
+	DS18B20_WriteByte(0x55);	/* å‘å‘½ä»¤ */
 	for (i = 0; i < 8; i++)
 	{
 		DS18B20_WriteByte(_id[i]);
 	}
-	DS18B20_WriteByte(0x44);	/* ·¢×ª»»ÃüÁî */
+	DS18B20_WriteByte(0x44);	/* å‘è½¬æ¢å‘½ä»¤ */
 
-	DS18B20_Reset();		/* ×ÜÏß¸´Î» */
+	DS18B20_Reset();		/* æ€»çº¿å¤ä½ */
 
-	DS18B20_WriteByte(0x55);	/* ·¢ÃüÁî */
+	DS18B20_WriteByte(0x55);	/* å‘å‘½ä»¤ */
 	for (i = 0; i < 8; i++)
 	{
 		DS18B20_WriteByte(_id[i]);
 	}	
 	DS18B20_WriteByte(0xbe);
 
-	temp1 = DS18B20_ReadByte();	/* ¶ÁÎÂ¶ÈÖµµÍ×Ö½Ú */
-	temp2 = DS18B20_ReadByte();	/* ¶ÁÎÂ¶ÈÖµ¸ß×Ö½Ú */
+	temp1 = DS18B20_ReadByte();	/* è¯»æ¸©åº¦å€¼ä½Žå­—èŠ‚ */
+	temp2 = DS18B20_ReadByte();	/* è¯»æ¸©åº¦å€¼é«˜å­—èŠ‚ */
 
-	return ((temp2 << 8) | temp1);	/* ·µ»Ø16Î»¼Ä´æÆ÷Öµ */
+	return ((temp2 << 8) | temp1);	/* è¿”å›ž16ä½å¯„å­˜å™¨å€¼ */
 }
 
-/***************************** °²¸»À³µç×Ó www.armfly.com (END OF FILE) *********************************/
+/***************************** å®‰å¯ŒèŽ±ç”µå­ www.armfly.com (END OF FILE) *********************************/

@@ -1,19 +1,19 @@
 /*
 *********************************************************************************************************
 *
-*	Ä£¿éÃû³Æ : STM32F429ÄÚ²¿LCDÇı¶¯³ÌĞò
-*	ÎÄ¼şÃû³Æ : bsp_tft_429.c
-*	°æ    ±¾ : V1.0
-*	Ëµ    Ã÷ : STM32F429 ÄÚ²¿LCD½Ó¿ÚµÄÓ²¼şÅäÖÃ³ÌĞò¡£
-*	ĞŞ¸Ä¼ÇÂ¼ :
-*		°æ±¾ºÅ  ÈÕÆÚ       ×÷Õß    ËµÃ÷
-*		V1.0    2014-05-05 armfly Ôö¼Ó STM32F429 ÄÚ²¿LCD½Ó¿Ú£» »ùÓÚSTµÄÀı×Ó¸ü¸Ä£¬²»Òª±³¾°²ãºÍÇ°¾°²ã¶¨Òå£¬Ö±½Ó
-*							      ÓÃ LTDC_Layer1 ¡¢ LTDC_Layer2, ÕâÊÇ2¸ö½á¹¹ÌåÖ¸Õë
+*	æ¨¡å—åç§° : STM32F429å†…éƒ¨LCDé©±åŠ¨ç¨‹åº
+*	æ–‡ä»¶åç§° : bsp_tft_429.c
+*	ç‰ˆ    æœ¬ : V1.0
+*	è¯´    æ˜ : STM32F429 å†…éƒ¨LCDæ¥å£çš„ç¡¬ä»¶é…ç½®ç¨‹åºã€‚
+*	ä¿®æ”¹è®°å½• :
+*		ç‰ˆæœ¬å·  æ—¥æœŸ       ä½œè€…    è¯´æ˜
+*		V1.0    2014-05-05 armfly å¢åŠ  STM32F429 å†…éƒ¨LCDæ¥å£ï¼› åŸºäºSTçš„ä¾‹å­æ›´æ”¹ï¼Œä¸è¦èƒŒæ™¯å±‚å’Œå‰æ™¯å±‚å®šä¹‰ï¼Œç›´æ¥
+*							      ç”¨ LTDC_Layer1 ã€ LTDC_Layer2, è¿™æ˜¯2ä¸ªç»“æ„ä½“æŒ‡é’ˆ
 *		V1.1	2015-11-19 armfly 
-*						1. »æÍ¼º¯ÊıÌæ»»ÎªDMA2DÓ²¼şÇı¶¯£¬Ìá¸ß»æÍ¼Ğ§ÂÊ
-*						2. Í³Ò»¶àÖÖÃæ°åµÄÅäÖÃº¯Êı£¬×Ô¶¯Ê¶±ğÃæ°åÀàĞÍ
+*						1. ç»˜å›¾å‡½æ•°æ›¿æ¢ä¸ºDMA2Dç¡¬ä»¶é©±åŠ¨ï¼Œæé«˜ç»˜å›¾æ•ˆç‡
+*						2. ç»Ÿä¸€å¤šç§é¢æ¿çš„é…ç½®å‡½æ•°ï¼Œè‡ªåŠ¨è¯†åˆ«é¢æ¿ç±»å‹
 *
-*	Copyright (C), 2015-2020, °²¸»À³µç×Ó www.armfly.com
+*	Copyright (C), 2015-2020, å®‰å¯Œè±ç”µå­ www.armfly.com
 *
 *********************************************************************************************************
 */
@@ -25,7 +25,7 @@ typedef uint32_t LCD_COLOR;
 
 #define LCD429_FRAME_BUFFER       EXT_SDRAM_ADDR
 
-/* Æ«ÒÆµØÖ·¼ÆËã¹«Ê½::
+/* åç§»åœ°å€è®¡ç®—å…¬å¼::
    Maximum width x Maximum Length x Maximum Pixel size (ARGB8888) in bytes
    => 640 x 480 x 4 =  1228800 or 0x12C000 */
 #define BUFFER_OFFSET          (uint32_t)(g_LcdHeight * g_LcdWidth * 2)
@@ -47,24 +47,24 @@ static void _DMA_Fill(void * pDst, int xSize, int ySize, int OffLine, uint32_t C
 
 /*
 *********************************************************************************************************
-*	º¯ Êı Ãû: LCD429_InitHard
-*	¹¦ÄÜËµÃ÷: ³õÊ¼»¯LCD
-*	ĞÎ    ²Î: ÎŞ
-*	·µ »Ø Öµ: ÎŞ
+*	å‡½ æ•° å: LCD429_InitHard
+*	åŠŸèƒ½è¯´æ˜: åˆå§‹åŒ–LCD
+*	å½¢    å‚: æ— 
+*	è¿” å› å€¼: æ— 
 *********************************************************************************************************
 */
 void LCD429_InitHard(void)
 {
-	LCD429_ConfigLTDC();			/* ÅäÖÃ429 CPUÄÚ²¿LTDC */
+	LCD429_ConfigLTDC();			/* é…ç½®429 CPUå†…éƒ¨LTDC */
 
-	LCD429_SetLayer(LCD_LAYER_1);	/* ÇĞ»»µ½Ç°¾°²ã */
+	LCD429_SetLayer(LCD_LAYER_1);	/* åˆ‡æ¢åˆ°å‰æ™¯å±‚ */
 	LCD429_SetPixelFormat(LTDC_Pixelformat_RGB565);
-	LCD429_ClrScr(CL_BLACK);		/* ÇåÆÁ£¬ÏÔÊ¾È«ºÚ */	
+	LCD429_ClrScr(CL_BLACK);		/* æ¸…å±ï¼Œæ˜¾ç¤ºå…¨é»‘ */	
 	LTDC_LayerCmd(LTDC_Layer1, ENABLE);
 	
 
-	LTDC_LayerCmd(LTDC_Layer2, ENABLE);	/* ½öÓÃµ¥²ãË«»º³åÇø¡£ Ë«²ãÇı¶¯ÒÔºóÔÙ×ö */
-	LCD429_SetLayer(LCD_LAYER_2);	/* ÇĞ»»µ½±³¾°²ã */
+	LTDC_LayerCmd(LTDC_Layer2, ENABLE);	/* ä»…ç”¨å•å±‚åŒç¼“å†²åŒºã€‚ åŒå±‚é©±åŠ¨ä»¥åå†åš */
+	LCD429_SetLayer(LCD_LAYER_2);	/* åˆ‡æ¢åˆ°èƒŒæ™¯å±‚ */
 	LCD429_SetPixelFormat(LTDC_Pixelformat_RGB565);
 	
 	/* Enable The LCD */
@@ -73,10 +73,10 @@ void LCD429_InitHard(void)
 
 /*
 *********************************************************************************************************
-*	º¯ Êı Ãû: LCD429_ConfigLTDC
-*	¹¦ÄÜËµÃ÷: ÅäÖÃLTDC
-*	ĞÎ    ²Î: ÎŞ
-*	·µ »Ø Öµ: ÎŞ
+*	å‡½ æ•° å: LCD429_ConfigLTDC
+*	åŠŸèƒ½è¯´æ˜: é…ç½®LTDC
+*	å½¢    å‚: æ— 
+*	è¿” å› å€¼: æ— 
 *********************************************************************************************************
 */
 static void LCD429_ConfigLTDC(void)
@@ -98,12 +98,12 @@ static void LCD429_ConfigLTDC(void)
 	//SDRAM_Init();
 	bsp_InitExtSDRAM();
 
-	/* ÅäÖÃĞÅºÅ¼«ĞÔ */	
-	LTDC_InitStruct.LTDC_HSPolarity = LTDC_HSPolarity_AL;	/* HSYNC µÍµçÆ½ÓĞĞ§ */
+	/* é…ç½®ä¿¡å·ææ€§ */	
+	LTDC_InitStruct.LTDC_HSPolarity = LTDC_HSPolarity_AL;	/* HSYNC ä½ç”µå¹³æœ‰æ•ˆ */
 	/* Initialize the vertical synchronization polarity as active low */
-	LTDC_InitStruct.LTDC_VSPolarity = LTDC_VSPolarity_AL;	/* VSYNC µÍµçÆ½ÓĞĞ§ */
+	LTDC_InitStruct.LTDC_VSPolarity = LTDC_VSPolarity_AL;	/* VSYNC ä½ç”µå¹³æœ‰æ•ˆ */
 	/* Initialize the data enable polarity as active low */
-	LTDC_InitStruct.LTDC_DEPolarity = LTDC_DEPolarity_AL;	/* DE µÍµçÆ½ÓĞĞ§ */
+	LTDC_InitStruct.LTDC_DEPolarity = LTDC_DEPolarity_AL;	/* DE ä½ç”µå¹³æœ‰æ•ˆ */
 	/* Initialize the pixel clock polarity as input pixel clock */
 	LTDC_InitStruct.LTDC_PCPolarity = LTDC_PCPolarity_IPC;
 	//LTDC_InitStruct.LTDC_PCPolarity = LTDC_GCR_PCPOL;		// inverted input pixel clock.
@@ -113,11 +113,11 @@ static void LCD429_ConfigLTDC(void)
 	LTDC_InitStruct.LTDC_BackgroundGreenValue = 0;
 	LTDC_InitStruct.LTDC_BackgroundBlueValue = 0;
 	
-	/* ÅäÖÃ PLLSAI ÓÃÓÚLCD */
+	/* é…ç½® PLLSAI ç”¨äºLCD */
 	/* Enable Pixel Clock */
 
-	/* ÊäÈëÊ±ÖÓ PLLSAI_VCO Input   = HSE_VALUE / PLL_M = 8M / 4 = 2 Mhz */
-	/* Êä³öÊ±ÖÓ PLLSAI_VCO Output  = PLLSAI_VCO Input * PLLSAI_N =   2 * 429 = 858 Mhz */
+	/* è¾“å…¥æ—¶é’Ÿ PLLSAI_VCO Input   = HSE_VALUE / PLL_M = 8M / 4 = 2 Mhz */
+	/* è¾“å‡ºæ—¶é’Ÿ PLLSAI_VCO Output  = PLLSAI_VCO Input * PLLSAI_N =   2 * 429 = 858 Mhz */
 	/* PLLLCDCLK = PLLSAI_VCO Output / PLLSAI_R = 858 / 4 = 214.5 Mhz */
 	/* LTDC clock frequency = PLLLCDCLK / RCC_PLLSAIDivR = 214.5 / 8 = 24 Mhz */
 
@@ -128,16 +128,16 @@ static void LCD429_ConfigLTDC(void)
 
 		This register is used to configure the PLLSAI clock outputs according to the formulas:
 		
-		f(VCO clock) = f(PLLSAI clock input) ¡Á (PLLSAIN / PLLM)
+		f(VCO clock) = f(PLLSAI clock input) Ã— (PLLSAIN / PLLM)
 		
 		f(PLLSAI1 clock output) = f(VCO clock) / PLLSAIQ
 		f(PLL LCD clock output) = f(VCO clock) / PLLSAIR				
 	*/
 	
-	/* Ö§³Ö6ÖÖÃæ°å */
+	/* æ”¯æŒ6ç§é¢æ¿ */
 	switch (g_LcdType)
 	{
-		case LCD_35_480X320:	/* 3.5´ç 480 * 320 */	
+		case LCD_35_480X320:	/* 3.5å¯¸ 480 * 320 */	
 			RCC_PLLSAIConfig(429, 2,  4);
 			RCC_LTDCCLKDivConfig(RCC_PLLSAIDivR_Div8);
 		
@@ -151,8 +151,8 @@ static void LCD429_ConfigLTDC(void)
 			VFP = 20;
 			break;
 		
-		case LCD_43_480X272:		/* 4.3´ç 480 * 272 */
-			RCC_PLLSAIConfig(429, 2,  6);		/* ÆµÂÊ¸ßÁËºó»á¶¶ÆÁ */
+		case LCD_43_480X272:		/* 4.3å¯¸ 480 * 272 */
+			RCC_PLLSAIConfig(429, 2,  6);		/* é¢‘ç‡é«˜äº†åä¼šæŠ–å± */
 			RCC_LTDCCLKDivConfig(RCC_PLLSAIDivR_Div8);		
 
 			Width = 480;
@@ -166,7 +166,7 @@ static void LCD429_ConfigLTDC(void)
 			VFP = 2;
 			break;
 		
-		case LCD_50_480X272:		/* 5.0´ç 480 * 272 */
+		case LCD_50_480X272:		/* 5.0å¯¸ 480 * 272 */
 			RCC_PLLSAIConfig(429, 2,  4);
 			RCC_LTDCCLKDivConfig(RCC_PLLSAIDivR_Div8);
 		
@@ -181,14 +181,14 @@ static void LCD429_ConfigLTDC(void)
 			VFP = 2;			
 			break;
 		
-		case LCD_50_800X480:		/* 5.0´ç 800 * 480 */
+		case LCD_50_800X480:		/* 5.0å¯¸ 800 * 480 */
 			RCC_PLLSAIConfig(429, 2,  6);
 			RCC_LTDCCLKDivConfig(RCC_PLLSAIDivR_Div4);
 
 			Width = 800;
 			Height = 480;
 
-			HSYNC_W = 96;	/* =10Ê±£¬ÏÔÊ¾´íÎ»£¬20Ê±²¿·ÖÆÁ¿ÉÒÔµÄ,80Ê±È«²¿OK */
+			HSYNC_W = 96;	/* =10æ—¶ï¼Œæ˜¾ç¤ºé”™ä½ï¼Œ20æ—¶éƒ¨åˆ†å±å¯ä»¥çš„,80æ—¶å…¨éƒ¨OK */
 			HBP = 10;
 			HFP = 10;
 			VSYNC_W = 2;
@@ -196,14 +196,14 @@ static void LCD429_ConfigLTDC(void)
 			VFP = 10;			
 			break;
 		
-		case LCD_70_800X480:		/* 7.0´ç 800 * 480 */
+		case LCD_70_800X480:		/* 7.0å¯¸ 800 * 480 */
 			RCC_PLLSAIConfig(429, 2,  6);
 			RCC_LTDCCLKDivConfig(RCC_PLLSAIDivR_Div4);
 			
 			Width = 800;
 			Height = 480;
 
-			HSYNC_W = 90;	/* =10Ê±£¬ÏÔÊ¾´íÎ»£¬20Ê±²¿·ÖÆÁ¿ÉÒÔµÄ,80Ê±È«²¿OK */
+			HSYNC_W = 90;	/* =10æ—¶ï¼Œæ˜¾ç¤ºé”™ä½ï¼Œ20æ—¶éƒ¨åˆ†å±å¯ä»¥çš„,80æ—¶å…¨éƒ¨OK */
 			HBP = 10;
 			HFP = 10;
 		
@@ -212,23 +212,23 @@ static void LCD429_ConfigLTDC(void)
 			VFP = 10;				   
 			break;
 		
-		case LCD_70_1024X600:		/* 7.0´ç 1024 * 600 */
-			LTDC_InitStruct.LTDC_HSPolarity = LTDC_HSPolarity_AL;	/* HSYNC µÍµçÆ½ÓĞĞ§ */
+		case LCD_70_1024X600:		/* 7.0å¯¸ 1024 * 600 */
+			LTDC_InitStruct.LTDC_HSPolarity = LTDC_HSPolarity_AL;	/* HSYNC ä½ç”µå¹³æœ‰æ•ˆ */
 			/* Initialize the vertical synchronization polarity as active low */
-			LTDC_InitStruct.LTDC_VSPolarity = LTDC_VSPolarity_AL;	/* VSYNC µÍµçÆ½ÓĞĞ§ */
+			LTDC_InitStruct.LTDC_VSPolarity = LTDC_VSPolarity_AL;	/* VSYNC ä½ç”µå¹³æœ‰æ•ˆ */
 			/* Initialize the data enable polarity as active low */
-			LTDC_InitStruct.LTDC_DEPolarity = LTDC_DEPolarity_AL;	/* DE µÍµçÆ½ÓĞĞ§ */
+			LTDC_InitStruct.LTDC_DEPolarity = LTDC_DEPolarity_AL;	/* DE ä½ç”µå¹³æœ‰æ•ˆ */
 			/* Initialize the pixel clock polarity as input pixel clock */
 			LTDC_InitStruct.LTDC_PCPolarity = LTDC_PCPolarity_IIPC;
 		
-			/* IPS 7´ç 1024*600£¬  ÏñËØÊ±ÖÓÆµÂÊ·¶Î§ : 57 -- 65 --- 70.5MHz 
+			/* IPS 7å¯¸ 1024*600ï¼Œ  åƒç´ æ—¶é’Ÿé¢‘ç‡èŒƒå›´ : 57 -- 65 --- 70.5MHz 
 		
 				PLLSAI_VCO Input   = HSE_VALUE / PLL_M = 8M / 4 = 2 Mhz
 				PLLSAI_VCO Output  = PLLSAI_VCO Input * PLLSAI_N =   2 * 429 = 858 Mhz
 				PLLLCDCLK = PLLSAI_VCO Output / PLLSAI_R = 858 / 4 = 214.5 Mhz
 				LTDC clock frequency = PLLLCDCLK / RCC_PLLSAIDivR = 214.5 / 4 = 53.625 Mhz 	
 
-				(429, 2, 4); RCC_PLLSAIDivR_Div4 Êµ²âÏñËØÊ±ÖÓ = 53.7M
+				(429, 2, 4); RCC_PLLSAIDivR_Div4 å®æµ‹åƒç´ æ—¶é’Ÿ = 53.7M
 			*/
 			RCC_PLLSAIConfig(429, 2, 6);
 			RCC_LTDCCLKDivConfig(RCC_PLLSAIDivR_Div4);
@@ -236,7 +236,7 @@ static void LCD429_ConfigLTDC(void)
 			Width = 1024;
 			Height = 600;
 
-			HSYNC_W = 2;	/* =10Ê±£¬ÏÔÊ¾´íÎ»£¬20Ê±²¿·ÖÆÁ¿ÉÒÔµÄ,80Ê±È«²¿OK */
+			HSYNC_W = 2;	/* =10æ—¶ï¼Œæ˜¾ç¤ºé”™ä½ï¼Œ20æ—¶éƒ¨åˆ†å±å¯ä»¥çš„,80æ—¶å…¨éƒ¨OK */
 			HBP = 157;
 			HFP = 160;
 		
@@ -252,7 +252,7 @@ static void LCD429_ConfigLTDC(void)
 			Width = 800;
 			Height = 480;
 
-			HSYNC_W = 80;	/* =10Ê±£¬ÏÔÊ¾´íÎ»£¬20Ê±²¿·ÖÆÁ¿ÉÒÔµÄ,80Ê±È«²¿OK */
+			HSYNC_W = 80;	/* =10æ—¶ï¼Œæ˜¾ç¤ºé”™ä½ï¼Œ20æ—¶éƒ¨åˆ†å±å¯ä»¥çš„,80æ—¶å…¨éƒ¨OK */
 			HBP = 10;
 			HFP = 10;
 			VSYNC_W = 10;
@@ -262,8 +262,8 @@ static void LCD429_ConfigLTDC(void)
 	}
 	
 	/* Initialize the LCD pixel width and pixel height */
-	g_LcdWidth  = Width;		/* ÏÔÊ¾ÆÁ·Ö±æÂÊ-¿í¶È */
-	g_LcdHeight = Height;		/* ÏÔÊ¾ÆÁ·Ö±æÂÊ-¸ß¶È */
+	g_LcdWidth  = Width;		/* æ˜¾ç¤ºå±åˆ†è¾¨ç‡-å®½åº¦ */
+	g_LcdHeight = Height;		/* æ˜¾ç¤ºå±åˆ†è¾¨ç‡-é«˜åº¦ */
 	
 	/* Enable PLLSAI Clock */
 	RCC_PLLSAICmd(ENABLE);
@@ -291,7 +291,7 @@ static void LCD429_ConfigLTDC(void)
 
 	LTDC_Init(&LTDC_InitStruct);
 
-	//LCD429_LayerInit();  Õ¹¿ª´Ëº¯Êı
+	//LCD429_LayerInit();  å±•å¼€æ­¤å‡½æ•°
 	{
 		LTDC_Layer_InitTypeDef LTDC_Layer_InitStruct;
 
@@ -326,7 +326,7 @@ static void LCD429_ConfigLTDC(void)
 		LTDC_Layer_InitStruct.LTDC_CFBPitch = (Height * 2);
 
 		/* Configure the number of lines */
-		LTDC_Layer_InitStruct.LTDC_CFBLineNumber = 	Width;	/*¡¡´Ë´¦ĞèÒªÌîĞ´¿í¶ÈÖµ?  */
+		LTDC_Layer_InitStruct.LTDC_CFBLineNumber = 	Width;	/*ã€€æ­¤å¤„éœ€è¦å¡«å†™å®½åº¦å€¼?  */
 		
 		/* Start Address configuration : the LCD Frame buffer is defined on SDRAM */
 		LTDC_Layer_InitStruct.LTDC_CFBStartAdress = LCD429_FRAME_BUFFER;
@@ -356,10 +356,10 @@ static void LCD429_ConfigLTDC(void)
 
 /*
 *********************************************************************************************************
-*	º¯ Êı Ãû: LCD429_AF_GPIOConfig
-*	¹¦ÄÜËµÃ÷: ÅäÖÃGPIOÓÃÓÚ LTDC.
-*	ĞÎ    ²Î: ÎŞ
-*	·µ »Ø Öµ: ÎŞ
+*	å‡½ æ•° å: LCD429_AF_GPIOConfig
+*	åŠŸèƒ½è¯´æ˜: é…ç½®GPIOç”¨äº LTDC.
+*	å½¢    å‚: æ— 
+*	è¿” å› å€¼: æ— 
 *********************************************************************************************************
 */
 static void LCD429_AF_GPIOConfig(void)
@@ -452,10 +452,10 @@ static void LCD429_AF_GPIOConfig(void)
 
 /*
 *********************************************************************************************************
-*	º¯ Êı Ãû: LCD429_GetChipDescribe
-*	¹¦ÄÜËµÃ÷: ¶ÁÈ¡LCDÇı¶¯Ğ¾Æ¬µÄÃèÊö·ûºÅ£¬ÓÃÓÚÏÔÊ¾
-*	ĞÎ    ²Î: char *_str : ÃèÊö·û×Ö·û´®ÌîÈë´Ë»º³åÇø
-*	·µ »Ø Öµ: ÎŞ
+*	å‡½ æ•° å: LCD429_GetChipDescribe
+*	åŠŸèƒ½è¯´æ˜: è¯»å–LCDé©±åŠ¨èŠ¯ç‰‡çš„æè¿°ç¬¦å·ï¼Œç”¨äºæ˜¾ç¤º
+*	å½¢    å‚: char *_str : æè¿°ç¬¦å­—ç¬¦ä¸²å¡«å…¥æ­¤ç¼“å†²åŒº
+*	è¿” å› å€¼: æ— 
 *********************************************************************************************************
 */
 void LCD429_GetChipDescribe(char *_str)
@@ -465,10 +465,10 @@ void LCD429_GetChipDescribe(char *_str)
 
 /*
 *********************************************************************************************************
-*	º¯ Êı Ãû: LCD429_SetLayer
-*	¹¦ÄÜËµÃ÷: ÇĞ»»²ã¡£Ö»ÊÇ¸ü¸Ä³ÌĞò±äÁ¿£¬ÒÔ±ãÓÚºóÃæµÄ´úÂë¸ü¸ÄÏà¹Ø¼Ä´æÆ÷¡£Ó²¼şÖ§³Ö2²ã¡£
-*	ĞÎ    ²Î: ÎŞ
-*	·µ »Ø Öµ: ÎŞ
+*	å‡½ æ•° å: LCD429_SetLayer
+*	åŠŸèƒ½è¯´æ˜: åˆ‡æ¢å±‚ã€‚åªæ˜¯æ›´æ”¹ç¨‹åºå˜é‡ï¼Œä»¥ä¾¿äºåé¢çš„ä»£ç æ›´æ”¹ç›¸å…³å¯„å­˜å™¨ã€‚ç¡¬ä»¶æ”¯æŒ2å±‚ã€‚
+*	å½¢    å‚: æ— 
+*	è¿” å› å€¼: æ— 
 *********************************************************************************************************
 */
 void LCD429_SetLayer(uint8_t _ucLayer)
@@ -487,10 +487,10 @@ void LCD429_SetLayer(uint8_t _ucLayer)
 
 /*
 *********************************************************************************************************
-*	º¯ Êı Ãû: LCD429_SetTransparency
-*	¹¦ÄÜËµÃ÷: ÅäÖÃµ±Ç°²ãµÄÍ¸Ã÷ÊôĞÔ
-*	ĞÎ    ²Î: Í¸Ã÷¶È£¬ ÖµÓò£º 0x00 - 0xFF
-*	·µ »Ø Öµ: ÎŞ
+*	å‡½ æ•° å: LCD429_SetTransparency
+*	åŠŸèƒ½è¯´æ˜: é…ç½®å½“å‰å±‚çš„é€æ˜å±æ€§
+*	å½¢    å‚: é€æ˜åº¦ï¼Œ å€¼åŸŸï¼š 0x00 - 0xFF
+*	è¿” å› å€¼: æ— 
 *********************************************************************************************************
 */
 void LCD429_SetTransparency(uint8_t transparency)
@@ -503,14 +503,14 @@ void LCD429_SetTransparency(uint8_t transparency)
 	{
 		LTDC_LayerAlpha(LTDC_Layer2, transparency);
 	}
-	LTDC_ReloadConfig(LTDC_IMReload);	/* Á¢¼´Ë¢ĞÂ */
+	LTDC_ReloadConfig(LTDC_IMReload);	/* ç«‹å³åˆ·æ–° */
 }
 
 /*
 *********************************************************************************************************
-*	º¯ Êı Ãû: LCD429_SetPixelFormat
-*	¹¦ÄÜËµÃ÷: ÅäÖÃµ±Ç°²ãµÄÏñËØ¸ñÊ½
-*	ĞÎ    ²Î: ÏñËØ¸ñÊ½:
+*	å‡½ æ•° å: LCD429_SetPixelFormat
+*	åŠŸèƒ½è¯´æ˜: é…ç½®å½“å‰å±‚çš„åƒç´ æ ¼å¼
+*	å½¢    å‚: åƒç´ æ ¼å¼:
 *                      LTDC_Pixelformat_ARGB8888
 *                      LTDC_Pixelformat_RGB888
 *                      LTDC_Pixelformat_RGB565
@@ -519,7 +519,7 @@ void LCD429_SetTransparency(uint8_t transparency)
 *                      LTDC_Pixelformat_L8
 *                      LTDC_Pixelformat_AL44
 *                      LTDC_Pixelformat_AL88
-*	·µ »Ø Öµ: ÎŞ
+*	è¿” å› å€¼: æ— 
 *********************************************************************************************************
 */
 void LCD429_SetPixelFormat(uint32_t PixelFormat)
@@ -537,14 +537,14 @@ void LCD429_SetPixelFormat(uint32_t PixelFormat)
 
 /*
 *********************************************************************************************************
-*	º¯ Êı Ãû: LCD429_SetDispWin
-*	¹¦ÄÜËµÃ÷: ÉèÖÃÏÔÊ¾´°¿Ú£¬½øÈë´°¿ÚÏÔÊ¾Ä£Ê½¡£
-*	ĞÎ    ²Î:  
-*		_usX : Ë®Æ½×ø±ê
-*		_usY : ´¹Ö±×ø±ê
-*		_usHeight: ´°¿Ú¸ß¶È
-*		_usWidth : ´°¿Ú¿í¶È
-*	·µ »Ø Öµ: ÎŞ
+*	å‡½ æ•° å: LCD429_SetDispWin
+*	åŠŸèƒ½è¯´æ˜: è®¾ç½®æ˜¾ç¤ºçª—å£ï¼Œè¿›å…¥çª—å£æ˜¾ç¤ºæ¨¡å¼ã€‚
+*	å½¢    å‚:  
+*		_usX : æ°´å¹³åæ ‡
+*		_usY : å‚ç›´åæ ‡
+*		_usHeight: çª—å£é«˜åº¦
+*		_usWidth : çª—å£å®½åº¦
+*	è¿” å› å€¼: æ— 
 *********************************************************************************************************
 */
 void LCD429_SetDispWin(uint16_t _usX, uint16_t _usY, uint16_t _usHeight, uint16_t _usWidth)
@@ -573,10 +573,10 @@ void LCD429_SetDispWin(uint16_t _usX, uint16_t _usY, uint16_t _usHeight, uint16_
 
 /*
 *********************************************************************************************************
-*	º¯ Êı Ãû: LCD429_QuitWinMode
-*	¹¦ÄÜËµÃ÷: ÍË³ö´°¿ÚÏÔÊ¾Ä£Ê½£¬±äÎªÈ«ÆÁÏÔÊ¾Ä£Ê½
-*	ĞÎ    ²Î:  ÎŞ
-*	·µ »Ø Öµ: ÎŞ
+*	å‡½ æ•° å: LCD429_QuitWinMode
+*	åŠŸèƒ½è¯´æ˜: é€€å‡ºçª—å£æ˜¾ç¤ºæ¨¡å¼ï¼Œå˜ä¸ºå…¨å±æ˜¾ç¤ºæ¨¡å¼
+*	å½¢    å‚:  æ— 
+*	è¿” å› å€¼: æ— 
 *********************************************************************************************************
 */
 void LCD429_QuitWinMode(void)
@@ -586,10 +586,10 @@ void LCD429_QuitWinMode(void)
 
 /*
 *********************************************************************************************************
-*	º¯ Êı Ãû: LCD429_DispOn
-*	¹¦ÄÜËµÃ÷: ´ò¿ªÏÔÊ¾
-*	ĞÎ    ²Î: ÎŞ
-*	·µ »Ø Öµ: ÎŞ
+*	å‡½ æ•° å: LCD429_DispOn
+*	åŠŸèƒ½è¯´æ˜: æ‰“å¼€æ˜¾ç¤º
+*	å½¢    å‚: æ— 
+*	è¿” å› å€¼: æ— 
 *********************************************************************************************************
 */
 void LCD429_DispOn(void)
@@ -598,10 +598,10 @@ void LCD429_DispOn(void)
 
 /*
 *********************************************************************************************************
-*	º¯ Êı Ãû: LCD429_DispOff
-*	¹¦ÄÜËµÃ÷: ¹Ø±ÕÏÔÊ¾
-*	ĞÎ    ²Î: ÎŞ
-*	·µ »Ø Öµ: ÎŞ
+*	å‡½ æ•° å: LCD429_DispOff
+*	åŠŸèƒ½è¯´æ˜: å…³é—­æ˜¾ç¤º
+*	å½¢    å‚: æ— 
+*	è¿” å› å€¼: æ— 
 *********************************************************************************************************
 */
 void LCD429_DispOff(void)
@@ -610,10 +610,10 @@ void LCD429_DispOff(void)
 
 /*
 *********************************************************************************************************
-*	º¯ Êı Ãû: LCD429_ClrScr
-*	¹¦ÄÜËµÃ÷: ¸ù¾İÊäÈëµÄÑÕÉ«ÖµÇåÆÁ
-*	ĞÎ    ²Î: _usColor : ±³¾°É«
-*	·µ »Ø Öµ: ÎŞ
+*	å‡½ æ•° å: LCD429_ClrScr
+*	åŠŸèƒ½è¯´æ˜: æ ¹æ®è¾“å…¥çš„é¢œè‰²å€¼æ¸…å±
+*	å½¢    å‚: _usColor : èƒŒæ™¯è‰²
+*	è¿” å› å€¼: æ— 
 *********************************************************************************************************
 */
 void LCD429_ClrScr(uint16_t _usColor)
@@ -635,12 +635,12 @@ void LCD429_ClrScr(uint16_t _usColor)
 
 /*
 *********************************************************************************************************
-*	º¯ Êı Ãû: LCD429_PutPixel
-*	¹¦ÄÜËµÃ÷: »­1¸öÏñËØ
-*	ĞÎ    ²Î:
-*			_usX,_usY : ÏñËØ×ø±ê
-*			_usColor  : ÏñËØÑÕÉ« ( RGB = 565 ¸ñÊ½)
-*	·µ »Ø Öµ: ÎŞ
+*	å‡½ æ•° å: LCD429_PutPixel
+*	åŠŸèƒ½è¯´æ˜: ç”»1ä¸ªåƒç´ 
+*	å½¢    å‚:
+*			_usX,_usY : åƒç´ åæ ‡
+*			_usColor  : åƒç´ é¢œè‰² ( RGB = 565 æ ¼å¼)
+*	è¿” å› å€¼: æ— 
 *********************************************************************************************************
 */
 void LCD429_PutPixel(uint16_t _usX, uint16_t _usY, uint16_t _usColor)
@@ -650,19 +650,19 @@ void LCD429_PutPixel(uint16_t _usX, uint16_t _usY, uint16_t _usColor)
 	
 	p = (uint16_t *)s_CurrentFrameBuffer;
 		
-	if (g_LcdDirection == 0)		/* ºáÆÁ */
+	if (g_LcdDirection == 0)		/* æ¨ªå± */
 	{
 		index = (uint32_t)_usY * g_LcdWidth + _usX;
 	}
-	else if (g_LcdDirection == 1)	/* ºáÆÁ180¡ã*/
+	else if (g_LcdDirection == 1)	/* æ¨ªå±180Â°*/
 	{
 		index = (uint32_t)(g_LcdHeight - _usY - 1) * g_LcdWidth + (g_LcdWidth - _usX - 1);
 	}
-	else if (g_LcdDirection == 2)	/* ÊúÆÁ */
+	else if (g_LcdDirection == 2)	/* ç«–å± */
 	{
 		index = (uint32_t)(g_LcdWidth - _usX - 1) * g_LcdHeight + _usY;
 	}
-	else if (g_LcdDirection == 3)	/* ÊúÆÁ180¡ã */
+	else if (g_LcdDirection == 3)	/* ç«–å±180Â° */
 	{
 		index = (uint32_t)_usX * g_LcdHeight + g_LcdHeight - _usY - 1;
 	}	
@@ -675,12 +675,12 @@ void LCD429_PutPixel(uint16_t _usX, uint16_t _usY, uint16_t _usColor)
 
 /*
 *********************************************************************************************************
-*	º¯ Êı Ãû: LCD429_GetPixel
-*	¹¦ÄÜËµÃ÷: ¶ÁÈ¡1¸öÏñËØ
-*	ĞÎ    ²Î:
-*			_usX,_usY : ÏñËØ×ø±ê
-*			_usColor  : ÏñËØÑÕÉ«
-*	·µ »Ø Öµ: RGBÑÕÉ«Öµ
+*	å‡½ æ•° å: LCD429_GetPixel
+*	åŠŸèƒ½è¯´æ˜: è¯»å–1ä¸ªåƒç´ 
+*	å½¢    å‚:
+*			_usX,_usY : åƒç´ åæ ‡
+*			_usColor  : åƒç´ é¢œè‰²
+*	è¿” å› å€¼: RGBé¢œè‰²å€¼
 *********************************************************************************************************
 */
 uint16_t LCD429_GetPixel(uint16_t _usX, uint16_t _usY)
@@ -691,19 +691,19 @@ uint16_t LCD429_GetPixel(uint16_t _usX, uint16_t _usY)
 	
 	p = (uint16_t *)s_CurrentFrameBuffer;
 
-	if (g_LcdDirection == 0)		/* ºáÆÁ */
+	if (g_LcdDirection == 0)		/* æ¨ªå± */
 	{
 		index = (uint32_t)_usY * g_LcdWidth + _usX;
 	}
-	else if (g_LcdDirection == 1)	/* ºáÆÁ180¡ã*/
+	else if (g_LcdDirection == 1)	/* æ¨ªå±180Â°*/
 	{
 		index = (uint32_t)(g_LcdHeight - _usY - 1) * g_LcdWidth + (g_LcdWidth - _usX - 1);
 	}
-	else if (g_LcdDirection == 2)	/* ÊúÆÁ */
+	else if (g_LcdDirection == 2)	/* ç«–å± */
 	{
 		index = (uint32_t)(g_LcdWidth - _usX - 1) * g_LcdHeight + _usY;
 	}
-	else if (g_LcdDirection == 3)	/* ÊúÆÁ180¡ã */
+	else if (g_LcdDirection == 3)	/* ç«–å±180Â° */
 	{
 		index = (uint32_t)_usX * g_LcdHeight + g_LcdHeight - _usY - 1;
 	}
@@ -716,13 +716,13 @@ uint16_t LCD429_GetPixel(uint16_t _usX, uint16_t _usY)
 
 /*
 *********************************************************************************************************
-*	º¯ Êı Ãû: LCD429_DrawLine
-*	¹¦ÄÜËµÃ÷: ²ÉÓÃ Bresenham Ëã·¨£¬ÔÚ2µã¼ä»­Ò»ÌõÖ±Ïß¡£
-*	ĞÎ    ²Î:
-*			_usX1, _usY1 : ÆğÊ¼µã×ø±ê
-*			_usX2, _usY2 : ÖÕÖ¹µãY×ø±ê
-*			_usColor     : ÑÕÉ«
-*	·µ »Ø Öµ: ÎŞ
+*	å‡½ æ•° å: LCD429_DrawLine
+*	åŠŸèƒ½è¯´æ˜: é‡‡ç”¨ Bresenham ç®—æ³•ï¼Œåœ¨2ç‚¹é—´ç”»ä¸€æ¡ç›´çº¿ã€‚
+*	å½¢    å‚:
+*			_usX1, _usY1 : èµ·å§‹ç‚¹åæ ‡
+*			_usX2, _usY2 : ç»ˆæ­¢ç‚¹Yåæ ‡
+*			_usColor     : é¢œè‰²
+*	è¿” å› å€¼: æ— 
 *********************************************************************************************************
 */
 void LCD429_DrawLine(uint16_t _usX1 , uint16_t _usY1 , uint16_t _usX2 , uint16_t _usY2 , uint16_t _usColor)
@@ -733,11 +733,11 @@ void LCD429_DrawLine(uint16_t _usX1 , uint16_t _usY1 , uint16_t _usX2 , uint16_t
 	int32_t d , iTag ;
 	int32_t x , y ;
 
-	/* ²ÉÓÃ Bresenham Ëã·¨£¬ÔÚ2µã¼ä»­Ò»ÌõÖ±Ïß */
+	/* é‡‡ç”¨ Bresenham ç®—æ³•ï¼Œåœ¨2ç‚¹é—´ç”»ä¸€æ¡ç›´çº¿ */
 
 	LCD429_PutPixel(_usX1 , _usY1 , _usColor);
 
-	/* Èç¹ûÁ½µãÖØºÏ£¬½áÊøºóÃæµÄ¶¯×÷¡£*/
+	/* å¦‚æœä¸¤ç‚¹é‡åˆï¼Œç»“æŸåé¢çš„åŠ¨ä½œã€‚*/
 	if ( _usX1 == _usX2 && _usY1 == _usY2 )
 	{
 		return;
@@ -764,7 +764,7 @@ void LCD429_DrawLine(uint16_t _usX1 , uint16_t _usY1 , uint16_t _usX2 , uint16_t
 		dy = _usY1 - _usY2;
 	}
 
-	if ( dx < dy )   /*Èç¹ûdyÎª¼Æ³¤·½Ïò£¬Ôò½»»»×İºá×ø±ê¡£*/
+	if ( dx < dy )   /*å¦‚æœdyä¸ºè®¡é•¿æ–¹å‘ï¼Œåˆ™äº¤æ¢çºµæ¨ªåæ ‡ã€‚*/
 	{
 		uint16_t temp;
 
@@ -773,14 +773,14 @@ void LCD429_DrawLine(uint16_t _usX1 , uint16_t _usY1 , uint16_t _usX2 , uint16_t
 		temp = _usX2; _usX2 = _usY2; _usY2 = temp;
 		temp = dx; dx = dy; dy = temp;
 	}
-	tx = _usX2 > _usX1 ? 1 : -1 ;    /* È·¶¨ÊÇÔö1»¹ÊÇ¼õ1 */
+	tx = _usX2 > _usX1 ? 1 : -1 ;    /* ç¡®å®šæ˜¯å¢1è¿˜æ˜¯å‡1 */
 	ty = _usY2 > _usY1 ? 1 : -1 ;
 	x = _usX1 ;
 	y = _usY1 ;
 	inc1 = 2 * dy ;
 	inc2 = 2 * ( dy - dx );
 	d = inc1 - dx ;
-	while ( x != _usX2 )     /* Ñ­»·»­µã */
+	while ( x != _usX2 )     /* å¾ªç¯ç”»ç‚¹ */
 	{
 		if ( d < 0 )
 		{
@@ -805,13 +805,13 @@ void LCD429_DrawLine(uint16_t _usX1 , uint16_t _usY1 , uint16_t _usX2 , uint16_t
 
 /*
 *********************************************************************************************************
-*	º¯ Êı Ãû: LCD429_DrawHLine
-*	¹¦ÄÜËµÃ÷: »æÖÆÒ»ÌõË®Æ½Ïß. Ê¹ÓÃSTM32F429 DMA2DÓ²¼ş»æÖÆ.
-*	ĞÎ    ²Î:
-*			_usX1, _usY1 : ÆğÊ¼µã×ø±ê
-*			_usLen       : ÏßµÄ³¤¶È
-*			_usColor     : ÑÕÉ«
-*	·µ »Ø Öµ: ÎŞ
+*	å‡½ æ•° å: LCD429_DrawHLine
+*	åŠŸèƒ½è¯´æ˜: ç»˜åˆ¶ä¸€æ¡æ°´å¹³çº¿. ä½¿ç”¨STM32F429 DMA2Dç¡¬ä»¶ç»˜åˆ¶.
+*	å½¢    å‚:
+*			_usX1, _usY1 : èµ·å§‹ç‚¹åæ ‡
+*			_usLen       : çº¿çš„é•¿åº¦
+*			_usColor     : é¢œè‰²
+*	è¿” å› å€¼: æ— 
 *********************************************************************************************************
 */
 void LCD429_DrawHLine(uint16_t _usX, uint16_t _usY, uint16_t _usLen , uint16_t _usColor)
@@ -830,13 +830,13 @@ void LCD429_DrawHLine(uint16_t _usX, uint16_t _usY, uint16_t _usLen , uint16_t _
 
 /*
 *********************************************************************************************************
-*	º¯ Êı Ãû: LCD429_DrawVLine
-*	¹¦ÄÜËµÃ÷: »æÖÆÒ»Ìõ´¹Ö±Ïß¡£ Ê¹ÓÃSTM32F429 DMA2DÓ²¼ş»æÖÆ.
-*	ĞÎ    ²Î:
-*			_usX, _usY : ÆğÊ¼µã×ø±ê
-*			_usLen       : ÏßµÄ³¤¶È
-*			_usColor     : ÑÕÉ«
-*	·µ »Ø Öµ: ÎŞ
+*	å‡½ æ•° å: LCD429_DrawVLine
+*	åŠŸèƒ½è¯´æ˜: ç»˜åˆ¶ä¸€æ¡å‚ç›´çº¿ã€‚ ä½¿ç”¨STM32F429 DMA2Dç¡¬ä»¶ç»˜åˆ¶.
+*	å½¢    å‚:
+*			_usX, _usY : èµ·å§‹ç‚¹åæ ‡
+*			_usLen       : çº¿çš„é•¿åº¦
+*			_usColor     : é¢œè‰²
+*	è¿” å› å€¼: æ— 
 *********************************************************************************************************
 */
 void LCD429_DrawVLine(uint16_t _usX , uint16_t _usY , uint16_t _usLen , uint16_t _usColor)
@@ -854,12 +854,12 @@ void LCD429_DrawVLine(uint16_t _usX , uint16_t _usY , uint16_t _usLen , uint16_t
 }
 /*
 *********************************************************************************************************
-*	º¯ Êı Ãû: LCD429_DrawPoints
-*	¹¦ÄÜËµÃ÷: ²ÉÓÃ Bresenham Ëã·¨£¬»æÖÆÒ»×éµã£¬²¢½«ÕâĞ©µãÁ¬½ÓÆğÀ´¡£¿ÉÓÃÓÚ²¨ĞÎÏÔÊ¾¡£
-*	ĞÎ    ²Î:
-*			x, y     : ×ø±êÊı×é
-*			_usColor : ÑÕÉ«
-*	·µ »Ø Öµ: ÎŞ
+*	å‡½ æ•° å: LCD429_DrawPoints
+*	åŠŸèƒ½è¯´æ˜: é‡‡ç”¨ Bresenham ç®—æ³•ï¼Œç»˜åˆ¶ä¸€ç»„ç‚¹ï¼Œå¹¶å°†è¿™äº›ç‚¹è¿æ¥èµ·æ¥ã€‚å¯ç”¨äºæ³¢å½¢æ˜¾ç¤ºã€‚
+*	å½¢    å‚:
+*			x, y     : åæ ‡æ•°ç»„
+*			_usColor : é¢œè‰²
+*	è¿” å› å€¼: æ— 
 *********************************************************************************************************
 */
 void LCD429_DrawPoints(uint16_t *x, uint16_t *y, uint16_t _usSize, uint16_t _usColor)
@@ -874,20 +874,20 @@ void LCD429_DrawPoints(uint16_t *x, uint16_t *y, uint16_t _usSize, uint16_t _usC
 
 /*
 *********************************************************************************************************
-*	º¯ Êı Ãû: LCD429_DrawRect
-*	¹¦ÄÜËµÃ÷: »æÖÆË®Æ½·ÅÖÃµÄ¾ØĞÎ¡£
-*	ĞÎ    ²Î:
-*			_usX,_usY: ¾ØĞÎ×óÉÏ½ÇµÄ×ø±ê
-*			_usHeight : ¾ØĞÎµÄ¸ß¶È
-*			_usWidth  : ¾ØĞÎµÄ¿í¶È
-*	·µ »Ø Öµ: ÎŞ
+*	å‡½ æ•° å: LCD429_DrawRect
+*	åŠŸèƒ½è¯´æ˜: ç»˜åˆ¶æ°´å¹³æ”¾ç½®çš„çŸ©å½¢ã€‚
+*	å½¢    å‚:
+*			_usX,_usY: çŸ©å½¢å·¦ä¸Šè§’çš„åæ ‡
+*			_usHeight : çŸ©å½¢çš„é«˜åº¦
+*			_usWidth  : çŸ©å½¢çš„å®½åº¦
+*	è¿” å› å€¼: æ— 
 *********************************************************************************************************
 */
 void LCD429_DrawRect(uint16_t _usX, uint16_t _usY, uint16_t _usHeight, uint16_t _usWidth, uint16_t _usColor)
 {
 	/*
 	 ---------------->---
-	|(_usX£¬_usY)        |
+	|(_usXï¼Œ_usY)        |
 	V                    V  _usHeight
 	|                    |
 	 ---------------->---
@@ -901,47 +901,47 @@ void LCD429_DrawRect(uint16_t _usX, uint16_t _usY, uint16_t _usHeight, uint16_t 
 
 /*
 *********************************************************************************************************
-*	º¯ Êı Ãû: LCD429_FillRect
-*	¹¦ÄÜËµÃ÷: ÓÃÒ»¸öÑÕÉ«ÖµÌî³äÒ»¸ö¾ØĞÎ¡£Ê¹ÓÃSTM32F429ÄÚ²¿DMA2DÓ²¼ş»æÖÆ¡£
-*	ĞÎ    ²Î:
-*			_usX,_usY: ¾ØĞÎ×óÉÏ½ÇµÄ×ø±ê
-*			_usHeight : ¾ØĞÎµÄ¸ß¶È
-*			_usWidth  : ¾ØĞÎµÄ¿í¶È
-*			_usColor  : ÑÕÉ«´úÂë
-*	·µ »Ø Öµ: ÎŞ
+*	å‡½ æ•° å: LCD429_FillRect
+*	åŠŸèƒ½è¯´æ˜: ç”¨ä¸€ä¸ªé¢œè‰²å€¼å¡«å……ä¸€ä¸ªçŸ©å½¢ã€‚ä½¿ç”¨STM32F429å†…éƒ¨DMA2Dç¡¬ä»¶ç»˜åˆ¶ã€‚
+*	å½¢    å‚:
+*			_usX,_usY: çŸ©å½¢å·¦ä¸Šè§’çš„åæ ‡
+*			_usHeight : çŸ©å½¢çš„é«˜åº¦
+*			_usWidth  : çŸ©å½¢çš„å®½åº¦
+*			_usColor  : é¢œè‰²ä»£ç 
+*	è¿” å› å€¼: æ— 
 *********************************************************************************************************
 */
 void LCD429_FillRect(uint16_t _usX, uint16_t _usY, uint16_t _usHeight, uint16_t _usWidth, uint16_t _usColor)
 {
-#if 1	/* ½«¿âº¯ÊıÕ¹¿ª£¬Ìá¸ßÖ´ĞĞĞ§ÂÊ */
+#if 1	/* å°†åº“å‡½æ•°å±•å¼€ï¼Œæé«˜æ‰§è¡Œæ•ˆç‡ */
 	uint32_t  Xaddress = 0;
 	uint16_t  OutputOffset;
 	uint16_t  NumberOfLine;
 	uint16_t  PixelPerLine;	
 
-	/* ¸ù¾İÏÔÊ¾·½ÏòÉèÖÃ²»Í¬µÄ²ÎÊı */
-	if (g_LcdDirection == 0)		/* ºáÆÁ */
+	/* æ ¹æ®æ˜¾ç¤ºæ–¹å‘è®¾ç½®ä¸åŒçš„å‚æ•° */
+	if (g_LcdDirection == 0)		/* æ¨ªå± */
 	{
 		Xaddress = s_CurrentFrameBuffer + 2 * (g_LcdWidth * _usY + _usX);	
 		OutputOffset = g_LcdWidth - _usWidth;
 		NumberOfLine = _usHeight;
 		PixelPerLine = _usWidth;
 	}
-	else if (g_LcdDirection == 1)	/* ºáÆÁ180¡ã*/
+	else if (g_LcdDirection == 1)	/* æ¨ªå±180Â°*/
 	{
 		Xaddress = s_CurrentFrameBuffer + 2 * (g_LcdWidth * (g_LcdHeight - _usHeight - _usY) + g_LcdWidth - _usX - _usWidth);	
 		OutputOffset = g_LcdWidth - _usWidth;
 		NumberOfLine = _usHeight;
 		PixelPerLine = _usWidth;
 	}
-	else if (g_LcdDirection == 2)	/* ÊúÆÁ */
+	else if (g_LcdDirection == 2)	/* ç«–å± */
 	{
 		Xaddress = s_CurrentFrameBuffer + 2 * (g_LcdHeight * (g_LcdWidth - _usX -  _usWidth) + _usY);	
 		OutputOffset = g_LcdHeight - _usHeight;
 		NumberOfLine = _usWidth;
 		PixelPerLine = _usHeight;
 	}
-	else if (g_LcdDirection == 3)	/* ÊúÆÁ180¡ã */
+	else if (g_LcdDirection == 3)	/* ç«–å±180Â° */
 	{
 		Xaddress = s_CurrentFrameBuffer + 2 * (g_LcdHeight * _usX + g_LcdHeight - _usHeight - _usY);	
 		OutputOffset = g_LcdHeight - _usHeight;
@@ -949,19 +949,19 @@ void LCD429_FillRect(uint16_t _usX, uint16_t _usY, uint16_t _usHeight, uint16_t 
 		PixelPerLine = _usHeight;		
 	}	
 
-	/* Èí¼ş¸´Î» DMA2D */
+	/* è½¯ä»¶å¤ä½ DMA2D */
 	RCC->AHB1RSTR |= RCC_AHB1Periph_DMA2D;
 	RCC->AHB1RSTR &= ~RCC_AHB1Periph_DMA2D; 
 	
-	/* ÅäÖÃDMA2D²Ù×÷Ä£Ê½Îª R2M (¼Ä´æÆ÷µ½´æ´¢Æ÷£© */
+	/* é…ç½®DMA2Dæ“ä½œæ¨¡å¼ä¸º R2M (å¯„å­˜å™¨åˆ°å­˜å‚¨å™¨ï¼‰ */
 	DMA2D->CR &= (uint32_t)0xFFFCE0FC;
 	DMA2D->CR |= DMA2D_R2M;
 
-	/* ÅäÖÃÊä³öµÄÑÕÉ«Ä£Ê½Îª RGB565 */
+	/* é…ç½®è¾“å‡ºçš„é¢œè‰²æ¨¡å¼ä¸º RGB565 */
 	DMA2D->OPFCCR &= ~(uint32_t)DMA2D_OPFCCR_CM;
 	DMA2D->OPFCCR |= (DMA2D_RGB565);
 
-	/* ÉèÖÃÑÕÉ«Öµ */   
+	/* è®¾ç½®é¢œè‰²å€¼ */   
 	DMA2D->OCOLR |= _usColor;
 
 	/* Configures the output memory address */
@@ -982,36 +982,36 @@ void LCD429_FillRect(uint16_t _usX, uint16_t _usY, uint16_t _usHeight, uint16_t 
 	while ((DMA2D->ISR & DMA2D_FLAG_TC)  == 0);
 #endif
 
-#if 0	/* Ê¹ÓÃ¿âº¯Êı -- ÈİÒ×Àí½â */
-	/* Ê¹ÓÃDMA2DÓ²¼şÌî³ä¾ØĞÎ */
+#if 0	/* ä½¿ç”¨åº“å‡½æ•° -- å®¹æ˜“ç†è§£ */
+	/* ä½¿ç”¨DMA2Dç¡¬ä»¶å¡«å……çŸ©å½¢ */
 	DMA2D_InitTypeDef      DMA2D_InitStruct;
 	uint32_t  Xaddress = 0;
 	uint16_t  OutputOffset;
 	uint16_t  NumberOfLine;
 	uint16_t  PixelPerLine;	
 		
-	if (g_LcdDirection == 0)		/* ºáÆÁ */
+	if (g_LcdDirection == 0)		/* æ¨ªå± */
 	{
 		Xaddress = s_CurrentFrameBuffer + 2 * (g_LcdWidth * _usY + _usX);	
 		OutputOffset = g_LcdWidth - _usWidth;
 		NumberOfLine = _usHeight;
 		PixelPerLine = _usWidth;
 	}
-	else if (g_LcdDirection == 1)	/* ºáÆÁ180¡ã*/
+	else if (g_LcdDirection == 1)	/* æ¨ªå±180Â°*/
 	{
 		Xaddress = s_CurrentFrameBuffer + 2 * (g_LcdWidth * (g_LcdHeight - _usHeight - _usY) + g_LcdWidth - _usX - _usWidth);	
 		OutputOffset = g_LcdWidth - _usWidth;
 		NumberOfLine = _usHeight;
 		PixelPerLine = _usWidth;
 	}
-	else if (g_LcdDirection == 2)	/* ÊúÆÁ */
+	else if (g_LcdDirection == 2)	/* ç«–å± */
 	{
 		Xaddress = s_CurrentFrameBuffer + 2 * (g_LcdHeight * (g_LcdWidth - _usX -  _usWidth) + _usY);	
 		OutputOffset = g_LcdHeight - _usHeight;
 		NumberOfLine = _usWidth;
 		PixelPerLine = _usHeight;
 	}
-	else if (g_LcdDirection == 3)	/* ÊúÆÁ180¡ã */
+	else if (g_LcdDirection == 3)	/* ç«–å±180Â° */
 	{
 		Xaddress = s_CurrentFrameBuffer + 2 * (g_LcdHeight * _usX + g_LcdHeight - _usHeight - _usY);	
 		OutputOffset = g_LcdHeight - _usHeight;
@@ -1019,20 +1019,20 @@ void LCD429_FillRect(uint16_t _usX, uint16_t _usY, uint16_t _usHeight, uint16_t 
 		PixelPerLine = _usHeight;		
 	}	
 
-	/* ÅäÖÃ DMA2D */
-	DMA2D_DeInit();		/* ¸´Î» DMA2D */
-	DMA2D_InitStruct.DMA2D_Mode = DMA2D_R2M;       /* ´«ÊäÄ£Ê½: ¼Ä´æÆ÷µ½´æ´¢Æ÷ */
-	DMA2D_InitStruct.DMA2D_CMode = DMA2D_RGB565;   /* ÑÕÉ«Ä£Ê½£¬ RGB565 */   
+	/* é…ç½® DMA2D */
+	DMA2D_DeInit();		/* å¤ä½ DMA2D */
+	DMA2D_InitStruct.DMA2D_Mode = DMA2D_R2M;       /* ä¼ è¾“æ¨¡å¼: å¯„å­˜å™¨åˆ°å­˜å‚¨å™¨ */
+	DMA2D_InitStruct.DMA2D_CMode = DMA2D_RGB565;   /* é¢œè‰²æ¨¡å¼ï¼Œ RGB565 */   
 	
-	DMA2D_InitStruct.DMA2D_OutputRed = RGB565_R2(_usColor);		/* ºìÉ«·ÖÁ¿£¬5bit£¬¸ßÎ»Îª0 */           
-	DMA2D_InitStruct.DMA2D_OutputGreen = RGB565_G2(_usColor);	/* ÂÌÉ«·ÖÁ¿£¬6bit£¬¸ßÎ»Îª0 */
-	DMA2D_InitStruct.DMA2D_OutputBlue = RGB565_B2(_usColor); 	/* À¶É«·ÖÁ¿£¬5bit£¬¸ßÎ»Îª0 */    
+	DMA2D_InitStruct.DMA2D_OutputRed = RGB565_R2(_usColor);		/* çº¢è‰²åˆ†é‡ï¼Œ5bitï¼Œé«˜ä½ä¸º0 */           
+	DMA2D_InitStruct.DMA2D_OutputGreen = RGB565_G2(_usColor);	/* ç»¿è‰²åˆ†é‡ï¼Œ6bitï¼Œé«˜ä½ä¸º0 */
+	DMA2D_InitStruct.DMA2D_OutputBlue = RGB565_B2(_usColor); 	/* è“è‰²åˆ†é‡ï¼Œ5bitï¼Œé«˜ä½ä¸º0 */    
 	
-	DMA2D_InitStruct.DMA2D_OutputAlpha = 0x0F;    				/* Í¸Ã÷²ÎÊı£¬ ¶ÔÓÚ565¸ñÊ½£¬ÎŞÒâÒå */              
-	DMA2D_InitStruct.DMA2D_OutputMemoryAdd = Xaddress;      	/* Ä¿±êÄÚ´æµØÖ· */          
-	DMA2D_InitStruct.DMA2D_OutputOffset = OutputOffset; 	/* Ã¿ĞĞ¼äµÄÏÔ´æÏñËØµØÖ·²îÖµ  */               
-	DMA2D_InitStruct.DMA2D_NumberOfLine = NumberOfLine;     /* Ò»¹²ÓĞ¼¸ĞĞ */        
-	DMA2D_InitStruct.DMA2D_PixelPerLine = PixelPerLine;		/* Ã¿ĞĞ¼¸¸öÏñËØ */
+	DMA2D_InitStruct.DMA2D_OutputAlpha = 0x0F;    				/* é€æ˜å‚æ•°ï¼Œ å¯¹äº565æ ¼å¼ï¼Œæ— æ„ä¹‰ */              
+	DMA2D_InitStruct.DMA2D_OutputMemoryAdd = Xaddress;      	/* ç›®æ ‡å†…å­˜åœ°å€ */          
+	DMA2D_InitStruct.DMA2D_OutputOffset = OutputOffset; 	/* æ¯è¡Œé—´çš„æ˜¾å­˜åƒç´ åœ°å€å·®å€¼  */               
+	DMA2D_InitStruct.DMA2D_NumberOfLine = NumberOfLine;     /* ä¸€å…±æœ‰å‡ è¡Œ */        
+	DMA2D_InitStruct.DMA2D_PixelPerLine = PixelPerLine;		/* æ¯è¡Œå‡ ä¸ªåƒç´  */
 	DMA2D_Init(&DMA2D_InitStruct); 
 
 	/* Start Transfer */ 
@@ -1047,19 +1047,19 @@ void LCD429_FillRect(uint16_t _usX, uint16_t _usY, uint16_t _usHeight, uint16_t 
 
 /*
 *********************************************************************************************************
-*	º¯ Êı Ãû: LCD429_DrawCircle
-*	¹¦ÄÜËµÃ÷: »æÖÆÒ»¸öÔ²£¬±Ê¿íÎª1¸öÏñËØ
-*	ĞÎ    ²Î:
-*			_usX,_usY  : Ô²ĞÄµÄ×ø±ê
-*			_usRadius  : Ô²µÄ°ë¾¶
-*	·µ »Ø Öµ: ÎŞ
+*	å‡½ æ•° å: LCD429_DrawCircle
+*	åŠŸèƒ½è¯´æ˜: ç»˜åˆ¶ä¸€ä¸ªåœ†ï¼Œç¬”å®½ä¸º1ä¸ªåƒç´ 
+*	å½¢    å‚:
+*			_usX,_usY  : åœ†å¿ƒçš„åæ ‡
+*			_usRadius  : åœ†çš„åŠå¾„
+*	è¿” å› å€¼: æ— 
 *********************************************************************************************************
 */
 void LCD429_DrawCircle(uint16_t _usX, uint16_t _usY, uint16_t _usRadius, uint16_t _usColor)
 {
 	int32_t  D;			/* Decision Variable */
-	uint32_t  CurX;		/* µ±Ç° X Öµ */
-	uint32_t  CurY;		/* µ±Ç° Y Öµ */
+	uint32_t  CurX;		/* å½“å‰ X å€¼ */
+	uint32_t  CurY;		/* å½“å‰ Y å€¼ */
 
 	D = 3 - (_usRadius << 1);
 	CurX = 0;
@@ -1091,14 +1091,14 @@ void LCD429_DrawCircle(uint16_t _usX, uint16_t _usY, uint16_t _usRadius, uint16_
 
 /*
 *********************************************************************************************************
-*	º¯ Êı Ãû: LCD429_DrawBMP
-*	¹¦ÄÜËµÃ÷: ÔÚLCDÉÏÏÔÊ¾Ò»¸öBMPÎ»Í¼£¬Î»Í¼µãÕóÉ¨Ãè´ÎĞò£º´Ó×óµ½ÓÒ£¬´ÓÉÏµ½ÏÂ
-*	ĞÎ    ²Î:  
-*			_usX, _usY : Í¼Æ¬µÄ×ø±ê
-*			_usHeight  £ºÍ¼Æ¬¸ß¶È
-*			_usWidth   £ºÍ¼Æ¬¿í¶È
-*			_ptr       £ºÍ¼Æ¬µãÕóÖ¸Õë
-*	·µ »Ø Öµ: ÎŞ
+*	å‡½ æ•° å: LCD429_DrawBMP
+*	åŠŸèƒ½è¯´æ˜: åœ¨LCDä¸Šæ˜¾ç¤ºä¸€ä¸ªBMPä½å›¾ï¼Œä½å›¾ç‚¹é˜µæ‰«ææ¬¡åºï¼šä»å·¦åˆ°å³ï¼Œä»ä¸Šåˆ°ä¸‹
+*	å½¢    å‚:  
+*			_usX, _usY : å›¾ç‰‡çš„åæ ‡
+*			_usHeight  ï¼šå›¾ç‰‡é«˜åº¦
+*			_usWidth   ï¼šå›¾ç‰‡å®½åº¦
+*			_ptr       ï¼šå›¾ç‰‡ç‚¹é˜µæŒ‡é’ˆ
+*	è¿” å› å€¼: æ— 
 *********************************************************************************************************
 */
 void LCD429_DrawBMP(uint16_t _usX, uint16_t _usY, uint16_t _usHeight, uint16_t _usWidth, uint16_t *_ptr)
@@ -1121,17 +1121,17 @@ void LCD429_DrawBMP(uint16_t _usX, uint16_t _usY, uint16_t _usHeight, uint16_t _
 
 /*
 *********************************************************************************************************
-*	º¯ Êı Ãû: LCD429_SetDirection
-*	¹¦ÄÜËµÃ÷: ÉèÖÃÏÔÊ¾ÆÁÏÔÊ¾·½Ïò£¨ºáÆÁ ÊúÆÁ£©
-*	ĞÎ    ²Î: ÏÔÊ¾·½Ïò´úÂë 0 ºáÆÁÕı³£, 1=ºáÆÁ180¶È·­×ª, 2=ÊúÆÁ, 3=ÊúÆÁ180¶È·­×ª
-*	·µ »Ø Öµ: ÎŞ
+*	å‡½ æ•° å: LCD429_SetDirection
+*	åŠŸèƒ½è¯´æ˜: è®¾ç½®æ˜¾ç¤ºå±æ˜¾ç¤ºæ–¹å‘ï¼ˆæ¨ªå± ç«–å±ï¼‰
+*	å½¢    å‚: æ˜¾ç¤ºæ–¹å‘ä»£ç  0 æ¨ªå±æ­£å¸¸, 1=æ¨ªå±180åº¦ç¿»è½¬, 2=ç«–å±, 3=ç«–å±180åº¦ç¿»è½¬
+*	è¿” å› å€¼: æ— 
 *********************************************************************************************************
 */
 void LCD429_SetDirection(uint8_t _dir)
 {
 	uint16_t temp;
 	
-	if (_dir == 0 || _dir == 1)		/* ºáÆÁ£¬ ºáÆÁ180¶È */
+	if (_dir == 0 || _dir == 1)		/* æ¨ªå±ï¼Œ æ¨ªå±180åº¦ */
 	{
 		if (g_LcdWidth < g_LcdHeight)
 		{
@@ -1140,7 +1140,7 @@ void LCD429_SetDirection(uint8_t _dir)
 			g_LcdHeight = temp;			
 		}
 	}
-	else if (_dir == 2 || _dir == 3)	/* ÊúÆÁ, ÊúÆÁ180¡ã*/
+	else if (_dir == 2 || _dir == 3)	/* ç«–å±, ç«–å±180Â°*/
 	{
 		if (g_LcdWidth > g_LcdHeight)
 		{
@@ -1153,11 +1153,11 @@ void LCD429_SetDirection(uint8_t _dir)
 
 /*
 *********************************************************************************************************
-*	º¯ Êı Ãû: LCD429_BeginDraw
-*	¹¦ÄÜËµÃ÷: Ë«»º³åÇø¹¤×÷Ä£Ê½¡£¿ªÊ¼»æÍ¼¡£½«µ±Ç°ÏÔÊ¾»º³åÇøµÄÊı¾İÍêÕû¸´ÖÆµ½ÁíÍâÒ»¸ö»º³åÇø¡£
-*			 ±ØĞëºÍ LCD429_EndDrawº¯Êı³É¶ÔÊ¹ÓÃ¡£ Êµ¼ÊĞ§¹û²¢²»ºÃ¡£
-*	ĞÎ    ²Î: ÎŞ
-*	·µ »Ø Öµ: ÎŞ
+*	å‡½ æ•° å: LCD429_BeginDraw
+*	åŠŸèƒ½è¯´æ˜: åŒç¼“å†²åŒºå·¥ä½œæ¨¡å¼ã€‚å¼€å§‹ç»˜å›¾ã€‚å°†å½“å‰æ˜¾ç¤ºç¼“å†²åŒºçš„æ•°æ®å®Œæ•´å¤åˆ¶åˆ°å¦å¤–ä¸€ä¸ªç¼“å†²åŒºã€‚
+*			 å¿…é¡»å’Œ LCD429_EndDrawå‡½æ•°æˆå¯¹ä½¿ç”¨ã€‚ å®é™…æ•ˆæœå¹¶ä¸å¥½ã€‚
+*	å½¢    å‚: æ— 
+*	è¿” å› å€¼: æ— 
 *********************************************************************************************************
 */
 void LCD429_BeginDraw(void)
@@ -1185,11 +1185,11 @@ void LCD429_BeginDraw(void)
 
 /*
 *********************************************************************************************************
-*	º¯ Êı Ãû: LCD429_EndDraw
-*	¹¦ÄÜËµÃ÷: APP½áÊøÁË»º³åÇø»æÍ¼¹¤×÷£¬ÇĞ»»Ó²¼şÏÔÊ¾¡£
-*			 ±ØĞëºÍ LCD429_BeginDrawº¯Êı³É¶ÔÊ¹ÓÃ¡£
-*	ĞÎ    ²Î: ÎŞ
-*	·µ »Ø Öµ: ÎŞ
+*	å‡½ æ•° å: LCD429_EndDraw
+*	åŠŸèƒ½è¯´æ˜: APPç»“æŸäº†ç¼“å†²åŒºç»˜å›¾å·¥ä½œï¼Œåˆ‡æ¢ç¡¬ä»¶æ˜¾ç¤ºã€‚
+*			 å¿…é¡»å’Œ LCD429_BeginDrawå‡½æ•°æˆå¯¹ä½¿ç”¨ã€‚
+*	å½¢    å‚: æ— 
+*	è¿” å› å€¼: æ— 
 *********************************************************************************************************
 */
 void LCD429_EndDraw(void)
@@ -1199,10 +1199,10 @@ void LCD429_EndDraw(void)
 
 /*
 *********************************************************************************************************
-*	º¯ Êı Ãû: _GetBufferSize
-*	¹¦ÄÜËµÃ÷: ÎŞ
-*	ĞÎ    ²Î: ÎŞ
-*	·µ »Ø Öµ: ÎŞ
+*	å‡½ æ•° å: _GetBufferSize
+*	åŠŸèƒ½è¯´æ˜: æ— 
+*	å½¢    å‚: æ— 
+*	è¿” å› å€¼: æ— 
 *********************************************************************************************************
 */
 uint32_t _GetBufferSize(uint8_t LayerIndex)
@@ -1213,10 +1213,10 @@ uint32_t _GetBufferSize(uint8_t LayerIndex)
 
 /*
 *********************************************************************************************************
-*	º¯ Êı Ãû: _GetPixelformat
-*	¹¦ÄÜËµÃ÷: »ñµÃÖ¸¶¨²ãµÄÏñËØ¸ñÊ½
-*	ĞÎ    ²Î: LayerIndex : ²ãºÅ 0,1
-*	·µ »Ø Öµ: ÎŞ
+*	å‡½ æ•° å: _GetPixelformat
+*	åŠŸèƒ½è¯´æ˜: è·å¾—æŒ‡å®šå±‚çš„åƒç´ æ ¼å¼
+*	å½¢    å‚: LayerIndex : å±‚å· 0,1
+*	è¿” å› å€¼: æ— 
 *********************************************************************************************************
 */
 static uint32_t _GetPixelformat(int LayerIndex) 
@@ -1235,7 +1235,7 @@ static uint32_t _GetPixelformat(int LayerIndex)
 
 /*********************************************************************
 *
-*       _DMA_LoadLUT       CLUT£¨ ÑÕÉ«²éÕÒ±í£©
+*       _DMA_LoadLUT       CLUTï¼ˆ é¢œè‰²æŸ¥æ‰¾è¡¨ï¼‰
 */
 static void _DMA_LoadLUT(LCD_COLOR * pColor, uint32_t NumItems) 
 {
@@ -1390,16 +1390,16 @@ static void _DMA_ConvertColor(void * pSrc, void * pDst,  uint32_t PixelFormatSrc
 
 /*
 *********************************************************************************************************
-*	º¯ Êı Ãû: _DMA_Copy
-*	¹¦ÄÜËµÃ÷: ¸´ÖÆÍ¼¿é
-*	ĞÎ    ²Î: 
-*			 pSrc : Ô´ÄÚ´æµØÖ·
-*			 pDst : Ä¿±êÄÚ´æµØÖ·
-*			 xSize : ¾ØĞÎx³ß´ç
-*			 ySize : ¾ØĞÎy³ß´ç
-*			 OffLineSrc : Ô´Í¼¿éĞĞÆ«ÒÆ
-*			 OffLineDst : Ä¿±êÍ¼¿éĞĞÆ«ÒÆ
-*	·µ »Ø Öµ: ÎŞ
+*	å‡½ æ•° å: _DMA_Copy
+*	åŠŸèƒ½è¯´æ˜: å¤åˆ¶å›¾å—
+*	å½¢    å‚: 
+*			 pSrc : æºå†…å­˜åœ°å€
+*			 pDst : ç›®æ ‡å†…å­˜åœ°å€
+*			 xSize : çŸ©å½¢xå°ºå¯¸
+*			 ySize : çŸ©å½¢yå°ºå¯¸
+*			 OffLineSrc : æºå›¾å—è¡Œåç§»
+*			 OffLineDst : ç›®æ ‡å›¾å—è¡Œåç§»
+*	è¿” å› å€¼: æ— 
 *********************************************************************************************************
 */
 static void _DMA_Copy(void * pSrc, void * pDst, int xSize, int ySize, int OffLineSrc, int OffLineDst) 
@@ -1423,15 +1423,15 @@ static void _DMA_Copy(void * pSrc, void * pDst, int xSize, int ySize, int OffLin
 
 /*
 *********************************************************************************************************
-*	º¯ Êı Ãû: _DMA_Fill
-*	¹¦ÄÜËµÃ÷: µ¥É«Ìî³ä¾ØĞÎ
-*	ĞÎ    ²Î: LayerIndex : ²ãºÅ 0,1
-*			 pDst  : Ä¿±êÄÚ´æµØÖ·
-*			 xSize : ¾ØĞÎx³ß´ç
-*			 ySize : ¾ØĞÎy³ß´ç
-*			 OffLine : Ä¿±ê¾ØĞÎµÄĞĞÆ«ÒÆ
-*			 ColorIndex : ¾ØĞÎµÄÑÕÉ«
-*	·µ »Ø Öµ: ÎŞ
+*	å‡½ æ•° å: _DMA_Fill
+*	åŠŸèƒ½è¯´æ˜: å•è‰²å¡«å……çŸ©å½¢
+*	å½¢    å‚: LayerIndex : å±‚å· 0,1
+*			 pDst  : ç›®æ ‡å†…å­˜åœ°å€
+*			 xSize : çŸ©å½¢xå°ºå¯¸
+*			 ySize : çŸ©å½¢yå°ºå¯¸
+*			 OffLine : ç›®æ ‡çŸ©å½¢çš„è¡Œåç§»
+*			 ColorIndex : çŸ©å½¢çš„é¢œè‰²
+*	è¿” å› å€¼: æ— 
 *********************************************************************************************************
 */
 static void _DMA_Fill(void * pDst, int xSize, int ySize, int OffLine, uint32_t Color)
@@ -1465,15 +1465,15 @@ static void _DMA_Fill(void * pDst, int xSize, int ySize, int OffLine, uint32_t C
 
 /*
 *********************************************************************************************************
-*	º¯ Êı Ãû: _DMA_DrawBitmapL8
-*	¹¦ÄÜËµÃ÷: µ¥É«Ìî³ä¾ØĞÎ
-*	ĞÎ    ²Î: LayerIndex : ²ãºÅ 0,1
-*			 pDst : Ä¿±êÄÚ´æµØÖ·
-*			 xSize : ¾ØĞÎx³ß´ç
-*			 ySize : ¾ØĞÎy³ß´ç
-*			 OffLine : Ä¿±ê¾ØĞÎµÄĞĞÆ«ÒÆ
-*			 ColorIndex : ¾ØĞÎµÄÑÕÉ«
-*	·µ »Ø Öµ: ÎŞ
+*	å‡½ æ•° å: _DMA_DrawBitmapL8
+*	åŠŸèƒ½è¯´æ˜: å•è‰²å¡«å……çŸ©å½¢
+*	å½¢    å‚: LayerIndex : å±‚å· 0,1
+*			 pDst : ç›®æ ‡å†…å­˜åœ°å€
+*			 xSize : çŸ©å½¢xå°ºå¯¸
+*			 ySize : çŸ©å½¢yå°ºå¯¸
+*			 OffLine : ç›®æ ‡çŸ©å½¢çš„è¡Œåç§»
+*			 ColorIndex : çŸ©å½¢çš„é¢œè‰²
+*	è¿” å› å€¼: æ— 
 *********************************************************************************************************
 */
 static void _DMA_DrawBitmapL8(void * pSrc, void * pDst,  uint32_t OffSrc, uint32_t OffDst, uint32_t PixelFormatDst, uint32_t xSize, uint32_t ySize) {
@@ -1583,4 +1583,4 @@ static void _LCD_DrawBitmap8bpp(int LayerIndex, int x, int y, U8 const * p, int 
 }
 #endif
 
-/***************************** °²¸»À³µç×Ó www.armfly.com (END OF FILE) *********************************/
+/***************************** å®‰å¯Œè±ç”µå­ www.armfly.com (END OF FILE) *********************************/

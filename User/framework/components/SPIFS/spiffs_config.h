@@ -16,11 +16,11 @@
  typedef signed char s8_t;
  typedef unsigned char u8_t;
 
-#define  SPIFLASH_CFG_PHYS_SZ               (1024*1024*8)    //FLASH×ÜÈÝÁ¿ 
-#define  SPIFLASH_CFG_PHYS_ERASE_SZ         (65536)          //FLASH²Á³ýµÄ×î´óÈÝÁ¿(W25XÏµÁÐ¿ÉÒÔ°´¿é²Á³ý£¬Ò»¿éµÄÈÝÁ¿ÊÇ65535×Ö½Ú)
-#define  SPIFLASH_CFG_PHYS_ADDR             (0)              //ÆðÊ¼µØÖ·
-#define  SPIFLASH_CFG_LOG_PAGE_SZ           (256)            //FLASHÒ³ÈÝÁ¿(W25XÏµÁÐÒ»Ò³µÄÈÝÁ¿ÊÇ256×Ö½Ú)
-#define  SPIFLASH_CFG_LOG_BLOCK_SZ          (65536)          //FLASH¿éÈÝÁ¿(W25XÏµÁÐÒ»¿éµÄÈÝÁ¿ÊÇ65535×Ö½Ú)
+#define  SPIFLASH_CFG_PHYS_SZ               (1024*1024*8)    //FLASHæ€»å®¹é‡ 
+#define  SPIFLASH_CFG_PHYS_ERASE_SZ         (65536)          //FLASHæ“¦é™¤çš„æœ€å¤§å®¹é‡(W25Xç³»åˆ—å¯ä»¥æŒ‰å—æ“¦é™¤ï¼Œä¸€å—çš„å®¹é‡æ˜¯65535å­—èŠ‚)
+#define  SPIFLASH_CFG_PHYS_ADDR             (0)              //èµ·å§‹åœ°å€
+#define  SPIFLASH_CFG_LOG_PAGE_SZ           (256)            //FLASHé¡µå®¹é‡(W25Xç³»åˆ—ä¸€é¡µçš„å®¹é‡æ˜¯256å­—èŠ‚)
+#define  SPIFLASH_CFG_LOG_BLOCK_SZ          (65536)          //FLASHå—å®¹é‡(W25Xç³»åˆ—ä¸€å—çš„å®¹é‡æ˜¯65535å­—èŠ‚)
 
 
 // Set generic spiffs debug output call.
