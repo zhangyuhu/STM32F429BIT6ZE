@@ -11,7 +11,7 @@ extern "C" {
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
-	
+
 #include "bsp.h"
 
 #define DEBUG_LOG 			(1)
@@ -83,6 +83,7 @@ extern "C" {
 
 #define LOG_DISPLAY(COLOR, BACKGROUND) "\033[1;" COLOR ";" BACKGROUND "m"
 #define LOG_PROMPT_DISPLAY             LOG_DISPLAY(LOG_COLOR_BROWN, LOG_BACKGROUND_BLACK)
+
 
 #else
 

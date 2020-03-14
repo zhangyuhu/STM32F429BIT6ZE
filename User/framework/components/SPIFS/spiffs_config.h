@@ -9,14 +9,14 @@
 #include <string.h>
 #include <stddef.h>
 
- typedef signed int s32_t;
- typedef unsigned int u32_t;
- typedef signed short s16_t;
- typedef unsigned short u16_t;
- typedef signed char s8_t;
- typedef unsigned char u8_t;
+typedef signed int s32_t;
+typedef unsigned int u32_t;
+typedef signed short s16_t;
+typedef unsigned short u16_t;
+typedef signed char s8_t;
+typedef unsigned char u8_t;
 
-#define  SPIFLASH_CFG_PHYS_SZ               (1024*1024*8)    //FLASH总容量 
+#define  SPIFLASH_CFG_PHYS_SZ               (1024*1024*8)    //FLASH总容量
 #define  SPIFLASH_CFG_PHYS_ERASE_SZ         (65536)          //FLASH擦除的最大容量(W25X系列可以按块擦除，一块的容量是65535字节)
 #define  SPIFLASH_CFG_PHYS_ADDR             (0)              //起始地址
 #define  SPIFLASH_CFG_LOG_PAGE_SZ           (256)            //FLASH页容量(W25X系列一页的容量是256字节)

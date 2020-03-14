@@ -68,7 +68,7 @@
 #include "bsp_key.h"
 //#include "bsp_msg.h"
 
-//#include "bsp_tim_pwm.h"
+#include "bsp_tim_pwm.h"
 
 //#include "bsp_cpu_flash.h"
 #include "bsp_sdio_sd.h"
@@ -120,7 +120,7 @@
 
 //#include "bsp_dac8501.h"
 //#include "bsp_dac8562.h"
-//#include "bsp_beep.h"
+#include "bsp_beep.h"
 
 //#include "bsp_adc_dso.h"
 //#include "bsp_dac_wave.h"

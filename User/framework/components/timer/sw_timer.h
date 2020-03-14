@@ -28,7 +28,8 @@ extern "C" {
  */
 typedef enum {
 
-	  SW_TIMER_ID_TEST,
+    SW_TIMER_ID_TEST,
+    SW_TIMER_ID_BEEP_DELAY,
     // 以下timer间隔较长，需要使用长定时器
     // 功耗调优版本，长定时时长最好为5s的整数倍
     SW_TIMER_ID_LONG_TIMER_INDEX,

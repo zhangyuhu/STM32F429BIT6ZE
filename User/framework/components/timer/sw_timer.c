@@ -162,10 +162,10 @@ static void aging_task_timer_handler(void* user);
 static uint8_t data = 0x55;
 void sw_timer_test(void) {
     SW_TIMER_CREATE(SW_TIMER_ID_TEST, SW_TIMER_TYPE_REPEATED, aging_task_timer_handler);
-    SW_TIMER_START_WITH_DATA(SW_TIMER_ID_TEST, 5000, &data);
+    SW_TIMER_START_WITH_DATA(SW_TIMER_ID_TEST, 1000, &data);
 }
 
 static void aging_task_timer_handler(void* user) {
     LOG_HIGHLIGHT("aging_task_timer_handler 0x%x", (*((uint8_t*)user)));
-    SW_TIMER_STOP(SW_TIMER_ID_TEST);
+    //SW_TIMER_STOP(SW_TIMER_ID_TEST);
 }

@@ -5,9 +5,10 @@
 extern "C" {
 #endif
 
-#define NAND_FATFS_TEST			(0)
-#define NAND_SPIFS_TEST			(1)
-	
+#define NAND_FATFS_TEST         (0)
+#define NAND_SPIFS_TEST         (0)
+#define BEEP_TEST               (0)
+
 #if (1 == NAND_FATFS_TEST)
 #include "demo_nand_fatfs.h"
 #endif
@@ -15,7 +16,7 @@ extern "C" {
 #if (1 == NAND_SPIFS_TEST)
 #include "demo_spiflash_spifs.h"
 #endif
-	
+
 #ifdef __cplusplus
 }
 #endif

@@ -489,6 +489,16 @@
               <FileType>1</FileType>
               <FilePath>..\..\User\bsp\src\bsp_spi_flash.c</FilePath>
             </File>
+            <File>
+              <FileName>bsp_beep.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\bsp\src\bsp_beep.c</FilePath>
+            </File>
+            <File>
+              <FileName>bsp_tim_pwm.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\bsp\src\bsp_tim_pwm.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -1124,6 +1134,16 @@
               <FileName>bsp_spi_flash.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\User\bsp\src\bsp_spi_flash.c</FilePath>
+            </File>
+            <File>
+              <FileName>bsp_beep.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\bsp\src\bsp_beep.c</FilePath>
+            </File>
+            <File>
+              <FileName>bsp_tim_pwm.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\bsp\src\bsp_tim_pwm.c</FilePath>
             </File>
           </Files>
         </Group>
